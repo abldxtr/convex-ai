@@ -81,7 +81,7 @@ export async function POST(req: Request) {
     const chatId = await fetchMutation(api.chat.createChatMutation, {
       title: body.message.content,
       id: body.chatId,
-      userId: userId,
+      userId: userId._id,
       isDeleted: false,
     });
     const saveMessage = await fetchMutation(
