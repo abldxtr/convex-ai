@@ -43,7 +43,7 @@ export const supportAgent = new Agent(components.agent, {
 export const createThread = action({
   args: {
     prompt: v.string(),
-    userId: v.string(),
+    userId: v.id("users"),
     id: v.string(),
     isDeleted: v.boolean(),
   },
@@ -185,22 +185,22 @@ export const saveMessageToDb = internalMutation({
   },
 });
 
-export const getMessagesByThreadId = query({
-  args: { threadId: v.string() },
-  handler: async (ctx, { threadId }) => {
-    const messages = await ctx.db
-      .query("conversation")
-      .filter((q) => q.eq(q.field("threadId"), threadId))
-      .collect();
+// export const getMessagesByThreadId = query({
+//   args: { threadId: v.string() },
+//   handler: async (ctx, { threadId }) => {
+//     const messages = await ctx.db
+//       .query("conversation")
+//       .filter((q) => q.eq(q.field("threadId"), threadId))
+//       .collect();
 
-    // const threadDoc = await ctx.runMutation(
-    //   components.agent.messages.createThread,
-    //   {
-    //     userId: "123",
-    //     title: "test",
-    //     summary: "test",
-    //   },
-    // );
-    return messages;
-  },
-});
+//     // const threadDoc = await ctx.runMutation(
+//     //   components.agent.messages.createThread,
+//     //   {
+//     //     userId: "123",
+//     //     title: "test",
+//     //     summary: "test",
+//     //   },
+//     // );
+//     return messages;
+//   },
+// });

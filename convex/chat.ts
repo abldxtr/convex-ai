@@ -252,28 +252,28 @@ export const getInProgressMessages = query({
 //   },
 // });
 
-// export const saveMessageWithInternal = internalMutation({
-//   args: {
-//     content: v.string(),
-//     role: v.union(v.literal("user"), v.literal("assistant")),
-//     threadId: v.string(),
-//   },
-//   handler: async (ctx, args): Promise<string> => {
-//     const messageId = await ctx.db.insert("conversation", args);
-//     return "success";
-//   },
-// });
+export const saveMessageWithInternal = internalMutation({
+  args: {
+    content: v.string(),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    threadId: v.string(),
+  },
+  handler: async (ctx, args): Promise<string> => {
+    // const messageId = await ctx.db.insert("conversation", args);
+    return "success";
+  },
+});
 
-// export const saveMessageWithInternalAction = internalAction({
-//   args: {
-//     content: v.string(),
-//     role: v.union(v.literal("user"), v.literal("assistant")),
-//     threadId: v.string(),
-//   },
-//   handler: async (ctx, args): Promise<string> => {
-//     return await ctx.runMutation(internal.chat.saveMessageWithInternal, args);
-//   },
-// });
+export const saveMessageWithInternalAction = internalAction({
+  args: {
+    content: v.string(),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    threadId: v.string(),
+  },
+  handler: async (ctx, args): Promise<string> => {
+    return await ctx.runMutation(internal.chat.saveMessageWithInternal, args);
+  },
+});
 
 // export const getMessagesByThreadId = query({
 //   args: { threadId: v.string() },

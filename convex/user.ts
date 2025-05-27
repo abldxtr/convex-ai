@@ -8,17 +8,20 @@ export const getUser = query({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    // const userId = await ctx.auth.getUserIdentity();
-    console.log("userid serversdideeeeeeeee");
-    console.log({ userId });
+    const userId_other = await ctx.auth.getUserIdentity();
+    console.log({ userId_other: JSON.stringify(userId_other, null, 2) });
+
     if (userId === null) {
       return null;
     }
-
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_id", (q) => q.eq("_id", userId))
+      .unique();
     // const user = await ctx.db.get(userId);
 
     // return user;
-    return userId;
+    return user;
   },
 });
 
