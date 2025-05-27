@@ -100,14 +100,14 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
   //   }
   //   const param = useParams<{ chatId: string }>();
   //   const createChat = useMutation(api.chat.createChat);
-  const createChat = useAction(api.agent.createThread);
+  // const createChat = useAction(api.agent.createThread);
   //   const [idChat, setIdChat] = useState<string>(
   //     param.chatId ?? crypto.randomUUID()
   //   );
   const idChat = useMemo(() => {
     return chatId ?? crypto.randomUUID();
   }, [chatId]);
-  const [isPending, startTransition] = useTransition();
+  // const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -156,17 +156,17 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
     },
   });
 
-  useEffect(() => {
-    if (!chatId && messages.length > 0 && !isRedirected.current) {
-      const firstMessage = messages[0];
-      const newChatId = firstMessage.id; // بسته به اینکه chatId رو کجا ذخیره می‌کنی
+  // useEffect(() => {
+  //   if (chatId !== undefined && messages.length > 0 && !isRedirected.current) {
+  //     const firstMessage = messages[0];
+  //     const newChatId = firstMessage.id; // بسته به اینکه chatId رو کجا ذخیره می‌کنی
 
-      if (newChatId) {
-        isRedirected.current = true;
-        router.replace(`/chat/${newChatId}`);
-      }
-    }
-  }, [messages, chatId, router]);
+  //     if (newChatId) {
+  //       isRedirected.current = true;
+  //       router.replace(`/chat/${newChatId}`);
+  //     }
+  //   }
+  // }, [messages, chatId, router]);
 
   useEffect(() => {
     const msg = localStorage.getItem("first-message");
@@ -201,14 +201,14 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
       e.preventDefault();
       localStorage.setItem("first-message", input);
       router.push(`/chat/${idChat}`);
-      setInput("");
+      // setInput("");
     } else {
       e.preventDefault();
       handleSubmit(e);
     }
   }
   async function sendMessageAndCreateChatClick(e: MouseEvent<HTMLDivElement>) {
-    if (chatIdd == undefined || chatIdd == null) {
+    if (chatIdd === undefined || chatIdd === null) {
       //   const res = await createChat({
       //     prompt: input,
       //     id: "7654321",
@@ -219,7 +219,7 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
       e.preventDefault();
       localStorage.setItem("first-message", input);
       router.push(`/chat/${idChat}`);
-      setInput("");
+      // setInput("");
     } else {
       e.preventDefault();
       handleSubmit(e);
