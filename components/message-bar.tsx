@@ -7,7 +7,7 @@ import { useScroll } from "@/hooks/use-scroll";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { useDirection } from "@/hooks/use-direction";
 import { MessageTools } from "./message-tools";
-import { Markdown } from "./markdown";
+import MarkdownRenderer from "./markdown";
 type MessageBarProps = {
   messages: UIMessage[];
   endOfMessagesRef: React.RefObject<HTMLDivElement> | null;
@@ -119,7 +119,7 @@ export function AIMessage({ message }: { message: UIMessage }) {
               return (
                 <div key={`${message.id}-${i}`} dir="auto">
                   {/* {part.text} */}
-                  <Markdown>{part.text}</Markdown>
+                  <MarkdownRenderer content={part.text} />
                 </div>
               );
           }
