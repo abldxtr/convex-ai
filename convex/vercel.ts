@@ -1,10 +1,11 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { api } from "./_generated/api";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const createVercelAiMessage = mutation({
   args: {
-    chatId: v.string(),
+    chatId: v.id("chats"),
     content: v.string(),
     role: v.union(v.literal("user"), v.literal("assistant")),
     parts: v.optional(
@@ -28,23 +29,13 @@ export const createVercelAiMessage = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    // const existChat = await ctx.db
-    //   .query("vercelAiMessages")
-    //   .filter((q) => q.eq(q.field("chatId"), args.chatId))
-    //   .unique();
-    // if (existChat) {
-    //   await ctx.db.patch(existChat._id, {
-    //     content: args.content,
-    //     role: args.role,
-    //     parts: args.parts,
-    //     attachments: args.attachments,
-    //     createdAt: Date.now(),
-    //   });
-    //   return existChat._id;
-    // }
-
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      return null;
+    }
     const messages = await ctx.db.insert("vercelAiMessages", {
       chatId: args.chatId,
+      userId: userId,
       content: args.content,
       role: args.role,
       parts: args.parts,
@@ -57,12 +48,18 @@ export const createVercelAiMessage = mutation({
 
 export const getVercelAiMessages = query({
   args: {
-    chatId: v.string(),
+    chatId: v.id("chats"),
   },
   handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      return null;
+    }
     return await ctx.db
       .query("vercelAiMessages")
-      .filter((q) => q.eq(q.field("chatId"), args.chatId))
+      .withIndex("by_chatId_userId", (q) =>
+        q.eq("chatId", args.chatId).eq("userId", userId)
+      )
       .collect();
   },
 });

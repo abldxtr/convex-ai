@@ -41,8 +41,23 @@ import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
 import { useAction, useQuery } from "convex/react";
 import { useMemo } from "react";
+import { Id } from "@/convex/_generated/dataModel";
 
-export function AppSidebar() {
+export function AppSidebar({
+  chatList,
+}: {
+  chatList:
+    | {
+        _id: Id<"chats">;
+        _creationTime: number;
+        id: string;
+        title: string;
+        userId: Id<"users">;
+        isDeleted: boolean;
+      }[]
+    | null
+    | undefined;
+}) {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
@@ -53,9 +68,7 @@ export function AppSidebar() {
   const { setOpenMobile } = useSidebar();
   // const clientParam = useParams();
   // const chatList = useQuery(api.chat.getChat, {});
-  const chatList = useQuery(api.chat.getChat, {
-    userId: "1234567",
-  });
+  // const chatList = useQuery(api.chat.getChat, {});
   // make group by date
   const chatGroup = useMemo(() => {
     return chatList?.reduce(

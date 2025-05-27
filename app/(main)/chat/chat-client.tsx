@@ -136,7 +136,7 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
       return {
         id,
         message: body.messages.at(-1),
-        chatId: chatId,
+        chatId: idChat,
 
         // threadId: "ks775p0gkb4rstnpea0wft4e4h7g4yjb",
       };
@@ -201,6 +201,7 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
       e.preventDefault();
       localStorage.setItem("first-message", input);
       router.push(`/chat/${idChat}`);
+      setInput("");
     } else {
       e.preventDefault();
       handleSubmit(e);
@@ -218,6 +219,7 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
       e.preventDefault();
       localStorage.setItem("first-message", input);
       router.push(`/chat/${idChat}`);
+      setInput("");
     } else {
       e.preventDefault();
       handleSubmit(e);

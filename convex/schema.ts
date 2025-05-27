@@ -10,12 +10,15 @@ const schema = defineSchema({
   chats: defineTable({
     id: v.string(),
     title: v.string(),
-    userId: v.string(),
+    userId: v.id("users"),
     isDeleted: v.boolean(),
-  }).index("by_userId", ["userId"]),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_createId", ["id"]),
 
   vercelAiMessages: defineTable({
-    chatId: v.string(),
+    chatId: v.id("chats"),
+    userId: v.id("users"),
     content: v.string(),
     role: v.union(
       v.literal("system"),
@@ -43,7 +46,10 @@ const schema = defineSchema({
       })
     ),
     createdAt: v.number(),
-  }).index("by_chatId", ["chatId"]),
+  })
+    .index("by_chatId", ["chatId"])
+    .index("by_userId", ["userId"])
+    .index("by_chatId_userId", ["chatId", "userId"]),
 });
 
 export default schema;

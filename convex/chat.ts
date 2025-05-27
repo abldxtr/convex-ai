@@ -48,7 +48,27 @@ export const getThreadMessages = query({
 export const createChat = internalMutation({
   args: {
     title: v.string(),
-    userId: v.string(),
+    userId: v.id("users"),
+    id: v.string(),
+    isDeleted: v.boolean(),
+  },
+  handler: async (ctx, args): Promise<Id<"chats">> => {
+    // const streamId = await streamingComponent.createStream(ctx);
+    const chatId = await ctx.db.insert("chats", {
+      id: args.id,
+      title: args.title,
+      userId: args.userId,
+      isDeleted: args.isDeleted,
+      // stream: streamId,
+    });
+    return chatId as Id<"chats">;
+  },
+});
+
+export const createChatMutation = mutation({
+  args: {
+    title: v.string(),
+    userId: v.id("users"),
     id: v.string(),
     isDeleted: v.boolean(),
   },
@@ -66,20 +86,42 @@ export const createChat = internalMutation({
 });
 
 export const getChat = query({
-  args: {
-    userId: v.string(),
-  },
+  args: {},
   handler: async (ctx, args) => {
     // return await ctx.db.get(args.chatId);
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      return null;
+    }
     const chatList = await ctx.db
       .query("chats")
-      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .collect();
     if (chatList.length === 0 || chatList === undefined) {
       return null;
     }
 
     return chatList;
+  },
+});
+
+export const getChatById = query({
+  args: { id: v.string() },
+  handler: async (ctx, args) => {
+    // return await ctx.db.get(args.chatId);
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      return null;
+    }
+    const chatItem = await ctx.db
+      .query("chats")
+      .withIndex("by_createId", (q) => q.eq("id", args.id))
+      .unique();
+    if (chatItem) {
+      return chatItem;
+    }
+
+    return null;
   },
 });
 
