@@ -79,7 +79,7 @@ export default function ChatClient({
   chatItem,
   chatMessages,
 }: ChatClientPropsPartial) {
-  const { firstText, setFirstText, newChat } = useGlobalstate();
+  const { firstText, setFirstText, newChat, setNewChat } = useGlobalstate();
   const router = useRouter();
   const pathname = usePathname();
   const isRedirected = useRef(false);
@@ -107,7 +107,7 @@ export default function ChatClient({
     experimental_throttle: 100,
     maxSteps: 2,
     api: "/api/chat",
-    initialMessages: chatMessages as unknown as Message[],
+    initialMessages: chatMessages,
     experimental_prepareRequestBody: (body) => {
       // console.log({ body });
       return {
@@ -131,7 +131,10 @@ export default function ChatClient({
   //   }
   // }, [messages, chatId, router]);
   useEffect(() => {
-    setMessages([]);
+    if (newChat) {
+      setMessages([]);
+      setNewChat(false);
+    }
   }, [newChat]);
 
   useEffect(() => {

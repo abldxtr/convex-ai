@@ -1,10 +1,7 @@
 import type { UIMessage } from "ai";
-import { ArrowDown, Check, CopyIcon, Pencil } from "lucide-react";
-import { Button } from "./ui/button";
-import { useState, useRef, useEffect } from "react";
+import { ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { useDirection } from "@/hooks/use-direction";
 import { MessageTools } from "./message-tools";
 import MarkdownRenderer from "./markdown";

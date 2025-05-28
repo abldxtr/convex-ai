@@ -1,4 +1,5 @@
 import { Id } from "@/convex/_generated/dataModel";
+import { UIMessage } from "ai";
 
 export type chat = {
   chatItem: {
@@ -44,6 +45,7 @@ export type ChatItem = {
 
 export type ChatMessage = {
   _id: Id<"vercelAiMessages">;
+  id: string;
   _creationTime: number;
   parts?: { text: string; type: string }[];
   attachments?: {
@@ -60,7 +62,7 @@ export type ChatMessage = {
 
 export type ChatClientProps = {
   chatItem: ChatItem;
-  chatMessages: ChatMessage[];
+  chatMessages: Array<UIMessage>;
 };
 
 export type ChatClientPropsPartial = Partial<ChatClientProps>;
