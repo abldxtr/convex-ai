@@ -15,5 +15,5 @@ export default async function Chat({
   //   return <div>chatId not found in query params</div>;
   // }
 
-  return <ChatClient chatId={chatId} />;
+  return <ChatClient />;
 }

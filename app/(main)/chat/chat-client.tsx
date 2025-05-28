@@ -1,17 +1,7 @@
 "use client";
-import { useChat } from "@ai-sdk/react";
-import {
-  Fragment,
-  MouseEvent,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { useChat, Message } from "@ai-sdk/react";
+import { Fragment, MouseEvent, useEffect, useId, useMemo, useRef } from "react";
 import { SidebarToggle } from "@/components/sidebar-toggle";
-import TextareaComponent from "@/components/text-area";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "usehooks-ts";
@@ -29,20 +19,13 @@ import {
   StopIcon,
 } from "@/components/icons";
 import MessageBar from "@/components/message-bar";
-import { ArrowDown } from "lucide-react";
 import { useScroll } from "@/hooks/use-scroll";
 import TooltipContainer from "@/components/tooltip-container";
 import { toast } from "sonner";
 import { useParams, usePathname } from "next/navigation";
-import { api } from "@/convex/_generated/api";
-import { useMutation } from "convex/react";
-import { useAction } from "convex/react";
-import { internal } from "@/convex/_generated/api";
-import { action } from "@/convex/_generated/server";
 import { useRouter } from "next/navigation";
 import { useGlobalstate } from "@/context/global-store";
-// import Messages from "@/components/messages";
-// Add this type definition for the icon components
+import { ChatClientProps, ChatClientPropsPartial, chat } from "@/lib/type";
 type IconComponent = ({ size }: { size?: number }) => React.ReactNode;
 
 const tools = [
@@ -78,7 +61,6 @@ const tools = [
   },
 ];
 
-// Update the searchTools array with proper typing
 const searchTools = [
   {
     name: "Mic",
@@ -93,34 +75,28 @@ const searchTools = [
     description: "Submit",
   },
 ];
-export default function ChatClient({ chatId }: { chatId: string | undefined }) {
-  const { firstText, setFirstText } = useGlobalstate();
-  //   if (!!chatId) {
-  //     return null;
-  //   }
-  //   const param = useParams<{ chatId: string }>();
-  //   const createChat = useMutation(api.chat.createChat);
-  // const createChat = useAction(api.agent.createThread);
-  //   const [idChat, setIdChat] = useState<string>(
-  //     param.chatId ?? crypto.randomUUID()
-  //   );
-  const idChat = useMemo(() => {
-    return chatId ?? crypto.randomUUID();
-  }, [chatId]);
-  // const [isPending, startTransition] = useTransition();
-
+export default function ChatClient({
+  chatItem,
+  chatMessages,
+}: ChatClientPropsPartial) {
+  const { firstText, setFirstText, newChat } = useGlobalstate();
   const router = useRouter();
   const pathname = usePathname();
-  const isRedirected = useRef(false); // جلوگیری از چندبار redirect شدن
-
+  const isRedirected = useRef(false);
   const chatIdd = pathname.split("/chat/")[1] || undefined;
 
-  //   const chatId = param.chatId ?? crypto.randomUUID();
+  const idChat = useMemo(() => {
+    // console.log("use memo", !!chatItem?.id);
+    return chatItem?.id ?? crypto.randomUUID();
+  }, [chatItem]);
+
+  console.log("ccccccc", JSON.stringify(chatMessages, null, 2));
 
   const {
     messages,
     input,
     handleInputChange,
+    append,
     handleSubmit,
     stop,
     setInput,
@@ -131,29 +107,16 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
     experimental_throttle: 100,
     maxSteps: 2,
     api: "/api/chat",
+    initialMessages: chatMessages as unknown as Message[],
     experimental_prepareRequestBody: (body) => {
-      console.log(body);
+      // console.log({ body });
       return {
         id,
         message: body.messages.at(-1),
-        chatId: idChat,
-
-        // threadId: "ks775p0gkb4rstnpea0wft4e4h7g4yjb",
+        chatId: chatIdd,
       };
     },
-    onFinish: async () => {
-      if (chatId == undefined || chatId?.length === 0) {
-        // startTransition(async () => {
-        //   const res = await createChat({
-        //     prompt: input,
-        //     id: "7654321",
-        //     userId: "1234567",
-        //     isDeleted: false,
-        //   });
-        //   router.push(`/chat?t=${res.chatId}`);
-        // });
-      }
-    },
+    onFinish: async () => {},
   });
 
   // useEffect(() => {
@@ -167,20 +130,23 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
   //     }
   //   }
   // }, [messages, chatId, router]);
+  useEffect(() => {
+    setMessages([]);
+  }, [newChat]);
 
   useEffect(() => {
     const msg = localStorage.getItem("first-message");
-    if (msg && messages.length === 0) {
-      setMessages([{ id: crypto.randomUUID(), content: msg, role: "user" }]);
-      setInput(msg);
-      handleSubmit();
+    // if (msg && messages.length === 0) {
+    if (msg) {
+      // setMessages([{ id: crypto.randomUUID(), content: msg, role: "user" }]);
+      // setInput(msg);
+      append({ id: crypto.randomUUID(), content: msg, role: "user" });
+      // handleSubmit();
       localStorage.removeItem("first-message");
     }
   }, []);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const matches = useMediaQuery("(min-width: 768px)");
-  const { showArrow } = useScroll();
   const id = useId();
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -190,16 +156,10 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
     e: React.KeyboardEvent<HTMLTextAreaElement>
   ) {
     if (chatIdd == undefined || chatIdd == null) {
-      //   const res = await createChat({
-      //     prompt: input,
-      //     id: "7654321",
-      //     userId: "1234567",
-      //     isDeleted: false,
-      //   });
-      //   router.push(`/chat/${res.chatId}`);
-      // setFirstText(input);
       e.preventDefault();
       localStorage.setItem("first-message", input);
+      setInput("");
+
       router.push(`/chat/${idChat}`);
       // setInput("");
     } else {
@@ -209,17 +169,10 @@ export default function ChatClient({ chatId }: { chatId: string | undefined }) {
   }
   async function sendMessageAndCreateChatClick(e: MouseEvent<HTMLDivElement>) {
     if (chatIdd === undefined || chatIdd === null) {
-      //   const res = await createChat({
-      //     prompt: input,
-      //     id: "7654321",
-      //     userId: "1234567",
-      //     isDeleted: false,
-      //   });
-      //   router.push(`/chat/${res.chatId}`);
       e.preventDefault();
       localStorage.setItem("first-message", input);
+      setInput("");
       router.push(`/chat/${idChat}`);
-      // setInput("");
     } else {
       e.preventDefault();
       handleSubmit(e);

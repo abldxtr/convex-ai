@@ -9,7 +9,7 @@ export const getUser = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const userId_other = await ctx.auth.getUserIdentity();
-    console.log({ userId_other: JSON.stringify(userId_other, null, 2) });
+    // console.log({ userId_other: JSON.stringify(userId_other, null, 2) });
 
     if (userId === null) {
       return null;

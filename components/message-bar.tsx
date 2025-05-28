@@ -126,7 +126,7 @@ export function AIMessage({ message }: { message: UIMessage }) {
         })}
       </div>
       <MessageTools message={message} />
-      <div className="h-[34px]" />
+      {/* <div className="h-[34px]" /> */}
     </div>
   );
 }

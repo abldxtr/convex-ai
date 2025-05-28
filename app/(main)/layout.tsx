@@ -21,7 +21,9 @@ export default async function ChatLayout({
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <AppSidebar chatList={chatList} />
+      {/* <AppSidebar chatList={chatList} /> */}
+      <AppSidebar />
+
       <SidebarInset className="h-dvh">{children}</SidebarInset>
     </SidebarProvider>
   );

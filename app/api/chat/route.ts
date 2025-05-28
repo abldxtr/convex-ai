@@ -23,7 +23,7 @@ import { after, NextResponse } from "next/server";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { redirect } from "next/navigation";
-const chatId = "abcdefghijklmnopqrstuvwxyz";
+import { Id } from "@/convex/_generated/dataModel";
 
 function convertToUIMessage(message: any): UIMessage {
   const text = message.content ?? message.parts?.text ?? "";
@@ -68,26 +68,41 @@ function getStreamContext() {
 export async function POST(req: Request) {
   // const json: PostRequestBody = await req.json();
   const body = await req.json();
+  // console.log({ body: JSON.stringify(body, null, 2) });
+
   const token = await convexAuthNextjsToken();
   const userId = await fetchQuery(api.user.getUser, {}, { token });
   if (!userId) {
     return NextResponse.json({ error: "User not found" }, { status: 401 });
   }
   // console.log({ json: JSON.stringify(body, null, 2) });
-  const getChat = await fetchQuery(api.chat.getChatById, {
-    id: body.chatId,
-  });
-  if (getChat === null) {
-    const chatId = await fetchMutation(api.chat.createChatMutation, {
-      title: body.message.content,
+  // console.log("body.chatId", body.chatId);
+  const getChat = await fetchQuery(
+    api.chat.getChatById,
+    {
       id: body.chatId,
-      userId: userId._id,
-      isDeleted: false,
-    });
+    },
+    { token }
+  );
+  // console.log("get chat", getChat);
+  if (!getChat?.chatItem) {
+    const chatId = await fetchMutation(
+      api.chat.createChatMutation,
+      {
+        title: body.message.content,
+        id: body.chatId,
+        userId: userId._id,
+        isDeleted: false,
+      },
+      { token }
+    );
+    // console.log("chatId", chatId);
+
     const saveMessage = await fetchMutation(
       api.vercel.createVercelAiMessage,
       {
         chatId: chatId,
+        id: body.message.id || crypto.randomUUID(),
         content: body.message.content,
         role: "user",
         parts: [{ type: "text", text: body.message.content }],
@@ -124,8 +139,9 @@ export async function POST(req: Request) {
       messages: messages,
       message: body.message,
     });
+    // console.log("all message if ", allMessages);
 
-    console.log({ allMessages: JSON.stringify(allMessages, null, 2) });
+    // console.log({ allMessages: JSON.stringify(allMessages, null, 2) });
     const result = streamText({
       model: openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
       // prompt: "hello my dear, my name is bahar, who are you",
@@ -140,15 +156,21 @@ export async function POST(req: Request) {
       onFinish: async (result) => {
         // console.log({ result });
         // console.log("eeeeee", result.response.messages);
-        console.log({
-          json: JSON.stringify(result.response.messages, null, 2),
-        });
-        const a = await fetchMutation(api.vercel.createVercelAiMessage, {
-          chatId: body.chatId,
-          content: result.text,
-          role: "assistant",
-          parts: [{ type: "text", text: result.text }],
-        });
+        // console.log({
+        //   json: JSON.stringify(result.response.messages, null, 2),
+        // });
+        const a = await fetchMutation(
+          api.vercel.createVercelAiMessage,
+          {
+            chatId: chatId,
+            id: result.response.messages[0].id || crypto.randomUUID(),
+
+            content: result.text,
+            role: "assistant",
+            parts: [{ type: "text", text: result.text }],
+          },
+          { token }
+        );
         //   const createChat = useMutation(api.chat.createChat);
 
         // redirect(`/chat/${b}`);
@@ -160,7 +182,9 @@ export async function POST(req: Request) {
     const saveMessage = await fetchMutation(
       api.vercel.createVercelAiMessage,
       {
-        chatId: getChat._id,
+        chatId: getChat.chatItem._id,
+        id: body.message.id || crypto.randomUUID(),
+
         content: body.message.content,
         role: "user",
         parts: [{ type: "text", text: body.message.content }],
@@ -169,7 +193,7 @@ export async function POST(req: Request) {
     );
     const getPreviousMessages = await fetchQuery(
       api.vercel.getVercelAiMessages,
-      { chatId: getChat._id },
+      { chatId: getChat.chatItem._id },
       { token }
     );
 
@@ -198,7 +222,9 @@ export async function POST(req: Request) {
       message: body.message,
     });
 
-    console.log({ allMessages: JSON.stringify(allMessages, null, 2) });
+    // console.log("all message else ", allMessages);
+
+    // console.log({ allMessages: JSON.stringify(allMessages, null, 2) });
     const result = streamText({
       model: openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
       // prompt: "hello my dear, my name is bahar, who are you",
@@ -213,15 +239,21 @@ export async function POST(req: Request) {
       onFinish: async (result) => {
         // console.log({ result });
         // console.log("eeeeee", result.response.messages);
-        console.log({
-          json: JSON.stringify(result.response.messages, null, 2),
-        });
-        const a = await fetchMutation(api.vercel.createVercelAiMessage, {
-          chatId: body.chatId,
-          content: result.text,
-          role: "assistant",
-          parts: [{ type: "text", text: result.text }],
-        });
+        // console.log({
+        //   json: JSON.stringify(result.response.messages, null, 2),
+        // });
+        const a = await fetchMutation(
+          api.vercel.createVercelAiMessage,
+          {
+            chatId: getChat.chatItem._id,
+            id: result.response.messages[0].id || crypto.randomUUID(),
+
+            content: result.text,
+            role: "assistant",
+            parts: [{ type: "text", text: result.text }],
+          },
+          { token }
+        );
         //   const createChat = useMutation(api.chat.createChat);
 
         // redirect(`/chat/${b}`);
@@ -229,10 +261,6 @@ export async function POST(req: Request) {
     });
 
     return result.toDataStreamResponse();
-
-    return NextResponse.json({
-      message: "Hello, how are you?",
-    });
   }
   // return result.toUIMessageStreamResponse();
 }

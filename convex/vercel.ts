@@ -6,6 +6,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 export const createVercelAiMessage = mutation({
   args: {
     chatId: v.id("chats"),
+    id: v.string(),
     content: v.string(),
     role: v.union(v.literal("user"), v.literal("assistant")),
     parts: v.optional(
@@ -35,6 +36,7 @@ export const createVercelAiMessage = mutation({
     }
     const messages = await ctx.db.insert("vercelAiMessages", {
       chatId: args.chatId,
+      id: args.id,
       userId: userId,
       content: args.content,
       role: args.role,

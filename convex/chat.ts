@@ -113,12 +113,18 @@ export const getChatById = query({
     if (userId === null) {
       return null;
     }
+    // داک مربوط به append رو بخون برای useChat vercel ai sdk
     const chatItem = await ctx.db
       .query("chats")
       .withIndex("by_createId", (q) => q.eq("id", args.id))
       .unique();
     if (chatItem) {
-      return chatItem;
+      const chatMessages = await ctx.db
+        .query("vercelAiMessages")
+        .withIndex("by_chatId", (q) => q.eq("chatId", chatItem._id))
+        .collect();
+
+      return { chatItem, chatMessages };
     }
 
     return null;

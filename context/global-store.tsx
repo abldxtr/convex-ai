@@ -11,18 +11,23 @@ import React, {
 type ContextType = {
   firstText: string;
   setFirstText: Dispatch<SetStateAction<string>>;
+  newChat: boolean;
+  setNewChat: Dispatch<SetStateAction<boolean>>;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
 
 export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [firstText, setFirstText] = useState("");
+  const [newChat, setNewChat] = useState(false);
 
   return (
     <GlobalContext.Provider
       value={{
         firstText,
         setFirstText,
+        newChat,
+        setNewChat,
       }}
     >
       {children}

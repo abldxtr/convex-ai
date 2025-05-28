@@ -16,12 +16,14 @@ import { Separator } from "@/components/ui/separator";
 import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import type { SignInFlow } from "@/components/auth/types";
+import { useRouter } from "next/navigation";
 
 interface SignInCardProps {
   setState: (state: SignInFlow) => void;
 }
 
 export const SignInCard = ({ setState }: SignInCardProps) => {
+  const router = useRouter();
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,6 +44,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
       password,
       flow: "signIn",
     })
+      .then(() => router.push("/"))
       .catch(() => {
         setError("Invalid email or password");
       })

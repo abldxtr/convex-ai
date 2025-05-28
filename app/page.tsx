@@ -19,7 +19,7 @@ export default async function HomePage() {
   return (
     <>
       <CurrentUser />
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-[#000000]  text-white">
         hello world
         <div className="flex flex-col gap-4">
           <Link href="/chat" className="text-2xl font-bold text-white">

@@ -42,26 +42,20 @@ import { api } from "@/convex/_generated/api";
 import { useAction, useQuery } from "convex/react";
 import { useMemo } from "react";
 import { Id } from "@/convex/_generated/dataModel";
+import { useGlobalstate } from "@/context/global-store";
 
-export function AppSidebar({
-  chatList,
-}: {
-  chatList:
-    | {
-        _id: Id<"chats">;
-        _creationTime: number;
-        id: string;
-        title: string;
-        userId: Id<"users">;
-        isDeleted: boolean;
-      }[]
-    | null
-    | undefined;
-}) {
+export function AppSidebar() {
+  // const chatList = await fetchQuery(api.chat.getChat, {}, { token });
+
+  const chatList = useQuery(api.chat.getChat, {});
+  console.log({ chatList });
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
+  const chatIdd = pathName.split("/chat/")[1] || undefined;
   console.log({ searchParams: searchParams });
+  const { firstText, setFirstText, newChat, setNewChat } = useGlobalstate();
+
   // console.log({ pathName: pathName.split("/")[2] });
   // console.log({ class: pathName.split("/") });
 
@@ -236,8 +230,10 @@ export function AppSidebar({
                   className="h-fit p-2"
                   onClick={() => {
                     // setOpenMobile(false);
-                    // router.push("/chat");
-                    window.history.replaceState({}, "", `/chat`);
+                    router.push("/chat");
+                    setNewChat(() => !newChat);
+                    // window.router.push("/chat");
+                    // window.history.replaceState({}, "", `/chat`);
                   }}
                 >
                   <PlusIcon />
@@ -262,9 +258,9 @@ export function AppSidebar({
                       <SidebarMenuItem key={chat._id}>
                         <SidebarMenuButton
                           asChild
-                          isActive={searchParams.get("t") === chat._id}
+                          isActive={chatIdd === chat.id}
                         >
-                          <Link href={`/chat/?t=${chat._id}`}>
+                          <Link href={`/chat/${chat.id}`}>
                             {chat.title || "Untitled Chat"}
                           </Link>
                         </SidebarMenuButton>

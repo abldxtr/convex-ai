@@ -18,6 +18,7 @@ const schema = defineSchema({
 
   vercelAiMessages: defineTable({
     chatId: v.id("chats"),
+    id: v.string(),
     userId: v.id("users"),
     content: v.string(),
     role: v.union(

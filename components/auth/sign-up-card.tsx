@@ -42,14 +42,13 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
         setError("Passwords do not match");
         return;
       }
-      setSigningUp(true);
+
       void signIn("password", { name, email, password, flow: "signUp" })
+        .then(() => setSigningUp(true))
         .catch(() => {
           setError("Something went wrong!");
         })
-        .finally(() => {
-          setSigningUp(false);
-        });
+        .finally(() => {});
     }
   );
 
