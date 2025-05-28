@@ -43,8 +43,9 @@ import { useAction, useQuery } from "convex/react";
 import { useMemo } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useGlobalstate } from "@/context/global-store";
+import { UserType } from "@/lib/type";
 
-export function AppSidebar() {
+export function AppSidebar({ user }: { user: UserType }) {
   // const chatList = await fetchQuery(api.chat.getChat, {}, { token });
 
   const chatList = useQuery(api.chat.getChat, {});
@@ -273,7 +274,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

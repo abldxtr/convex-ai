@@ -1,4 +1,4 @@
-import { Id } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { UIMessage } from "ai";
 
 export type chat = {
@@ -66,3 +66,5 @@ export type ChatClientProps = {
 };
 
 export type ChatClientPropsPartial = Partial<ChatClientProps>;
+
+export type UserType = Doc<"users"> | null;

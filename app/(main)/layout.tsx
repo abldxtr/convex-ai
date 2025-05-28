@@ -16,13 +16,14 @@ export default async function ChatLayout({
     convexAuthNextjsToken(),
   ]);
   const isCollapsed = cookieStore.get("sidebar:state")?.value !== "true";
+  const user = await fetchQuery(api.user.getUser, {}, { token });
   const chatList = await fetchQuery(api.chat.getChat, {}, { token });
-  console.log({ chatList });
+  // console.log({ chatList });
 
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider defaultOpen={isCollapsed}>
       {/* <AppSidebar chatList={chatList} /> */}
-      <AppSidebar />
+      <AppSidebar user={user} />
 
       <SidebarInset className="h-dvh">{children}</SidebarInset>
     </SidebarProvider>

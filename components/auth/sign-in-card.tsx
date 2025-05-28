@@ -44,7 +44,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
       password,
       flow: "signIn",
     })
-      .then(() => router.push("/"))
+      .then(() => router.push("/chat"))
       .catch(() => {
         setError("Invalid email or password");
       })
