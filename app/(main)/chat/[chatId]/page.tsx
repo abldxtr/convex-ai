@@ -19,11 +19,11 @@ export default async function ChatPage({
       id: message.id,
       parts: message.parts as UIMessage["parts"],
       role: message.role as UIMessage["role"],
-      // Note: content will soon be deprecated in @ai-sdk/react
       content: "",
-      createdAt: message.createdAt,
-      experimental_attachments:
-        (message.attachments as Array<Attachment>) ?? [],
+      createdAt: new Date(message.createdAt),
+      experimental_attachments: message.attachments
+        ? [message.attachments as Attachment]
+        : [],
     }));
   }
   // const []
