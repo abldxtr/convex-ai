@@ -131,6 +131,35 @@ export const getChatById = query({
   },
 });
 
+export const deleteChat = mutation({
+  args: { id: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      return null;
+    }
+
+    // const hasChat = await ctx.db
+    //   .query("chats")
+    //   .withIndex("by_userId", (q) => q.eq("userId", userId))
+    //   .filter((q) => q.eq(q.field("_id"), args.id))
+    //   .unique();
+
+    const chat = await ctx.db
+      .query("chats")
+      .withIndex("by_createId", (q) => q.eq("id", args.id))
+      .unique();
+    if (chat) {
+      const isUserChat = chat.userId === userId;
+      if (isUserChat) {
+        return await ctx.db.delete(chat._id);
+      }
+      return null;
+    }
+    return null;
+  },
+});
+
 // Create a query that returns the chat body.
 export const getChatBody = query({
   args: {

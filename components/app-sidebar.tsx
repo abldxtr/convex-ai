@@ -9,6 +9,13 @@ import {
 
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -21,6 +28,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarGroupLabel,
+  SidebarMenuAction,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
@@ -36,15 +44,18 @@ import {
   Frame,
   PieChart,
   Map,
+  Ellipsis,
+  Trash2,
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
-import { useAction, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { useMemo } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useGlobalstate } from "@/context/global-store";
 import { UserType } from "@/lib/type";
-
+import { toast } from "sonner";
+import { useMediaQuery } from "usehooks-ts";
 export function AppSidebar({ user }: { user: UserType }) {
   // const chatList = await fetchQuery(api.chat.getChat, {}, { token });
 
@@ -56,6 +67,19 @@ export function AppSidebar({ user }: { user: UserType }) {
   const chatIdd = pathName.split("/chat/")[1] || undefined;
   // console.log({ searchParams: searchParams });
   const { firstText, setFirstText, newChat, setNewChat } = useGlobalstate();
+  const deleteChat = useMutation(api.chat.deleteChat);
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const handleDeleteChat = (id: string) => {
+    try {
+      deleteChat({ id });
+      toast.success("Chat deleted successfully");
+    } catch (error) {
+      console.log({ error });
+      toast.error("Failed to delete chat");
+    }
+  };
 
   // // console.log({ pathName: pathName.split("/")[2] });
   // // console.log({ class: pathName.split("/") });
@@ -268,6 +292,32 @@ export function AppSidebar({ user }: { user: UserType }) {
                               {chat.title || "Untitled Chat"}
                             </Link>
                           </SidebarMenuButton>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <SidebarMenuAction
+                                showOnHover
+                                className="data-[state=open]:bg-accent rounded-sm"
+                              >
+                                {/* <IconDots /> */}
+                                <Ellipsis />
+                                <span className="sr-only">More</span>
+                              </SidebarMenuAction>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              className="w-24 rounded-lg"
+                              side={isMobile ? "bottom" : "right"}
+                              align={isMobile ? "end" : "start"}
+                            >
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => handleDeleteChat(chat.id)}
+                              >
+                                {/* <IconTrash /> */}
+                                <Trash2 />
+                                <span>Delete</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </SidebarMenuItem>
                       ))}
                   </SidebarMenu>

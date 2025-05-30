@@ -25,7 +25,7 @@ export default function RootLayout({
       <html lang="en" className={`${geist.variable}`}>
         <GlobalStoreProvider>
           <body>
-            <Toaster />
+            <Toaster position="top-center" richColors />
             <ConvexClientProvider>{children}</ConvexClientProvider>
           </body>
         </GlobalStoreProvider>
