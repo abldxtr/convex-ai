@@ -284,7 +284,7 @@ export const saveMessageWithInternalAction = internalAction({
 // export const getMessagesByThreadId = query({
 //   args: { threadId: v.string() },
 //   handler: async (ctx, args) => {
-//     console.log("getMessagesByThreadId", args.threadId);
+//     // console.log("getMessagesByThreadId", args.threadId);
 
 //     const allMessages = await ctx.db
 //       .query("conversation")

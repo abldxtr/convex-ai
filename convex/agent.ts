@@ -36,7 +36,7 @@ export const supportAgent = new Agent(components.agent, {
     - the title should be a summary of the user's message
     - do not use quotes or colons`,
   usageHandler: async (ctx, args) => {
-    console.log({ args });
+    // console.log({ args });
   },
 });
 
@@ -113,8 +113,8 @@ export const getThreadMessages = internalQuery({
 export const sendMessageHttpStream = httpAction(async (ctx, request) => {
   const { prompt, threadId } = await request.json();
 
-  console.log("convex Httpppppppppppppp");
-  console.log({ threadId });
+  // console.log("convex Httpppppppppppppp");
+  // console.log({ threadId });
 
   if (!threadId) {
     const { thread } = await supportAgent.createThread(ctx);

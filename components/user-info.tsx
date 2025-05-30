@@ -15,7 +15,7 @@ export default function UserInfo() {
     threadId: "ks71t87b3vx77hxbytb2fh25rd7g7rjj",
   });
 
-  // console.log(getMessages?.page[0]);
+  // // console.log(getMessages?.page[0]);
   const convexChat = async () => {
     const response = await fetch("http://localhost:3000/api/convexai", {
       method: "POST",
@@ -44,8 +44,8 @@ export default function UserInfo() {
       const matches = chunk.match(/"content":"(.*?)"/g);
       const result =
         matches?.map((m) => m.replace(/"content":"|"/g, "")).join("") ?? "";
-      console.log(result);
-      // console.log("chunk", chunk);
+      // console.log(result);
+      // // console.log("chunk", chunk);
       setStreamedText((prev) => prev + result);
     }
   };

@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const stream = createDataStream({
     async execute(dataStream) {
       try {
-        console.log("Fetching from Convex...");
+        // console.log("Fetching from Convex...");
         const convexRes = await fetch(
           "https://aware-barracuda-585.convex.site/streamText",
 
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
           }
         );
 
-        console.log("Convex response status:", convexRes.status);
+        // console.log("Convex response status:", convexRes.status);
 
         if (!convexRes.ok || !convexRes.body) {
           console.error("Stream not available:", convexRes.statusText);
@@ -37,18 +37,18 @@ export async function POST(req: Request) {
         const reader = convexRes.body.getReader();
         const decoder = new TextDecoder();
 
-        console.log("Starting to read stream");
+        // console.log("Starting to read stream");
         while (true) {
           const { done, value } = await reader.read();
-          // console.log({ done, value: value ? `${value.length} bytes` : null });
+          // // console.log({ done, value: value ? `${value.length} bytes` : null });
 
           if (done) {
-            console.log("Stream completed");
+            // console.log("Stream completed");
             break;
           }
 
           const textChunk = decoder.decode(value, { stream: true });
-          // console.log(
+          // // console.log(
           //   "Decoded chunk:",
           //   textChunk.substring(0, 50) + (textChunk.length > 50 ? "..." : ""),
           // );
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     },
   });
 
-  console.log("Returning stream response");
+  // console.log("Returning stream response");
   return new Response(stream);
 }
 
@@ -98,6 +98,6 @@ export async function POST(req: Request) {
 //     chunking: "word", // optional: defaults to 'word'
 //   }),
 //   onFinish: (result) => {
-//     console.log(result);
+//     // console.log(result);
 //   },
 // });

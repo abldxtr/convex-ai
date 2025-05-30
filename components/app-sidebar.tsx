@@ -49,16 +49,16 @@ export function AppSidebar({ user }: { user: UserType }) {
   // const chatList = await fetchQuery(api.chat.getChat, {}, { token });
 
   const chatList = useQuery(api.chat.getChat, {});
-  console.log({ chatList });
+  // console.log({ chatList });
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
   const chatIdd = pathName.split("/chat/")[1] || undefined;
-  console.log({ searchParams: searchParams });
+  // console.log({ searchParams: searchParams });
   const { firstText, setFirstText, newChat, setNewChat } = useGlobalstate();
 
-  // console.log({ pathName: pathName.split("/")[2] });
-  // console.log({ class: pathName.split("/") });
+  // // console.log({ pathName: pathName.split("/")[2] });
+  // // console.log({ class: pathName.split("/") });
 
   const { setOpenMobile } = useSidebar();
   // const clientParam = useParams();
@@ -247,30 +247,33 @@ export function AppSidebar({ user }: { user: UserType }) {
       </SidebarHeader>
       <SidebarContent>
         {chatGroup &&
-          Object.entries(chatGroup).map(([date, chats]) => (
-            <SidebarGroup key={date}>
-              <SidebarGroupLabel>{date}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {chats
-                    .slice()
-                    .reverse()
-                    .map((chat) => (
-                      <SidebarMenuItem key={chat._id}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={chatIdd === chat.id}
-                        >
-                          <Link href={`/chat/${chat.id}`}>
-                            {chat.title || "Untitled Chat"}
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ))}
+          Object.entries(chatGroup)
+            .slice()
+            .reverse()
+            .map(([date, chats]) => (
+              <SidebarGroup key={date}>
+                <SidebarGroupLabel>{date}</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {chats
+                      .slice()
+                      .reverse()
+                      .map((chat) => (
+                        <SidebarMenuItem key={chat._id}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={chatIdd === chat.id}
+                          >
+                            <Link href={`/chat/${chat.id}`} prefetch={true}>
+                              {chat.title || "Untitled Chat"}
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            ))}
       </SidebarContent>
 
       <SidebarFooter>

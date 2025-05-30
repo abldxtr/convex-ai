@@ -29,10 +29,14 @@ export default function MessageBar({
           <div
             className="flex size-[32px] cursor-pointer items-center justify-center rounded-full border bg-gray-100 transition-all duration-300 hover:cursor-pointer hover:bg-gray-200"
             onClick={() => {
-              scrollRef.current?.scrollTo({
-                top: clientHeight,
-                behavior: "smooth",
-              });
+              if (status === "streaming") {
+                // toast.error("Please wait for the previous message to be sent");
+              } else {
+                scrollRef.current?.scrollTo({
+                  top: clientHeight,
+                  behavior: "smooth",
+                });
+              }
             }}
           >
             <ArrowDown className="size-6 grow-0" />
@@ -69,7 +73,7 @@ export function UserMessage({ message }: { message: UIMessage }) {
 
   return (
     <div
-      className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]"
+      className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] "
       dir="auto"
     >
       <div
@@ -96,7 +100,7 @@ export function UserMessage({ message }: { message: UIMessage }) {
           }
         })}
       </div>
-      <MessageTools message={message} />
+      <MessageTools message={message} role="user" />
     </div>
   );
 }
@@ -105,9 +109,10 @@ export function AIMessage({ message }: { message: UIMessage }) {
   // const textPart = message.parts.find((part) => part.type === "text");
 
   return (
-    <div className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]">
+    <div className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] ">
+      {/* <div className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:48rem] @[48rem]:[--thread-content-max-width:48rem] @[64rem]:[--thread-content-max-width:48rem]"></div> */}
       <div
-        className="gap-4 rounded-3xl px-5 py-2.5 text-base focus-visible:outline-hidden md:gap-5 lg:gap-6"
+        className="gap-4 rounded-3xl px-5  text-base focus-visible:outline-hidden md:gap-5 lg:gap-6"
         dir="auto"
       >
         {message.parts.map((part, i) => {
@@ -122,7 +127,7 @@ export function AIMessage({ message }: { message: UIMessage }) {
           }
         })}
       </div>
-      <MessageTools message={message} />
+      <MessageTools message={message} role="assistant" />
       {/* <div className="h-[34px]" /> */}
     </div>
   );

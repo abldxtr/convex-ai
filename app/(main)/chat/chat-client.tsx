@@ -1,6 +1,14 @@
 "use client";
 import { useChat, Message } from "@ai-sdk/react";
-import { Fragment, MouseEvent, useEffect, useId, useMemo, useRef } from "react";
+import {
+  Fragment,
+  MouseEvent,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -26,6 +34,7 @@ import { useParams, usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useGlobalstate } from "@/context/global-store";
 import { ChatClientProps, ChatClientPropsPartial, chat } from "@/lib/type";
+import { ModelSwitcher } from "@/components/models";
 type IconComponent = ({ size }: { size?: number }) => React.ReactNode;
 
 const tools = [
@@ -85,12 +94,18 @@ export default function ChatClient({
   const isRedirected = useRef(false);
   const chatIdd = pathname.split("/chat/")[1] || undefined;
 
+  const [selectedModel, setSelectedModel] = useState(
+    "mmd-meta-llama/llama-4-scout"
+  );
+  const [showExperimentalModels, setShowExperimentalModels] = useState(false);
+  console.log("selectedModel", selectedModel);
+
   const idChat = useMemo(() => {
-    // console.log("use memo", !!chatItem?.id);
+    // // console.log("use memo", !!chatItem?.id);
     return chatItem?.id ?? crypto.randomUUID();
   }, [chatItem]);
 
-  console.log("ccccccc", JSON.stringify(chatMessages, null, 2));
+  // console.log("ccccccc", JSON.stringify(chatMessages, null, 2));
 
   const {
     messages,
@@ -109,11 +124,12 @@ export default function ChatClient({
     api: "/api/chat",
     initialMessages: chatMessages,
     experimental_prepareRequestBody: (body) => {
-      // console.log({ body });
+      // // console.log({ body });
       return {
         id,
         message: body.messages.at(-1),
         chatId: chatIdd,
+        model: selectedModel,
       };
     },
     onFinish: async () => {},
@@ -171,7 +187,7 @@ export default function ChatClient({
     <div className="stretch flex h-full w-full flex-col">
       {/* header */}
 
-      <div className="px-4 py-3">
+      <div className="px-4 pt-3 pb-1">
         <SidebarToggle />
       </div>
 
@@ -186,9 +202,9 @@ export default function ChatClient({
       {/* footer */}
 
       <form onSubmit={() => sendMessageAndCreateChatClick} className="w-full">
-        <div className="mb-8 w-full px-[16px] sm:px-[0px]">
+        <div className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]">
           <div className="flex items-center justify-center">
-            <div className="border-token-border-default bg-token-bg-primary flex w-full max-w-[40rem] grow cursor-text flex-col items-center justify-center overflow-clip rounded-[28px] border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg dark:bg-[#303030] dark:shadow-none!">
+            <div className="border-token-border-default bg-token-bg-primary flex  grow max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] cursor-text flex-col items-center justify-center overflow-clip rounded-[28px] border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg dark:bg-[#303030] dark:shadow-none!">
               <div className="relative w-full px-3 py-3">
                 <Textarea
                   id={id}
@@ -215,7 +231,45 @@ export default function ChatClient({
                 />
                 <div className="flex h-[48px] items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    {tools.map((tool, index) => {
+                    <div
+                    // className={cn(
+                    //   "transition-all duration-300",
+                    //   isMobile && isGroupSelectorExpanded
+                    //     ? "opacity-0 invisible w-0"
+                    //     : "opacity-100 visible w-auto"
+                    // )}
+                    >
+                      <ModelSwitcher
+                        selectedModel={selectedModel}
+                        setSelectedModel={setSelectedModel}
+                        showExperimentalModels={showExperimentalModels}
+                        attachments={[]}
+                        messages={messages}
+                        status={status}
+                        onModelSelect={(model) => {
+                          // Show additional info about image attachments for vision models
+                          const isVisionModel = model.vision === true;
+                          // showSwitchNotification(
+                          //   model.label,
+                          //   isVisionModel
+                          //     ? "Vision model enabled - you can now attach images and PDFs"
+                          //     : model.description,
+                          //   typeof model.icon === "string" ? (
+                          //     <img
+                          //       src={model.icon}
+                          //       alt={model.label}
+                          //       className="size-4 object-contain"
+                          //     />
+                          //   ) : (
+                          //     <model.icon className="size-4" />
+                          //   ),
+                          //   model.color,
+                          //   "model" // Explicitly mark as model notification
+                          // );
+                        }}
+                      />
+                    </div>
+                    {/* {tools.map((tool, index) => {
                       if (index > 3 && !matches) {
                         return null;
                       }
@@ -235,7 +289,7 @@ export default function ChatClient({
                           </div>
                         </TooltipContainer>
                       );
-                    })}
+                    })} */}
                   </div>
                   <div className="flex items-center gap-2">
                     {searchTools.map((tool, index) => {

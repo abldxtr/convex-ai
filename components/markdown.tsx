@@ -17,19 +17,51 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
     () => ({
       code({ className, children, ...props }) {
         return (
-          <code className={cn(className, "rounded-md px-1 py-0.5")} {...props}>
+          <code
+            className={cn(className, "rounded-md px-1 pb-0.5 pt-1.5")}
+            {...props}
+            dir="ltr"
+          >
             {children}
           </code>
         );
       },
       pre({ children, ...props }) {
+        const code = children as React.ReactElement;
+        // console.log(code);
+
+        // const handleCopy = () => {
+        //   let textToCopy = "";
+
+        //   if (React.isValidElement(code)) {
+        //     const childrenArray = React.Children.toArray(code.props.children);
+        //     textToCopy = childrenArray
+        //       .map((child) => {
+        //         if (typeof child === "string") return child;
+        //         if (typeof child === "number") return String(child);
+        //         return ""; // نادیده گرفتن باقی موارد
+        //       })
+        //       .join("");
+        //   }
+
+        //   navigator.clipboard.writeText(textToCopy.trim());
+        // };
+
         return (
-          <pre
-            className="my-1.5 overflow-x-auto rounded-lg bg-zinc-100 p-2.5 text-sm dark:bg-zinc-800/50"
-            {...props}
-          >
-            {children}
-          </pre>
+          <div className="relative group my-1.5 isolate " dir="ltr">
+            <button
+              // onClick={handleCopy}
+              className=" sticky bg-white   left-0 top-0 rounded-md  px-2 py-1 text-xs text-zinc-800 transition-opacity hover:bg-zinc-300  dark:bg-zinc-700 z-[22] block   "
+            >
+              Copy
+            </button>
+            <pre
+              className="overflow-x-auto rounded-lg bg-zinc-100 p-2 text-sm dark:bg-zinc-800/50"
+              {...props}
+            >
+              {children}
+            </pre>
+          </div>
         );
       },
       ol({ children, ...props }) {

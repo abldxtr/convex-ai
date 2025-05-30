@@ -4,7 +4,7 @@ import { streamText } from "ai";
 
 export async function POST(req: Request) {
   const { messages, input } = await req.json();
-  console.log({ messages, input });
+  // console.log({ messages, input });
 
   return createDataStreamResponse({
     execute: (dataStream) => {
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 //       chunking: "word", // optional: defaults to 'word'
 //     }),
 //     onFinish: (result) => {
-//       console.log(result);
+//       // console.log(result);
 //     },
 //   });
 

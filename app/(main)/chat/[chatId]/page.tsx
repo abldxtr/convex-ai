@@ -35,7 +35,7 @@ export default async function ChatPage({
     },
     { token }
   );
-  console.log({ chat });
+  // console.log({ chat });
 
   if (!chat) {
     return (

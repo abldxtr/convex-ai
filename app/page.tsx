@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import CurrentUser from "@/components/current-user";
 export default async function HomePage() {
   const token = await convexAuthNextjsToken();
-  console.log({ token });
+  // console.log({ token });
   // const isAuth = await isAuthenticatedNextjs();
 
   // if (!isAuth) {
@@ -13,7 +13,7 @@ export default async function HomePage() {
   // }
   // if (token) {
   const user = await fetchQuery(api.user.getUser, {}, { token });
-  console.log({ user });
+  // console.log({ user });
   // }
 
   return (

@@ -11,7 +11,7 @@ const isHomePage = createRouteMatcher(["/"]);
 
 export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
   const isAuth = await isAuthenticatedNextjs();
-  console.log({ isAuth });
+  // console.log({ isAuth });
   // if (isHomePage(request) && isAuth) {
   //   return nextjsMiddlewareRedirect(request, "/chat");
   // }
@@ -24,10 +24,9 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
   if (isProtectedRoute(request) && !isAuth) {
     return nextjsMiddlewareRedirect(request, "/auth");
   }
-  // if (isAuth) {
-  //   // return nextjsMiddlewareRedirect(request, "/chat");
-  //   return NextResponse.redirect("/chat");
-  // }
+  if (isHomePage(request) && !isAuth) {
+    return nextjsMiddlewareRedirect(request, "/auth");
+  }
 });
 
 export const config = {
