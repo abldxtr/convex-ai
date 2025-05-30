@@ -20,11 +20,12 @@ import {
 } from "resumable-stream";
 import { after, NextResponse } from "next/server";
 // import { generateTitleFromUserMessage } from "@/app/(main)/actions";
-import { fetchMutation, fetchQuery } from "convex/nextjs";
+import { fetchMutation, fetchQuery, fetchAction } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { redirect } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import { mmd } from "@/provider/providers";
+import { useAction } from "convex/react";
 
 function convertToUIMessage(message: any): UIMessage {
   const text = message.content ?? message.parts?.text ?? "";
@@ -87,32 +88,43 @@ export async function POST(req: Request) {
   );
   // // console.log("get chat", getChat);
   if (!getChat?.chatItem) {
-    const chatId = await fetchMutation(
-      api.chat.createChatMutation,
-      {
-        title: body.message.content,
-        id: body.chatId,
-        userId: userId._id,
-        isDeleted: false,
-      },
-      { token }
-    );
+    // const chatId = await fetchMutation(
+    //   api.chat.createChatMutation,
+    //   {
+    //     title: body.message.content,
+    //     id: body.chatId,
+    //     userId: userId._id,
+    //     isDeleted: false,
+    //   },
+    //   { token }
+    // );
+
+    const chatId = await fetchAction(api.agent.createThread, {
+      prompt: body.message.content,
+      id: body.chatId,
+      userId: userId._id,
+      isDeleted: false,
+    });
+    if (chatId === null) {
+      return NextResponse.json({ error: "Chat not found" }, { status: 401 });
+    }
     // // console.log("chatId", chatId);
 
     const saveMessage = await fetchMutation(
       api.vercel.createVercelAiMessage,
       {
-        chatId: chatId,
+        chatId: chatId.chatId,
         id: body.message.id || crypto.randomUUID(),
         content: body.message.content,
         role: "user",
         parts: [{ type: "text", text: body.message.content }],
+        userId: userId._id,
       },
       { token }
     );
     const getPreviousMessages = await fetchQuery(
       api.vercel.getVercelAiMessages,
-      { chatId },
+      { chatId: chatId.chatId },
       { token }
     );
 
@@ -166,9 +178,9 @@ export async function POST(req: Request) {
         const a = await fetchMutation(
           api.vercel.createVercelAiMessage,
           {
-            chatId: chatId,
+            chatId: chatId.chatId,
             id: result.response.messages[0].id || crypto.randomUUID(),
-
+            userId: userId._id,
             content: result.text,
             role: "assistant",
             parts: [{ type: "text", text: result.text }],
@@ -187,6 +199,7 @@ export async function POST(req: Request) {
       api.vercel.createVercelAiMessage,
       {
         chatId: getChat.chatItem._id,
+        userId: userId._id,
         id: body.message.id || crypto.randomUUID(),
 
         content: body.message.content,
@@ -251,7 +264,7 @@ export async function POST(req: Request) {
           {
             chatId: getChat.chatItem._id,
             id: result.response.messages[0].id || crypto.randomUUID(),
-
+            userId: userId._id,
             content: result.text,
             role: "assistant",
             parts: [{ type: "text", text: result.text }],

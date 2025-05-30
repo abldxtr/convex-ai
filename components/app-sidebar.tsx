@@ -75,6 +75,7 @@ export function AppSidebar({ user }: { user: UserType }) {
     try {
       deleteChat({ id });
       toast.success("Chat deleted successfully");
+      router.push("/chat");
     } catch (error) {
       console.log({ error });
       toast.error("Failed to delete chat");

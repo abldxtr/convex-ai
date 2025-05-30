@@ -9,6 +9,7 @@ export const createVercelAiMessage = mutation({
     id: v.string(),
     content: v.string(),
     role: v.union(v.literal("user"), v.literal("assistant")),
+    userId: v.id("users"),
     parts: v.optional(
       v.array(
         v.object({
@@ -30,14 +31,14 @@ export const createVercelAiMessage = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (userId === null) {
-      return null;
-    }
+    // const userId = await getAuthUserId(ctx);
+    // if (userId === null) {
+    //   return null;
+    // }
     const messages = await ctx.db.insert("vercelAiMessages", {
       chatId: args.chatId,
       id: args.id,
-      userId: userId,
+      userId: args.userId,
       content: args.content,
       role: args.role,
       parts: args.parts,

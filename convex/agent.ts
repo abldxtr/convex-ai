@@ -32,9 +32,11 @@ export const supportAgent = new Agent(components.agent, {
   // textEmbedding: openai.textEmbedding("text-embedding-3-small"),
   instructions: `\n
     - you will generate a short title based on the first message a user begins a conversation with
-    - ensure it is not more than 80 characters long
+    - ensure it is not more than 70 characters long
     - the title should be a summary of the user's message
-    - do not use quotes or colons`,
+    - do not use quotes or colons
+    - what the language of the user is, you must respond in the same language
+    `,
   usageHandler: async (ctx, args) => {
     // console.log({ args });
   },
@@ -49,12 +51,18 @@ export const createThread = action({
   },
   handler: async (ctx, args) => {
     // Start a new thread for the user.
+    // const userId = await getAuthUserId(ctx);
+    // if (userId === null) {
+    //   return null;
+    // }
+    console.log("createThread");
     const { threadId, thread } = await supportAgent.createThread(ctx);
     // Creates a user message with the prompt, and an assistant reply message.
     const result = await thread.generateText({ prompt: args.prompt });
     const res: Id<"chats"> = await ctx.runMutation(internal.chat.createChat, {
       title: result.text,
       userId: args.userId,
+      // userId,
       id: args.id,
       isDeleted: args.isDeleted,
     });

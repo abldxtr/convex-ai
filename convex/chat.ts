@@ -45,7 +45,7 @@ export const getThreadMessages = query({
 //   },
 // });
 
-export const createChat = internalMutation({
+export const createChatMutation = mutation({
   args: {
     title: v.string(),
     userId: v.id("users"),
@@ -54,6 +54,11 @@ export const createChat = internalMutation({
   },
   handler: async (ctx, args): Promise<Id<"chats">> => {
     // const streamId = await streamingComponent.createStream(ctx);
+
+    // const userId = await getAuthUserId(ctx);
+    // if (userId === null) {
+    //   return null;
+    // }
     const chatId = await ctx.db.insert("chats", {
       id: args.id,
       title: args.title,
@@ -65,7 +70,7 @@ export const createChat = internalMutation({
   },
 });
 
-export const createChatMutation = mutation({
+export const createChat = internalMutation({
   args: {
     title: v.string(),
     userId: v.id("users"),
