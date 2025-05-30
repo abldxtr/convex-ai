@@ -69,7 +69,7 @@ export function AppSidebar({ user }: { user: UserType }) {
   const { firstText, setFirstText, newChat, setNewChat } = useGlobalstate();
   const deleteChat = useMutation(api.chat.deleteChat);
 
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  // const isMobile = useMediaQuery("(max-width: 768px)");
 
   const handleDeleteChat = (id: string) => {
     try {
@@ -85,7 +85,7 @@ export function AppSidebar({ user }: { user: UserType }) {
   // // console.log({ pathName: pathName.split("/")[2] });
   // // console.log({ class: pathName.split("/") });
 
-  const { setOpenMobile } = useSidebar();
+  const { setOpenMobile, toggleSidebar, state, isMobile } = useSidebar();
   // const clientParam = useParams();
   // const chatList = useQuery(api.chat.getChat, {});
   // const chatList = useQuery(api.chat.getChat, {});
@@ -258,6 +258,9 @@ export function AppSidebar({ user }: { user: UserType }) {
                     // setOpenMobile(false);
                     router.push("/chat");
                     setNewChat(() => !newChat);
+                    if (state === "expanded" && isMobile) {
+                      toggleSidebar();
+                    }
                     // window.router.push("/chat");
                     // window.history.replaceState({}, "", `/chat`);
                   }}
@@ -288,6 +291,11 @@ export function AppSidebar({ user }: { user: UserType }) {
                           <SidebarMenuButton
                             asChild
                             isActive={chatIdd === chat.id}
+                            onClick={() => {
+                              if (state === "expanded" && isMobile) {
+                                toggleSidebar();
+                              }
+                            }}
                           >
                             <Link href={`/chat/${chat.id}`} prefetch={true}>
                               {chat.title || "Untitled Chat"}

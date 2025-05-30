@@ -320,6 +320,7 @@ export const ModelSwitcher: React.FC<ModelSwitcherProps> = ({
                     onSelect={() => {
                       // console.log("Selected model:", model.value);
                       setSelectedModel(model.value.trim());
+                      sessionStorage.setItem(`model`, model.value.trim());
 
                       // Call onModelSelect if provided
                       if (onModelSelect) {

@@ -156,7 +156,9 @@ export async function POST(req: Request) {
 
     // // console.log({ allMessages: JSON.stringify(allMessages, null, 2) });
     const result = streamText({
-      model: openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
+      model: mmd.languageModel(
+        body.model ?? "meta-llama/llama-3.2-3b-instruct:free"
+      ),
       // model: openrouter.chat("qwen/qwen-2.5-7b-instruct:free"),
       // model: openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
 
@@ -243,7 +245,9 @@ export async function POST(req: Request) {
 
     // // console.log({ allMessages: JSON.stringify(allMessages, null, 2) });
     const result = streamText({
-      model: mmd.languageModel(body.model),
+      model: mmd.languageModel(
+        body.model ?? "meta-llama/llama-3.2-3b-instruct:free"
+      ),
       // prompt: "hello my dear, my name is bahar, who are you",
       messages: allMessages,
       system:

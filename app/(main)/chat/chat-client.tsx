@@ -93,10 +93,9 @@ export default function ChatClient({
   const pathname = usePathname();
   const isRedirected = useRef(false);
   const chatIdd = pathname.split("/chat/")[1] || undefined;
-
-  const [selectedModel, setSelectedModel] = useState(
-    "mmd-meta-llama/llama-4-scout"
-  );
+  const model =
+    sessionStorage.getItem(`model`) ?? "mmd-meta-llama/llama-4-scout";
+  const [selectedModel, setSelectedModel] = useState(model);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   console.log("selectedModel", selectedModel);
 
