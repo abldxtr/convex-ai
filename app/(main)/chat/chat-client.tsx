@@ -119,17 +119,6 @@ export default function ChatClient({
     onFinish: async () => {},
   });
 
-  // useEffect(() => {
-  //   if (chatId !== undefined && messages.length > 0 && !isRedirected.current) {
-  //     const firstMessage = messages[0];
-  //     const newChatId = firstMessage.id; // بسته به اینکه chatId رو کجا ذخیره می‌کنی
-
-  //     if (newChatId) {
-  //       isRedirected.current = true;
-  //       router.replace(`/chat/${newChatId}`);
-  //     }
-  //   }
-  // }, [messages, chatId, router]);
   useEffect(() => {
     if (newChat) {
       setMessages([]);
@@ -139,12 +128,8 @@ export default function ChatClient({
 
   useEffect(() => {
     const msg = localStorage.getItem("first-message");
-    // if (msg && messages.length === 0) {
     if (msg) {
-      // setMessages([{ id: crypto.randomUUID(), content: msg, role: "user" }]);
-      // setInput(msg);
       append({ id: crypto.randomUUID(), content: msg, role: "user" });
-      // handleSubmit();
       localStorage.removeItem("first-message");
     }
   }, []);
