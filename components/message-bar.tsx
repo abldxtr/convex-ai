@@ -5,6 +5,7 @@ import { useScroll } from "@/hooks/use-scroll";
 import { useDirection } from "@/hooks/use-direction";
 import { MessageTools } from "./message-tools";
 import MarkdownRenderer from "./markdown";
+import { useLayoutEffect } from "react";
 type MessageBarProps = {
   messages: UIMessage[];
   endOfMessagesRef: React.RefObject<HTMLDivElement> | null;
@@ -17,6 +18,32 @@ export default function MessageBar({
   status,
 }: MessageBarProps) {
   const { scrollRef, showArrow, clientHeight } = useScroll();
+
+  useLayoutEffect(() => {
+    const storedScrollPosition = sessionStorage.getItem(
+      `scrollPos-${messages.at(-1)?.id}`
+    );
+    console.log("storedScrollPosition", storedScrollPosition);
+    // if (messages) {
+    if (storedScrollPosition && scrollRef.current) {
+      scrollRef.current.scrollTop = parseInt(storedScrollPosition, 10);
+    } else if (endOfMessagesRef?.current) {
+      endOfMessagesRef.current.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+    }
+    // }
+
+    return () => {
+      if (scrollRef.current) {
+        sessionStorage.setItem(
+          `scrollPos-${messages.at(-1)?.id}`,
+          scrollRef.current.scrollTop.toString()
+        );
+      }
+    };
+  }, [messages.at(-1)?.id, endOfMessagesRef?.current, scrollRef.current]);
   return (
     <div className="relative h-full w-full flex-1 overflow-hidden">
       {showArrow && (
