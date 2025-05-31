@@ -1,5 +1,5 @@
 import type { UIMessage } from "ai";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
 import { useDirection } from "@/hooks/use-direction";
@@ -27,7 +27,10 @@ export default function MessageBar({
     // if (messages) {
     if (storedScrollPosition && scrollRef.current) {
       scrollRef.current.scrollTop = parseInt(storedScrollPosition, 10);
-    } else if (endOfMessagesRef?.current) {
+    } else if (
+      endOfMessagesRef?.current &&
+      clientHeight > window.innerHeight + 100
+    ) {
       endOfMessagesRef.current.scrollIntoView({
         behavior: "instant",
         block: "center",
@@ -76,12 +79,17 @@ export default function MessageBar({
       >
         <div className="relative z-[9] h-full w-full">
           {messages.map((message) => {
+            const isLastMessage = message.id === messages.at(-1)?.id;
             return (
               <div key={message.id} className="whitespace-pre-wrap">
                 {message.role === "user" ? (
                   <UserMessage message={message} />
                 ) : (
-                  <AIMessage message={message} />
+                  <AIMessage
+                    message={message}
+                    status={status}
+                    isLastMessage={isLastMessage}
+                  />
                 )}
               </div>
             );
@@ -132,7 +140,15 @@ export function UserMessage({ message }: { message: UIMessage }) {
   );
 }
 
-export function AIMessage({ message }: { message: UIMessage }) {
+export function AIMessage({
+  message,
+  status,
+  isLastMessage,
+}: {
+  message: UIMessage;
+  status: "error" | "submitted" | "streaming" | "ready";
+  isLastMessage: boolean;
+}) {
   // const textPart = message.parts.find((part) => part.type === "text");
 
   return (
@@ -146,7 +162,15 @@ export function AIMessage({ message }: { message: UIMessage }) {
           switch (part.type) {
             case "text":
               return (
-                <div key={`${message.id}-${i}`} dir="auto">
+                <div
+                  key={`${message.id}-${i}`}
+                  dir="auto"
+                  // className="flex"
+                >
+                  {(status === "streaming" || status === "submitted") &&
+                    isLastMessage && (
+                      <span className="size-4 animate-pulse rounded-full bg-black" />
+                    )}
                   {/* {part.text} */}
                   <MarkdownRenderer content={part.text} />
                 </div>

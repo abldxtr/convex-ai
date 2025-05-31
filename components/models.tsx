@@ -64,6 +64,19 @@ const models = [
     category: "Stable",
     pdf: false,
   },
+  {
+    value: "mmd-meta-llama/llama-3.3-8b-instruct:free",
+    label: "meta-llama/llama-3.3-8b-instruct:free",
+    icon: "./../faviconV2.png",
+    iconClass: "text-current",
+    description: "xAI's advanced vision model",
+    color: "indigo",
+    vision: false,
+    reasoning: false,
+    experimental: false,
+    category: "Stable",
+    pdf: false,
+  },
 ];
 
 interface ModelSwitcherProps {

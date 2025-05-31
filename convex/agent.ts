@@ -32,7 +32,7 @@ export const supportAgent = new Agent(components.agent, {
   // textEmbedding: openai.textEmbedding("text-embedding-3-small"),
   instructions: `\n
     - you will generate a short title based on the first message a user begins a conversation with
-    - ensure it is not more than 70 characters long
+    - ensure it is not more than 32 characters long
     - the title should be a summary of the user's message
     - do not use quotes or colons
     - what the language of the user is, you must respond in the same language

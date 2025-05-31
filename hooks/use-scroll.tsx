@@ -12,6 +12,7 @@ export function useScroll() {
     const scrollTop = el.scrollTop;
     const scrollHeight = el.scrollHeight;
     const clientHeight = el.clientHeight;
+    const offsetHeight = el.offsetHeight;
 
     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
 
@@ -20,7 +21,11 @@ export function useScroll() {
     if (scrollPercent > 90) {
       setShowArrow(false);
     }
-    if (scrollPercent > 10 && scrollPercent < 90) {
+    if (
+      scrollPercent > 10 &&
+      scrollPercent < 90 &&
+      scrollHeight > offsetHeight * 1.5
+    ) {
       setShowArrow(true);
     } else {
       setShowArrow(false);

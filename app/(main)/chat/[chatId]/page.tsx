@@ -5,6 +5,7 @@ import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { redirect } from "next/navigation";
 import { Attachment, UIMessage } from "ai";
 import { ChatMessage } from "@/lib/type";
+import exa from "@/lib/exa";
 
 export default async function ChatPage({
   params,
@@ -26,6 +27,20 @@ export default async function ChatPage({
         : [],
     }));
   }
+  // async function exampleSearch() {
+  //   try {
+  //     const result = await exa.searchAndContents("elsa jean pornstar", {
+  //       type: "neural",
+  //       numResults: 3,
+  //       text: true,
+  //     });
+
+  //     console.log(JSON.stringify(result, null, 2));
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // }
+  // exampleSearch();
   // const []
 
   const chat = await fetchQuery(

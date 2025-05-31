@@ -22,6 +22,9 @@ export const mmd = customProvider({
     "mmd-google": openrouter.chat("google/gemini-2.0-flash-exp:free"),
     "mmd-deepseek": openrouter.chat("deepseek/deepseek-r1-0528:free"),
     "mmd-mistral": openrouter.chat("mistralai/mistral-7b-instruct:free"),
+    "mmd-meta-llama/llama-3.3-8b-instruct:free": openrouter.chat(
+      "meta-llama/llama-3.3-8b-instruct:free"
+    ),
     "mmd-meta-llama/llama-4-scout": openrouter.chat(
       "meta-llama/llama-4-scout:free"
     ),

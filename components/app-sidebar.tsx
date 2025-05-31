@@ -46,6 +46,7 @@ import {
   Map,
   Ellipsis,
   Trash2,
+  Loader2,
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
@@ -56,6 +57,7 @@ import { useGlobalstate } from "@/context/global-store";
 import { UserType } from "@/lib/type";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
+import { getRelativeDateLabel } from "@/lib/date";
 export function AppSidebar({ user }: { user: UserType }) {
   // const chatList = await fetchQuery(api.chat.getChat, {}, { token });
 
@@ -75,7 +77,7 @@ export function AppSidebar({ user }: { user: UserType }) {
     try {
       deleteChat({ id });
       toast.success("Chat deleted successfully");
-      router.push("/chat");
+      router.replace("/chat");
     } catch (error) {
       console.log({ error });
       toast.error("Failed to delete chat");
@@ -90,148 +92,53 @@ export function AppSidebar({ user }: { user: UserType }) {
   // const chatList = useQuery(api.chat.getChat, {});
   // const chatList = useQuery(api.chat.getChat, {});
   // make group by date
+  // const chatGroup = useMemo(() => {
+  //   return chatList?.reduce(
+  //     (acc, item) => {
+  //       const date = new Date(item._creationTime);
+  //       const dateString = date.toLocaleDateString();
+  //       if (!acc[dateString]) {
+  //         acc[dateString] = [];
+  //       }
+  //       acc[dateString].push(item);
+  //       return acc;
+  //     },
+  //     {} as Record<string, typeof chatList>
+  //   );
+  // }, [chatList]);
+
   const chatGroup = useMemo(() => {
+    if (chatList === undefined) return undefined;
     return chatList?.reduce(
       (acc, item) => {
-        const date = new Date(item._creationTime);
-        const dateString = date.toLocaleDateString();
-        if (!acc[dateString]) {
-          acc[dateString] = [];
+        console.log("item._creationTime:", item._creationTime);
+
+        // فرض کنیم item._creationTime عدد یا رشته عددی است بر حسب میلی‌ثانیه
+        const timestamp = Number(item._creationTime);
+
+        // اگر بر حسب ثانیه بود:
+        // const timestamp = Number(item._creationTime) * 1000;
+
+        const date = new Date(timestamp);
+
+        if (isNaN(date.getTime())) {
+          console.warn("Invalid date for _creationTime:", item._creationTime);
+          return acc; // یا هر رفتار دلخواه در صورت تاریخ نامعتبر
         }
-        acc[dateString].push(item);
+
+        const dateLabel = getRelativeDateLabel(date);
+
+        if (!acc[dateLabel]) {
+          acc[dateLabel] = [];
+        }
+        acc[dateLabel].push(item);
+
         return acc;
       },
       {} as Record<string, typeof chatList>
     );
   }, [chatList]);
-  const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
-    },
-    teams: [
-      {
-        name: "Acme Inc",
-        logo: GalleryVerticalEnd,
-        plan: "Enterprise",
-      },
-      {
-        name: "Acme Corp.",
-        logo: AudioWaveform,
-        plan: "Startup",
-      },
-      {
-        name: "Evil Corp.",
-        logo: Command,
-        plan: "Free",
-      },
-    ],
-    navMain: [
-      {
-        title: "Playground",
-        url: "#",
-        icon: SquareTerminal,
-        isActive: true,
-        items: [
-          {
-            title: "History",
-            url: "#",
-          },
-          {
-            title: "Starred",
-            url: "#",
-          },
-          {
-            title: "Settings",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Models",
-        url: "#",
-        icon: Bot,
-        items: [
-          {
-            title: "Genesis",
-            url: "#",
-          },
-          {
-            title: "Explorer",
-            url: "#",
-          },
-          {
-            title: "Quantum",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Documentation",
-        url: "#",
-        icon: BookOpen,
-        items: [
-          {
-            title: "Introduction",
-            url: "#",
-          },
-          {
-            title: "Get Started",
-            url: "#",
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-          },
-          {
-            title: "Changelog",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Settings",
-        url: "#",
-        icon: Settings2,
-        items: [
-          {
-            title: "General",
-            url: "#",
-          },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
-            url: "#",
-          },
-        ],
-      },
-    ],
-    projects: [
-      {
-        name: "Design Engineering",
-        url: "#",
-        icon: Frame,
-      },
-      {
-        name: "Sales & Marketing",
-        url: "#",
-        icon: PieChart,
-      },
-      {
-        name: "Travel",
-        url: "#",
-        icon: Map,
-      },
-    ],
-  };
+
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
       <SidebarHeader>
@@ -274,13 +181,20 @@ export function AppSidebar({ user }: { user: UserType }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        {chatList === undefined && (
+          <div className="flex items-center justify-center">
+            <Loader2 className="size-6 animate-spin" />
+          </div>
+        )}
         {chatGroup &&
           Object.entries(chatGroup)
             .slice()
             .reverse()
             .map(([date, chats]) => (
               <SidebarGroup key={date}>
-                <SidebarGroupLabel>{date}</SidebarGroupLabel>
+                <SidebarGroupLabel>
+                  {getRelativeDateLabel(new Date(Number(date)))}
+                </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
                     {chats

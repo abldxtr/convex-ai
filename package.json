@@ -32,6 +32,8 @@
     "clsx": "^2.1.1",
     "convex": "^1.24.1",
     "convex-helpers": "^0.1.88",
+    "date-fns": "^4.1.0",
+    "exa-js": "^1.7.3",
     "framer-motion": "^12.15.0",
     "lucide-react": "^0.511.0",
     "marked-react": "^3.0.0",
