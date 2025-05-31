@@ -63,6 +63,7 @@ export type ChatMessage = {
 export type ChatClientProps = {
   chatItem: ChatItem;
   chatMessages: Array<UIMessage>;
+  // chatId: string;
 };
 
 export type ChatClientPropsPartial = Partial<ChatClientProps>;

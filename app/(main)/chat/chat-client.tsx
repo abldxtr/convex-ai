@@ -162,7 +162,9 @@ export default function ChatClient({
         model: selectedModel,
       };
     },
-    onFinish: async () => {},
+    onFinish: async () => {
+      router.refresh();
+    },
   });
 
   useEffect(() => {
@@ -259,7 +261,7 @@ export default function ChatClient({
               <div
                 className={cn(
                   "relative w-full p-[10px] flex flex-col justify-between ",
-                  chatIdd ? "h-[100px]" : " h-[120px]"
+                  chatIdd ? "min-h-[100px]" : "min-h-[120px]"
                 )}
               >
                 <Textarea

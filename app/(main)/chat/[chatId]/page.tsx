@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { Attachment, UIMessage } from "ai";
 import { ChatMessage } from "@/lib/type";
 import exa from "@/lib/exa";
+import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 
 export default async function ChatPage({
   params,
@@ -15,18 +16,6 @@ export default async function ChatPage({
   const chatId = (await params).chatId;
   const token = await convexAuthNextjsToken();
 
-  function convertToUIMessages(messages: ChatMessage[]): Array<UIMessage> {
-    return messages.map((message: ChatMessage) => ({
-      id: message.id,
-      parts: message.parts as UIMessage["parts"],
-      role: message.role as UIMessage["role"],
-      content: "",
-      createdAt: new Date(message.createdAt),
-      experimental_attachments: message.attachments
-        ? [message.attachments as Attachment]
-        : [],
-    }));
-  }
   // async function exampleSearch() {
   //   try {
   //     const result = await exa.searchAndContents("elsa jean pornstar", {
@@ -65,7 +54,19 @@ export default async function ChatPage({
       <ChatClient
         chatItem={chat.chatItem}
         chatMessages={convertToUIMessages(chat.chatMessages)}
+        // chatId={chatId}
       />
     </>
   );
 }
+
+// import { preloadQuery } from "convex/nextjs";
+// import { api } from "@/convex/_generated/api";
+// import { Tasks } from "./Tasks";
+
+// export async function TasksWrapper() {
+//   const preloadedTasks = await preloadQuery(api.tasks.list, {
+//     list: "default",
+//   });
+//   return <Tasks preloadedTasks={preloadedTasks} />;
+// }
