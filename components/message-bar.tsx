@@ -17,7 +17,8 @@ export default function MessageBar({
   endOfMessagesRef,
   status,
 }: MessageBarProps) {
-  const { scrollRef, showArrow, clientHeight } = useScroll();
+  const { scrollRef, showArrow, clientHeight, scrollHeight, offsetHeight } =
+    useScroll();
 
   useLayoutEffect(() => {
     const storedScrollPosition = sessionStorage.getItem(
@@ -27,10 +28,7 @@ export default function MessageBar({
     // if (messages) {
     if (storedScrollPosition && scrollRef.current) {
       scrollRef.current.scrollTop = parseInt(storedScrollPosition, 10);
-    } else if (
-      endOfMessagesRef?.current &&
-      clientHeight > window.innerHeight + 100
-    ) {
+    } else if (endOfMessagesRef?.current) {
       endOfMessagesRef.current.scrollIntoView({
         behavior: "instant",
         block: "center",

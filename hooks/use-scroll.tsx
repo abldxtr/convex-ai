@@ -4,6 +4,8 @@ export function useScroll() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showArrow, setShowArrow] = useState(false);
   const [clientHeight, setClientHeight] = useState(0);
+  const [scrollHeight, setScrollHeight] = useState(0);
+  const [offsetHeight, setOffsetHeight] = useState(0);
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -18,6 +20,8 @@ export function useScroll() {
 
     const scrollPercent = (scrollTop / (scrollHeight - clientHeight)) * 100;
     setClientHeight(scrollHeight);
+    setScrollHeight(offsetHeight);
+    setOffsetHeight(offsetHeight);
     if (scrollPercent > 90) {
       setShowArrow(false);
     }
@@ -44,5 +48,5 @@ export function useScroll() {
     };
   }, [handleScroll]);
 
-  return { scrollRef, showArrow, clientHeight };
+  return { scrollRef, showArrow, clientHeight, scrollHeight, offsetHeight };
 }

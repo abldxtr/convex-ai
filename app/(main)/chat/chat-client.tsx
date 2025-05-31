@@ -177,7 +177,6 @@ export default function ChatClient({
     }
   }, []);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
-  const matches = useMediaQuery("(min-width: 768px)");
   const id = useId();
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -220,11 +219,9 @@ export default function ChatClient({
     >
       {/* header */}
 
-      {/* {active && ( */}
       <div className="px-4 pt-3 pb-1">
         <SidebarToggle />
       </div>
-      {/* )} */}
 
       {/* body */}
 
