@@ -1,6 +1,7 @@
 "use client";
 
-import { useQuery } from "convex/react";
+// import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { api } from "@/convex/_generated/api";
@@ -11,9 +12,9 @@ export default function UserInfo() {
   //   threadId: "ks775p0gkb4rstnpea0wft4e4h7g4yjb",
   // });
 
-  const getMessages = useQuery(api.chat.getThreadMessages, {
-    threadId: "ks71t87b3vx77hxbytb2fh25rd7g7rjj",
-  });
+  // const getMessages = useQuery(api.chat.getThreadMessages, {
+  //   threadId: "ks71t87b3vx77hxbytb2fh25rd7g7rjj",
+  // });
 
   // // console.log(getMessages?.page[0]);
   const convexChat = async () => {
@@ -59,7 +60,7 @@ export default function UserInfo() {
           {streamedText}
         </div>
         <div>DB DB</div>
-        <div className="mt-4 border p-2 whitespace-pre-wrap">
+        {/* <div className="mt-4 border p-2 whitespace-pre-wrap">
           {getMessages?.page
             .slice() // کپی کردن برای جلوگیری از تغییر اصل داده
             .reverse() // برعکس کردن آرایه
@@ -117,7 +118,7 @@ export default function UserInfo() {
                 </div>
               );
             })}
-        </div>
+        </div> */}
       </div>
     </div>
   );

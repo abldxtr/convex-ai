@@ -66,14 +66,14 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       },
       ol({ children, ...props }) {
         return (
-          <ol className="my-1.5 ml-4 list-decimal space-y-0.5" {...props}>
+          <ol className=" ml-4 list-decimal space-y-0.5" {...props}>
             {children}
           </ol>
         );
       },
       ul({ children, ...props }) {
         return (
-          <ul className="my-1.5 ml-4 list-disc space-y-0.5" {...props}>
+          <ul className=" ml-4 list-disc space-y-0.5" {...props}>
             {children}
           </ul>
         );
@@ -87,7 +87,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       },
       p({ children, ...props }) {
         return (
-          <p className="my-1 leading-relaxed" {...props}>
+          <p className=" leading-relaxed" {...props}>
             {children}
           </p>
         );
@@ -109,7 +109,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       blockquote({ children, ...props }) {
         return (
           <blockquote
-            className="my-1.5 border-l-2 border-zinc-200 pl-3 text-zinc-600 italic dark:border-zinc-700 dark:text-zinc-400"
+            className=" border-l-2 border-zinc-200 pl-3 text-zinc-600 italic dark:border-zinc-700 dark:text-zinc-400"
             {...props}
           >
             {children}
@@ -131,7 +131,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       h1({ children, ...props }) {
         return (
           <h1
-            className="mt-3 mb-1.5 text-2xl font-semibold text-zinc-800 dark:text-zinc-200"
+            className=" text-2xl font-semibold text-zinc-800 dark:text-zinc-200"
             {...props}
           >
             {children}
@@ -141,7 +141,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       h2({ children, ...props }) {
         return (
           <h2
-            className="mt-2.5 mb-1.5 text-xl font-semibold text-zinc-800 dark:text-zinc-200"
+            className="text-xl font-semibold text-zinc-800 dark:text-zinc-200"
             {...props}
           >
             {children}
@@ -151,7 +151,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       h3({ children, ...props }) {
         return (
           <h3
-            className="mt-2 mb-1 text-lg font-semibold text-zinc-800 dark:text-zinc-200"
+            className=" text-lg font-semibold text-zinc-800 dark:text-zinc-200"
             {...props}
           >
             {children}
@@ -161,7 +161,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       h4({ children, ...props }) {
         return (
           <h4
-            className="mt-2 mb-1 text-base font-semibold text-zinc-800 dark:text-zinc-200"
+            className=" text-base font-semibold text-zinc-800 dark:text-zinc-200"
             {...props}
           >
             {children}
@@ -171,7 +171,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       h5({ children, ...props }) {
         return (
           <h5
-            className="mt-2 mb-1 text-sm font-semibold text-zinc-800 dark:text-zinc-200"
+            className=" text-sm font-semibold text-zinc-800 dark:text-zinc-200"
             {...props}
           >
             {children}
@@ -181,7 +181,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       h6({ children, ...props }) {
         return (
           <h6
-            className="mt-2 mb-0.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200"
+            className=" text-xs font-semibold text-zinc-800 dark:text-zinc-200"
             {...props}
           >
             {children}
@@ -190,7 +190,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       },
       table({ children, ...props }) {
         return (
-          <div className="my-1.5 overflow-x-auto">
+          <div className=" overflow-x-auto">
             <table
               className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700"
               {...props}
@@ -230,7 +230,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       th({ children, ...props }) {
         return (
           <th
-            className="px-3 py-1.5 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
+            className="px-3  text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
             {...props}
           >
             {children}
@@ -239,17 +239,14 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       },
       td({ children, ...props }) {
         return (
-          <td className="px-3 py-1.5 text-sm" {...props}>
+          <td className="px-3  text-sm" {...props}>
             {children}
           </td>
         );
       },
       hr(props) {
         return (
-          <hr
-            className="my-1.5 border-zinc-200 dark:border-zinc-700"
-            {...props}
-          />
+          <hr className=" border-zinc-200 dark:border-zinc-700" {...props} />
         );
       },
     }),

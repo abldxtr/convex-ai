@@ -95,7 +95,10 @@ export default function ChatClient({
   const router = useRouter();
   const pathname = usePathname();
   const isRedirected = useRef(false);
-  const chatIdd = pathname.split("/chat/")[1] || undefined;
+  const chatIdd = useMemo(
+    () => pathname.split("/chat/")[1] || undefined,
+    [pathname]
+  );
 
   const [active, setActive] = useState(false);
 
@@ -120,7 +123,7 @@ export default function ChatClient({
     if (storedModel) {
       setSelectedModel(storedModel);
     }
-  }, []);
+  }, [chatIdd]);
   // console.log("selectedModel", selectedModel);
 
   const idChat = useMemo(() => {
@@ -210,13 +213,7 @@ export default function ChatClient({
   }
 
   return (
-    <div
-      className={cn(
-        "stretch flex h-full w-full flex-col",
-
-        active ? "  " : " "
-      )}
-    >
+    <div className={cn("stretch flex h-full w-full flex-col")}>
       {/* header */}
 
       <div className="px-4 pt-3 pb-1">
@@ -251,8 +248,20 @@ export default function ChatClient({
           }}
         >
           <div className="flex items-center justify-center">
-            <div className="border-token-border-default bg-token-bg-primary flex  grow max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] cursor-text flex-col items-center justify-center overflow-clip rounded-[28px] border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg dark:bg-[#303030] dark:shadow-none!">
-              <div className="relative w-full p-[10px] ">
+            <div
+              className={cn(
+                "border-token-border-default bg-token-bg-primary flex  grow max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]  cursor-text flex-col items-center justify-center overflow-clip rounded-[28px] border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg dark:bg-[#303030] dark:shadow-none!",
+                chatIdd
+                  ? "lg:[--thread-content-max-width:50rem]"
+                  : "lg:[--thread-content-max-width:50rem]"
+              )}
+            >
+              <div
+                className={cn(
+                  "relative w-full p-[10px] flex flex-col justify-between ",
+                  chatIdd ? "h-[100px]" : " h-[120px]"
+                )}
+              >
                 <Textarea
                   id={id}
                   value={input}

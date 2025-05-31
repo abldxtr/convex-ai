@@ -76,8 +76,9 @@ export default function MessageBar({
         ref={scrollRef}
       >
         <div className="relative z-[9] h-full w-full">
-          {messages.map((message) => {
-            const isLastMessage = message.id === messages.at(-1)?.id;
+          {messages.map((message, index) => {
+            const isLastMessage = messages.length - 1 === index;
+            // status === 'streaming' && messages.length - 1 === index
             return (
               <div key={message.id} className="whitespace-pre-wrap">
                 {message.role === "user" ? (
@@ -156,6 +157,10 @@ export function AIMessage({
         className="gap-4 rounded-3xl px-5  text-base focus-visible:outline-hidden md:gap-5 lg:gap-6"
         dir="auto"
       >
+        {/* Hmm... */}
+        {status === "streaming" && isLastMessage && (
+          <span className="size-4 animate-pulse rounded-full bg-black" />
+        )}
         {message.parts.map((part, i) => {
           switch (part.type) {
             case "text":
@@ -165,10 +170,6 @@ export function AIMessage({
                   dir="auto"
                   // className="flex"
                 >
-                  {(status === "streaming" || status === "submitted") &&
-                    isLastMessage && (
-                      <span className="size-4 animate-pulse rounded-full bg-black" />
-                    )}
                   {/* {part.text} */}
                   <MarkdownRenderer content={part.text} />
                 </div>

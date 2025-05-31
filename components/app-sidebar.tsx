@@ -50,7 +50,8 @@ import {
 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useAction, useMutation } from "convex/react";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMemo } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { useGlobalstate } from "@/context/global-store";
