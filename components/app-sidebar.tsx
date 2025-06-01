@@ -69,7 +69,7 @@ export function AppSidebar({ user }: { user: UserType }) {
   const searchParams = useSearchParams();
   const chatIdd = pathName.split("/chat/")[1] || undefined;
   // console.log({ searchParams: searchParams });
-  const { firstText, setFirstText, newChat, setNewChat } = useGlobalstate();
+  const { newChat, setNewChat, setIsNavigating } = useGlobalstate();
   const deleteChat = useMutation(api.chat.deleteChat);
 
   // const isMobile = useMediaQuery("(max-width: 768px)");
@@ -112,7 +112,7 @@ export function AppSidebar({ user }: { user: UserType }) {
     if (chatList === undefined) return undefined;
     return chatList?.reduce(
       (acc, item) => {
-        console.log("item._creationTime:", item._creationTime);
+        // console.log("item._creationTime:", item._creationTime);
 
         // فرض کنیم item._creationTime عدد یا رشته عددی است بر حسب میلی‌ثانیه
         const timestamp = Number(item._creationTime);
@@ -212,7 +212,18 @@ export function AppSidebar({ user }: { user: UserType }) {
                               }
                             }}
                           >
-                            <Link href={`/chat/${chat.id}`} prefetch={true}>
+                            <Link
+                              href={`/chat/${chat.id}`}
+                              prefetch={true}
+                              // onNavigate={(e) => {
+                              //   // Only executes during SPA navigation
+                              //   console.log("Navigating...");
+                              //   setIsNavigating(true);
+
+                              //   // Optionally prevent navigation
+                              //   // e.preventDefault()
+                              // }}
+                            >
                               {chat.title || "Untitled Chat"}
                             </Link>
                           </SidebarMenuButton>

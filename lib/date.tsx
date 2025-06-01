@@ -10,7 +10,7 @@ import {
 
 export function getRelativeDateLabel(date: Date): string {
   //   console.log({ date });
-  console.log({ date: date.getTime() });
+  //   console.log({ date: date.getTime() });
 
   if (isNaN(date.getTime())) return "Invalid Date";
 

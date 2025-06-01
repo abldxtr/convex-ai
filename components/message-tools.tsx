@@ -1,20 +1,28 @@
-import { Check, CopyIcon, Pencil } from "lucide-react";
+import { Check, CopyIcon, Pencil, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-import type { UIMessage } from "ai";
+import type { ChatRequestOptions, UIMessage } from "ai";
 import { useDirection } from "@/hooks/use-direction";
-
+import { useGlobalstate } from "@/context/global-store";
 export function MessageTools({
   message,
   role,
+  isLastMessage,
+  reload,
 }: {
   message: UIMessage;
   role: "user" | "assistant";
+  isLastMessage?: boolean;
+  reload?: (
+    chatRequestOptions?: ChatRequestOptions
+  ) => Promise<string | null | undefined>;
 }) {
   const { isCopied, copyToClipboard } = useCopyToClipboard({
     timeout: 2000,
   });
+  const { getError, setGetError } = useGlobalstate();
+  console.log("getError", getError);
   const textPart = message.parts.find((part) => part.type === "text");
 
   const direction = useDirection(textPart?.text ?? "");
@@ -42,6 +50,20 @@ export function MessageTools({
       {role === "user" && (
         <Button variant="ghost" size="smIcon">
           <Pencil />
+        </Button>
+      )}
+
+      {role === "user" && isLastMessage && getError && (
+        <Button
+          variant="ghost"
+          size="smIcon"
+          onClick={() => {
+            if (reload) {
+              reload();
+            }
+          }}
+        >
+          <RefreshCw />
         </Button>
       )}
     </div>

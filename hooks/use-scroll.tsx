@@ -1,6 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { UIMessage } from "ai";
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
-export function useScroll() {
+export function useScroll({
+  status,
+  endOfMessagesRef,
+  messages,
+}: {
+  status: "streaming" | "ready" | "error" | "submitted";
+  endOfMessagesRef: RefObject<HTMLDivElement> | null;
+  messages: UIMessage[];
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showArrow, setShowArrow] = useState(false);
   const [clientHeight, setClientHeight] = useState(0);
@@ -47,6 +63,32 @@ export function useScroll() {
       el.removeEventListener("scroll", handleScroll);
     };
   }, [handleScroll]);
+
+  useLayoutEffect(() => {
+    const storedScrollPosition = sessionStorage.getItem(
+      `scrollPos-${messages.at(-1)?.id}`
+    );
+    // console.log("storedScrollPosition", storedScrollPosition);
+    // if (messages) {
+    if (storedScrollPosition && scrollRef.current) {
+      scrollRef.current.scrollTop = parseInt(storedScrollPosition, 10);
+    } else if (endOfMessagesRef?.current) {
+      endOfMessagesRef.current.scrollIntoView({
+        behavior: "instant",
+        block: "center",
+      });
+    }
+    // }
+
+    return () => {
+      if (scrollRef.current) {
+        sessionStorage.setItem(
+          `scrollPos-${messages.at(-1)?.id}`,
+          scrollRef.current.scrollTop.toString()
+        );
+      }
+    };
+  }, [messages.at(-1)?.id, endOfMessagesRef?.current, scrollRef.current]);
 
   return { scrollRef, showArrow, clientHeight, scrollHeight, offsetHeight };
 }

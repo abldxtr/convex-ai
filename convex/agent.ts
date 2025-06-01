@@ -55,7 +55,7 @@ export const createThread = action({
     // if (userId === null) {
     //   return null;
     // }
-    console.log("createThread");
+    // console.log("createThread");
     const { threadId, thread } = await supportAgent.createThread(ctx);
     // Creates a user message with the prompt, and an assistant reply message.
     const result = await thread.generateText({ prompt: args.prompt });

@@ -181,7 +181,7 @@ export async function POST(req: Request) {
           api.vercel.createVercelAiMessage,
           {
             chatId: chatId.chatId,
-            id: result.response.messages[0].id || crypto.randomUUID(),
+            id: crypto.randomUUID(),
             userId: userId._id,
             content: result.text,
             role: "assistant",
@@ -267,7 +267,7 @@ export async function POST(req: Request) {
           api.vercel.createVercelAiMessage,
           {
             chatId: getChat.chatItem._id,
-            id: result.response.messages[0].id || crypto.randomUUID(),
+            id: crypto.randomUUID(),
             userId: userId._id,
             content: result.text,
             role: "assistant",

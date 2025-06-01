@@ -38,6 +38,7 @@ import { ChatClientProps, ChatClientPropsPartial, chat } from "@/lib/type";
 import { ModelSwitcher } from "@/components/models";
 import exa from "@/lib/exa";
 import { motion } from "framer-motion";
+import { useLinkStatus } from "next/link";
 type IconComponent = ({ size }: { size?: number }) => React.ReactNode;
 
 const tools = [
@@ -91,10 +92,9 @@ export default function ChatClient({
   chatItem,
   chatMessages,
 }: ChatClientPropsPartial) {
-  const { firstText, setFirstText, newChat, setNewChat } = useGlobalstate();
+  const { newChat, setNewChat, getError, setGetError } = useGlobalstate();
   const router = useRouter();
   const pathname = usePathname();
-  const isRedirected = useRef(false);
   const chatIdd = useMemo(
     () => pathname.split("/chat/")[1] || undefined,
     [pathname]
@@ -147,6 +147,7 @@ export default function ChatClient({
     setInput,
     status,
     setMessages,
+    reload,
   } = useChat({
     id: idChat,
     experimental_throttle: 100,
@@ -162,7 +163,14 @@ export default function ChatClient({
         model: selectedModel,
       };
     },
-    onFinish: async () => {
+    onError: (error) => {
+      console.log("error", error);
+      setGetError(true);
+      // router.refresh();
+      // reload();
+    },
+    onFinish: () => {
+      console.log("onFinish");
       router.refresh();
     },
   });
@@ -183,9 +191,11 @@ export default function ChatClient({
   }, []);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const id = useId();
-  useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  // useEffect(() => {
+  //   if (status !== "streaming") {
+  //     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [messages, status]);
 
   async function sendMessageAndCreateChatKeyBoard(
     e: React.KeyboardEvent<HTMLTextAreaElement>
@@ -213,9 +223,16 @@ export default function ChatClient({
       handleSubmit(e);
     }
   }
+  const { pending } = useLinkStatus();
 
   return (
-    <div className={cn("stretch flex h-full w-full flex-col")}>
+    <div
+      className={cn(
+        "stretch flex h-full w-full flex-col",
+        pending &&
+          "absolute inset-0 bg-gray-100 opacity-50 pointer-events-none "
+      )}
+    >
       {/* header */}
 
       <div className="px-4 pt-3 pb-1">
@@ -229,6 +246,7 @@ export default function ChatClient({
           messages={messages}
           endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
           status={status}
+          reload={reload}
         />
       )}
 
@@ -267,9 +285,11 @@ export default function ChatClient({
                 <Textarea
                   id={id}
                   value={input}
+                  autoFocus
                   placeholder="Ask anything"
-                  className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px]"
+                  className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
                   onChange={(e) => setInput(e.target.value)}
+                  disabled={status === "streaming" || status === "submitted"}
                   onKeyDown={(e) => {
                     if (
                       e.key === "Enter" &&
@@ -354,14 +374,19 @@ export default function ChatClient({
                       const Icon =
                         index === 1 && input.length > 0
                           ? tool.activeIcon!
-                          : index === 1 && status === "streaming"
+                          : index === 1 &&
+                              (status === "streaming" || status === "submitted")
                             ? tool.stopIcon!
                             : tool.icon;
 
                       return (
                         <Fragment key={tool.name}>
                           <TooltipContainer
-                            tooltipContent={tool.description}
+                            tooltipContent={
+                              status === "streaming" || status === "submitted"
+                                ? "Stooping..."
+                                : tool.description
+                            }
                             key={tool.name}
                           >
                             <div
@@ -370,13 +395,21 @@ export default function ChatClient({
                                 "flex h-9 w-9 items-center justify-center rounded-full border fill-[#5d5d5d] hover:cursor-pointer",
                                 index === 1 && "bg-black",
                                 index === 0 &&
-                                  "transition-all duration-300 hover:cursor-pointer hover:bg-gray-100"
+                                  "transition-all duration-300 hover:cursor-pointer hover:bg-gray-100",
+                                index === 0 &&
+                                  (status === "submitted" ||
+                                    status === "streaming") &&
+                                  "opacity-50 hover:cursor-not-allowed pointer-events-none"
                               )}
                               onClick={(e) => {
                                 if (tool.activeIcon && input.length > 0) {
                                   sendMessageAndCreateChatClick(e);
                                 }
-                                if (tool.stopIcon && status === "streaming") {
+                                if (
+                                  tool.stopIcon &&
+                                  (status === "streaming" ||
+                                    status === "submitted")
+                                ) {
                                   stop();
                                 }
                               }}
