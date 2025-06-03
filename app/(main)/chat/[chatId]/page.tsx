@@ -49,7 +49,13 @@ export default async function ChatPage({
   // console.log({ chat });
 
   if (!chat) {
-    return redirect("/chat");
+    // return redirect("/chat");
+    return (
+      <>
+        <ChatClientCopy />
+        {/* <ChatClient /> */}
+      </>
+    );
   }
 
   return (
