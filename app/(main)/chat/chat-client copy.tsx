@@ -36,12 +36,12 @@ import { useRouter } from "next/navigation";
 import { useGlobalstate } from "@/context/global-store";
 import { ChatClientProps, ChatClientPropsPartial, chat } from "@/lib/type";
 import { ModelSwitcher } from "@/components/models";
-import exa from "@/lib/exa";
 import { motion } from "framer-motion";
 import { useLinkStatus } from "next/link";
-import { useQuery } from "convex/react";
+import { usePreloadedQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 type IconComponent = ({ size }: { size?: number }) => React.ReactNode;
 
 const tools = [
@@ -94,6 +94,7 @@ const searchTools = [
 export default function ChatClientCopy({
   chatItem,
   chatMessages,
+  preloaded,
 }: ChatClientPropsPartial) {
   const { newChat, setNewChat, getError, setGetError, active, setActive } =
     useGlobalstate();
@@ -105,136 +106,140 @@ export default function ChatClientCopy({
     () => pathname.split("/chat/")[1] || undefined,
     [pathname]
   );
-
-  const clientGetChatMessages = useQuery(api.chat.getChatById, {
-    id: chatIdd ?? "",
-  });
-
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const [selectedModel, setSelectedModel] = useState("");
-
   useLayoutEffect(() => {
     const storedModel = sessionStorage.getItem("model");
     if (storedModel) {
       setSelectedModel(storedModel);
     }
   }, [chatIdd]);
-  // console.log("selectedModel", selectedModel);
-
   const idChat = useMemo(() => {
     // // console.log("use memo", !!chatItem?.id);
     return chatItem?.id ?? crypto.randomUUID();
   }, [chatItem]);
+  if (chatIdd && preloaded) {
+    const dataChat = usePreloadedQuery(preloaded);
 
-  useEffect(() => {
-    if (newChat) {
-      setMessages([]);
-      setNewChat(false);
+    const clientGetChatMessages = useQuery(api.chat.getChatById, {
+      id: chatIdd,
+    });
+
+    // console.log("selectedModel", selectedModel);
+
+    useEffect(() => {
+      if (newChat) {
+        setMessages([]);
+        setNewChat(false);
+      }
+    }, [newChat]);
+
+    // این رو به uselayouteffect منتقل کنید تبدیل کنیم ببینیم چی میشه :)))
+
+    useEffect(() => {
+      const msg = localStorage.getItem("first-message");
+      if (msg) {
+        append({ id: crypto.randomUUID(), content: msg, role: "user" });
+        localStorage.removeItem("first-message");
+      }
+    }, []);
+
+    const { pending } = useLinkStatus();
+
+    // useEffect(() => {
+    //   exampleSearch();
+    // }, []);
+
+    // console.log("ccccccc", JSON.stringify(chatMessages, null, 2));
+
+    const {
+      messages,
+      input,
+      handleInputChange,
+      append,
+      handleSubmit,
+      stop,
+      setInput,
+      status,
+      setMessages,
+      reload,
+    } = useChat({
+      id: idChat,
+      experimental_throttle: 100,
+      maxSteps: 2,
+      api: "/api/chat",
+      // initialMessages: dataChat?.chatMessages
+      //   ? convertToUIMessages(dataChat.chatMessages)
+      //   : undefined,
+      initialMessages: clientGetChatMessages?.chatMessages
+        ? convertToUIMessages(clientGetChatMessages.chatMessages)
+        : undefined,
+      experimental_prepareRequestBody: (body) => {
+        // // console.log({ body });
+        return {
+          id,
+          message: body.messages.at(-1),
+          chatId: chatIdd,
+          model: selectedModel,
+        };
+      },
+      onError: (error) => {
+        console.log("error", error);
+        setGetError(true);
+        // router.refresh();
+        // reload();
+      },
+      onFinish: () => {
+        console.log("onFinish");
+        router.refresh();
+      },
+    });
+
+    useEffect(() => {
+      if (status === "submitted") {
+        endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }, [messages, status]);
+
+    async function sendMessageAndCreateChatKeyBoard(
+      e: React.KeyboardEvent<HTMLTextAreaElement>
+    ) {
+      if (chatIdd == undefined || chatIdd == null) {
+        e.preventDefault();
+        localStorage.setItem("first-message", input);
+        setInput("");
+        setActive(true);
+
+        router.push(`/chat/${idChat}`);
+        // setInput("");
+      } else {
+        e.preventDefault();
+        handleSubmit(e);
+      }
     }
-  }, [newChat]);
-
-  // این رو به uselayouteffect منتقل کنید تبدیل کنیم ببینیم چی میشه :)))
-
-  useEffect(() => {
-    const msg = localStorage.getItem("first-message");
-    if (msg) {
-      append({ id: crypto.randomUUID(), content: msg, role: "user" });
-      localStorage.removeItem("first-message");
+    async function sendMessageAndCreateChatClick(
+      e: MouseEvent<HTMLDivElement>
+    ) {
+      if (chatIdd === undefined || chatIdd === null) {
+        e.preventDefault();
+        localStorage.setItem("first-message", input);
+        setInput("");
+        setActive(true);
+        router.push(`/chat/${idChat}`);
+      } else {
+        e.preventDefault();
+        handleSubmit(e);
+      }
     }
-  }, []);
 
-  const { pending } = useLinkStatus();
+    useLayoutEffect(() => {
+      if (chatIdd) {
+        setActive(true);
+      } else {
+        setActive(false);
+      }
+    }, [chatIdd]);
 
-  // useEffect(() => {
-  //   exampleSearch();
-  // }, []);
-
-  // console.log("ccccccc", JSON.stringify(chatMessages, null, 2));
-
-  const {
-    messages,
-    input,
-    handleInputChange,
-    append,
-    handleSubmit,
-    stop,
-    setInput,
-    status,
-    setMessages,
-    reload,
-  } = useChat({
-    id: idChat,
-    experimental_throttle: 100,
-    maxSteps: 2,
-    api: "/api/chat",
-    initialMessages: clientGetChatMessages
-      ? convertToUIMessages(clientGetChatMessages.chatMessages)
-      : undefined,
-    experimental_prepareRequestBody: (body) => {
-      // // console.log({ body });
-      return {
-        id,
-        message: body.messages.at(-1),
-        chatId: chatIdd,
-        model: selectedModel,
-      };
-    },
-    onError: (error) => {
-      console.log("error", error);
-      setGetError(true);
-      // router.refresh();
-      // reload();
-    },
-    onFinish: () => {
-      console.log("onFinish");
-      router.refresh();
-    },
-  });
-
-  useEffect(() => {
-    if (status === "submitted") {
-      endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, status]);
-
-  async function sendMessageAndCreateChatKeyBoard(
-    e: React.KeyboardEvent<HTMLTextAreaElement>
-  ) {
-    if (chatIdd == undefined || chatIdd == null) {
-      e.preventDefault();
-      localStorage.setItem("first-message", input);
-      setInput("");
-      setActive(true);
-
-      router.push(`/chat/${idChat}`);
-      // setInput("");
-    } else {
-      e.preventDefault();
-      handleSubmit(e);
-    }
-  }
-  async function sendMessageAndCreateChatClick(e: MouseEvent<HTMLDivElement>) {
-    if (chatIdd === undefined || chatIdd === null) {
-      e.preventDefault();
-      localStorage.setItem("first-message", input);
-      setInput("");
-      setActive(true);
-      router.push(`/chat/${idChat}`);
-    } else {
-      e.preventDefault();
-      handleSubmit(e);
-    }
-  }
-
-  useLayoutEffect(() => {
-    if (chatIdd) {
-      setActive(true);
-    } else {
-      setActive(false);
-    }
-  }, [chatIdd]);
-
-  if (chatIdd) {
     return (
       <div
         className={cn(
@@ -279,6 +284,12 @@ export default function ChatClientCopy({
               ease: "easeInOut",
             }}
           >
+            {/* header */}
+            {!active && (
+              <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700    ">
+                What can I help with?
+              </div>
+            )}
             <div className="flex items-center justify-center">
               <div
                 className={cn(
@@ -403,6 +414,86 @@ export default function ChatClientCopy({
     );
   }
 
+  const {
+    messages,
+    input,
+    handleInputChange,
+    append,
+    handleSubmit,
+    stop,
+    setInput,
+    status,
+    setMessages,
+    reload,
+  } = useChat({
+    id: idChat,
+    experimental_throttle: 100,
+    maxSteps: 2,
+    api: "/api/chat",
+    initialMessages: undefined,
+    experimental_prepareRequestBody: (body) => {
+      // // console.log({ body });
+      return {
+        id,
+        message: body.messages.at(-1),
+        chatId: chatIdd,
+        model: selectedModel,
+      };
+    },
+    onError: (error) => {
+      console.log("error", error);
+      setGetError(true);
+      // router.refresh();
+      // reload();
+    },
+    onFinish: () => {
+      console.log("onFinish");
+      router.refresh();
+    },
+  });
+
+  useEffect(() => {
+    if (status === "submitted") {
+      endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, status]);
+
+  async function sendMessageAndCreateChatKeyBoard(
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) {
+    if (chatIdd == undefined || chatIdd == null) {
+      e.preventDefault();
+      localStorage.setItem("first-message", input);
+      setInput("");
+      setActive(true);
+
+      router.push(`/chat/${idChat}`);
+      // setInput("");
+    } else {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  }
+  async function sendMessageAndCreateChatClick(e: MouseEvent<HTMLDivElement>) {
+    if (chatIdd === undefined || chatIdd === null) {
+      e.preventDefault();
+      localStorage.setItem("first-message", input);
+      setInput("");
+      setActive(true);
+      router.push(`/chat/${idChat}`);
+    } else {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  }
+
+  useLayoutEffect(() => {
+    if (chatIdd) {
+      setActive(true);
+    } else {
+      setActive(false);
+    }
+  }, [chatIdd]);
   // const model =
   //   sessionStorage.getItem(`model`) ?? "mmd-meta-llama/llama-4-scout";
   // const [selectedModel, setSelectedModel] = useState(model);
@@ -410,9 +501,9 @@ export default function ChatClientCopy({
   return (
     <div
       className={cn(
-        "stretch flex h-full w-full flex-col",
-        pending &&
-          "absolute inset-0 bg-gray-100 opacity-50 pointer-events-none "
+        "stretch flex h-full w-full flex-col"
+        // pending &&
+        //   "absolute inset-0 bg-gray-100 opacity-50 pointer-events-none "
       )}
     >
       {/* header */}
@@ -449,6 +540,12 @@ export default function ChatClientCopy({
             ease: "easeInOut",
           }}
         >
+          {/* header */}
+          {!active && (
+            <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700    ">
+              What can I help with?
+            </div>
+          )}
           <div className="flex items-center justify-center">
             <div
               className={cn(

@@ -1,5 +1,7 @@
+import { api } from "@/convex/_generated/api";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { UIMessage } from "ai";
+import { Preloaded } from "convex/react";
 
 export type chat = {
   chatItem: {
@@ -63,6 +65,7 @@ export type ChatMessage = {
 export type ChatClientProps = {
   chatItem: ChatItem;
   chatMessages: Array<UIMessage>;
+  preloaded: Preloaded<typeof api.chat.getChatById>;
   // chatId: string;
 };
 

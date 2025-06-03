@@ -66,14 +66,14 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
       },
       ol({ children, ...props }) {
         return (
-          <ol className=" ml-4 list-decimal space-y-0.5" {...props}>
+          <ol className=" ml-4 list-decimal " {...props}>
             {children}
           </ol>
         );
       },
       ul({ children, ...props }) {
         return (
-          <ul className=" ml-4 list-disc space-y-0.5" {...props}>
+          <ul className=" ml-4 list-disc " {...props}>
             {children}
           </ul>
         );

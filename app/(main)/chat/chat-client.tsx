@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useTransition,
 } from "react";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,6 +40,7 @@ import { ModelSwitcher } from "@/components/models";
 import exa from "@/lib/exa";
 import { motion } from "framer-motion";
 import { useLinkStatus } from "next/link";
+import { usePreloadedQuery } from "convex/react";
 type IconComponent = ({ size }: { size?: number }) => React.ReactNode;
 
 const tools = [
@@ -150,6 +152,7 @@ export default function ChatClient({
   }, []);
 
   const { pending } = useLinkStatus();
+  const [isPending, startTransition] = useTransition();
 
   // useEffect(() => {
   //   exampleSearch();
@@ -191,7 +194,10 @@ export default function ChatClient({
     },
     onFinish: () => {
       console.log("onFinish");
-      router.refresh();
+      // router.refresh();
+      startTransition(() => {
+        window.location.reload();
+      });
     },
   });
 
@@ -270,8 +276,21 @@ export default function ChatClient({
           transition={{
             duration: 0.3,
             ease: "easeInOut",
+            // type: "tween",
+            // delay: 0.3,
+
+            // stiffness: 300,
+            // damping: 30,
+            // bounce: 0,
           }}
         >
+          {/* header */}
+          {!active && (
+            <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700    ">
+              What can I help with?
+            </div>
+          )}
+
           <div className="flex items-center justify-center">
             <div
               className={cn(

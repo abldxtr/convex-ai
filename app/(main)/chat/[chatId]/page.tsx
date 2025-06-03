@@ -1,4 +1,4 @@
-import { fetchQuery } from "convex/nextjs";
+import { fetchQuery, preloadQuery } from "convex/nextjs";
 import ChatClient from "../chat-client";
 import { api } from "@/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
@@ -42,28 +42,35 @@ export default async function ChatPage({
     },
     { token }
   );
+
+  const preloaded = await preloadQuery(api.chat.getChatById, {
+    id: chatId,
+  });
   // console.log({ chat });
 
   if (!chat) {
     return (
       <>
-        <ChatClient />
+        <ChatClientCopy />
+        {/* <ChatClient /> */}
       </>
     );
   }
 
   return (
     <>
-      {/* <ChatClientCopy
+      <ChatClientCopy
         chatItem={chat.chatItem}
         chatMessages={convertToUIMessages(chat.chatMessages)}
-        // chatId={chatId}
-      /> */}
-      <ChatClient
-        chatItem={chat.chatItem}
-        chatMessages={convertToUIMessages(chat.chatMessages)}
+        preloaded={preloaded}
         // chatId={chatId}
       />
+      {/* <ChatClient
+        chatItem={chat.chatItem}
+        chatMessages={convertToUIMessages(chat.chatMessages)}
+        preloaded={preloaded}
+        // chatId={chatId}
+      /> */}
     </>
   );
 }

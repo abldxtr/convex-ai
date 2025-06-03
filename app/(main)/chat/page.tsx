@@ -18,8 +18,8 @@ export default async function Chat({
 
   return (
     <>
-      <ChatClient />
-      {/* <ChatClientCopy /> */}
+      {/* <ChatClient /> */}
+      <ChatClientCopy />
     </>
   );
 }
