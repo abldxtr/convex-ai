@@ -190,8 +190,8 @@ export async function POST(req: Request) {
           },
           { token }
         );
-        revalidatePath("/(main)/chat/[chatId]", "layout");
-        revalidatePath("/(main)/chat/[chatId]", "page");
+        // revalidatePath("/(main)/chat/[chatId]", "layout");
+        // revalidatePath("/(main)/chat/[chatId]", "page");
 
         //   const createChat = useMutation(api.chat.createChat);
 
@@ -280,8 +280,8 @@ export async function POST(req: Request) {
           { token }
         );
 
-        revalidatePath("/(main)/chat/[chatId]", "layout");
-        revalidatePath("/(main)/chat/[chatId]", "page");
+        // revalidatePath("/(main)/chat/[chatId]", "layout");
+        // revalidatePath("/(main)/chat/[chatId]", "page");
 
         //   const createChat = useMutation(api.chat.createChat);
 

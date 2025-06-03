@@ -177,7 +177,7 @@ export default function IfChatClient({
       },
       onFinish: () => {
         console.log("onFinish");
-        router.refresh();
+        // router.refresh();
       },
     });
 

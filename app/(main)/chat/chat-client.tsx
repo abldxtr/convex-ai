@@ -195,9 +195,9 @@ export default function ChatClient({
     onFinish: () => {
       console.log("onFinish");
       // router.refresh();
-      startTransition(() => {
-        window.location.reload();
-      });
+      // startTransition(() => {
+      //   window.location.reload();
+      // });
     },
   });
 
