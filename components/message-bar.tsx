@@ -66,7 +66,7 @@ export default function MessageBar({
         </div>
       )}
       <div
-        className="isolate h-full w-full flex-1 overflow-x-hidden overflow-y-auto px-4"
+        className="isolate h-full w-full flex-1 overflow-x-clip overflow-y-auto px-4"
         ref={scrollRef}
       >
         <div className="relative z-[9] h-full w-full">
@@ -137,7 +137,7 @@ export default function MessageBar({
           {(status === "submitted" || status === "streaming") &&
             messages.length > 0 &&
             messages[messages.length - 1].role === "user" && (
-              <div className="h-[220px] w-2/5 " />
+              <div className="h-[220px] w-[20px] flex items-center justify-center " />
             )}
           <div ref={endOfMessagesRef} />
         </div>

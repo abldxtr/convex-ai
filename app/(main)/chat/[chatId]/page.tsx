@@ -43,9 +43,9 @@ export default async function ChatPage({
     { token }
   );
 
-  const preloaded = await preloadQuery(api.chat.getChatById, {
-    id: chatId,
-  });
+  // const preloaded = await preloadQuery(api.chat.getChatById, {
+  //   id: chatId,
+  // });
   // console.log({ chat });
 
   if (!chat) {
@@ -62,7 +62,7 @@ export default async function ChatPage({
       <ChatClientCopy
         chatItem={chat.chatItem}
         chatMessages={convertToUIMessages(chat.chatMessages)}
-        preloaded={preloaded}
+        // preloaded={preloaded}
         // chatId={chatId}
       />
       {/* <ChatClient
