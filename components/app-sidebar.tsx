@@ -67,10 +67,15 @@ export function AppSidebar({ user }: { user: UserType }) {
   const router = useRouter();
   const pathName = usePathname();
   const searchParams = useSearchParams();
-  const chatIdd = pathName.split("/chat/")[1] || undefined;
+  // const chatIdd = pathName.split("/chat/")[1] || undefined;
   // console.log({ searchParams: searchParams });
-  const { newChat, setNewChat, setIsNavigating } = useGlobalstate();
+  const { newChat, setNewChat, setIsNavigating, active, setActive } =
+    useGlobalstate();
   const deleteChat = useMutation(api.chat.deleteChat);
+  const chatIdd = useMemo(
+    () => pathName.split("/chat/")[1] || undefined,
+    [pathName]
+  );
 
   // const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -78,7 +83,9 @@ export function AppSidebar({ user }: { user: UserType }) {
     try {
       deleteChat({ id });
       toast.success("Chat deleted successfully");
-      router.replace("/chat");
+      if (chatIdd === id) {
+        router.replace("/chat");
+      }
     } catch (error) {
       console.log({ error });
       toast.error("Failed to delete chat");
@@ -164,6 +171,7 @@ export function AppSidebar({ user }: { user: UserType }) {
                   className="h-fit p-2"
                   onClick={() => {
                     // setOpenMobile(false);
+                    setActive(false);
                     router.push("/chat");
                     setNewChat(() => !newChat);
                     if (state === "expanded" && isMobile) {

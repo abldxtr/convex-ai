@@ -7,6 +7,9 @@ import { Attachment, UIMessage } from "ai";
 import { ChatMessage } from "@/lib/type";
 import exa from "@/lib/exa";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
+import ChatClientCopy from "../chat-client copy";
+
+export const dynamic = "force-dynamic";
 
 export default async function ChatPage({
   params,
@@ -51,6 +54,11 @@ export default async function ChatPage({
 
   return (
     <>
+      {/* <ChatClientCopy
+        chatItem={chat.chatItem}
+        chatMessages={convertToUIMessages(chat.chatMessages)}
+        // chatId={chatId}
+      /> */}
       <ChatClient
         chatItem={chat.chatItem}
         chatMessages={convertToUIMessages(chat.chatMessages)}

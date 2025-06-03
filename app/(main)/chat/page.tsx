@@ -1,4 +1,5 @@
 import ChatClient from "./chat-client";
+import ChatClientCopy from "./chat-client copy";
 
 type Params = Promise<{ chatId: string }>;
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -15,5 +16,10 @@ export default async function Chat({
   //   return <div>chatId not found in query params</div>;
   // }
 
-  return <ChatClient />;
+  return (
+    <>
+      <ChatClient />
+      {/* <ChatClientCopy /> */}
+    </>
+  );
 }

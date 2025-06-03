@@ -39,6 +39,9 @@ import { ModelSwitcher } from "@/components/models";
 import exa from "@/lib/exa";
 import { motion } from "framer-motion";
 import { useLinkStatus } from "next/link";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 type IconComponent = ({ size }: { size?: number }) => React.ReactNode;
 
 const tools = [
@@ -88,7 +91,7 @@ const searchTools = [
     description: "Submit",
   },
 ];
-export default function ChatClient({
+export default function ChatClientCopy({
   chatItem,
   chatMessages,
 }: ChatClientPropsPartial) {
@@ -103,21 +106,12 @@ export default function ChatClient({
     [pathname]
   );
 
-  useLayoutEffect(() => {
-    if (chatIdd) {
-      setActive(true);
-    } else {
-      setActive(false);
-    }
-  }, [chatIdd]);
+  const clientGetChatMessages = useQuery(api.chat.getChatById, {
+    id: chatIdd ?? "",
+  });
 
-  // const model =
-  //   sessionStorage.getItem(`model`) ?? "mmd-meta-llama/llama-4-scout";
-  // const [selectedModel, setSelectedModel] = useState(model);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
-  const [selectedModel, setSelectedModel] = useState(
-    "mmd-meta-llama/llama-4-scout"
-  );
+  const [selectedModel, setSelectedModel] = useState("");
 
   useLayoutEffect(() => {
     const storedModel = sessionStorage.getItem("model");
@@ -173,7 +167,9 @@ export default function ChatClient({
     experimental_throttle: 100,
     maxSteps: 2,
     api: "/api/chat",
-    initialMessages: chatMessages,
+    initialMessages: clientGetChatMessages
+      ? convertToUIMessages(clientGetChatMessages.chatMessages)
+      : undefined,
     experimental_prepareRequestBody: (body) => {
       // // console.log({ body });
       return {
@@ -229,6 +225,187 @@ export default function ChatClient({
       handleSubmit(e);
     }
   }
+
+  useLayoutEffect(() => {
+    if (chatIdd) {
+      setActive(true);
+    } else {
+      setActive(false);
+    }
+  }, [chatIdd]);
+
+  if (chatIdd) {
+    return (
+      <div
+        className={cn(
+          "stretch flex h-full w-full flex-col"
+          // pending &&
+          //   "absolute inset-0 bg-gray-100 opacity-50 pointer-events-none "
+        )}
+      >
+        {/* header */}
+
+        <div className="px-4 pt-3 pb-1">
+          <SidebarToggle />
+        </div>
+
+        {/* body */}
+
+        {(active || status === "submitted" || status === "streaming") && (
+          <MessageBar
+            messages={messages}
+            endOfMessagesRef={
+              endOfMessagesRef as React.RefObject<HTMLDivElement>
+            }
+            status={status}
+            reload={reload}
+          />
+        )}
+
+        {/* footer */}
+
+        <form
+          onSubmit={() => sendMessageAndCreateChatClick}
+          className={cn(
+            "w-full",
+            active ? "" : "h-full flex items-center justify-center"
+          )}
+        >
+          <motion.div
+            className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]"
+            layoutId="chat-input"
+            transition={{
+              duration: 0.3,
+              ease: "easeInOut",
+            }}
+          >
+            <div className="flex items-center justify-center">
+              <div
+                className={cn(
+                  "border-token-border-default bg-token-bg-primary flex  grow max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]  cursor-text flex-col items-center justify-center overflow-clip rounded-[28px] border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg dark:bg-[#303030] dark:shadow-none!",
+                  chatIdd
+                    ? "lg:[--thread-content-max-width:50rem]"
+                    : "lg:[--thread-content-max-width:50rem]"
+                )}
+              >
+                <div
+                  className={cn(
+                    "relative w-full p-[10px] flex flex-col justify-between ",
+                    chatIdd ? "min-h-[120px]" : "min-h-[120px]"
+                  )}
+                >
+                  <Textarea
+                    id={id}
+                    value={input}
+                    autoFocus
+                    placeholder="Ask anything"
+                    className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
+                    onChange={(e) => setInput(e.target.value)}
+                    disabled={status === "streaming" || status === "submitted"}
+                    onKeyDown={(e) => {
+                      if (
+                        e.key === "Enter" &&
+                        !e.shiftKey &&
+                        !e.nativeEvent.isComposing
+                      ) {
+                        e.preventDefault();
+                        if (status !== "ready") {
+                          toast.error(
+                            "Please wait for the previous message to be sent"
+                          );
+                        } else {
+                          sendMessageAndCreateChatKeyBoard(e);
+                        }
+                      }
+                    }}
+                  />
+                  <div className="flex h-[36px] items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <ModelSwitcher
+                          selectedModel={
+                            selectedModel.length > 0
+                              ? selectedModel
+                              : "mmd-meta-llama/llama-3.3-8b-instruct:free"
+                          }
+                          setSelectedModel={setSelectedModel}
+                          showExperimentalModels={showExperimentalModels}
+                          attachments={[]}
+                          messages={messages}
+                          status={status}
+                          onModelSelect={(model) => {
+                            // Show additional info about image attachments for vision models
+                            const isVisionModel = model.vision === true;
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {searchTools.map((tool, index) => {
+                        const Icon =
+                          index === 1 && input.length > 0
+                            ? tool.activeIcon!
+                            : index === 1 &&
+                                (status === "streaming" ||
+                                  status === "submitted")
+                              ? tool.stopIcon!
+                              : tool.icon;
+
+                        return (
+                          <Fragment key={tool.name}>
+                            <TooltipContainer
+                              tooltipContent={
+                                status === "streaming" || status === "submitted"
+                                  ? "Stooping..."
+                                  : tool.description
+                              }
+                              key={tool.name}
+                            >
+                              <div
+                                key={tool.name}
+                                className={cn(
+                                  "flex h-9 w-9 items-center justify-center rounded-full border fill-[#5d5d5d] hover:cursor-pointer",
+                                  index === 1 && "bg-black",
+                                  index === 0 &&
+                                    "transition-all duration-300 hover:cursor-pointer hover:bg-gray-100",
+                                  index === 0 &&
+                                    (status === "submitted" ||
+                                      status === "streaming") &&
+                                    "opacity-50 hover:cursor-not-allowed pointer-events-none"
+                                )}
+                                onClick={(e) => {
+                                  if (tool.activeIcon && input.length > 0) {
+                                    sendMessageAndCreateChatClick(e);
+                                  }
+                                  if (
+                                    tool.stopIcon &&
+                                    (status === "streaming" ||
+                                      status === "submitted")
+                                  ) {
+                                    stop();
+                                  }
+                                }}
+                              >
+                                <Icon />
+                              </div>
+                            </TooltipContainer>
+                          </Fragment>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </form>
+      </div>
+    );
+  }
+
+  // const model =
+  //   sessionStorage.getItem(`model`) ?? "mmd-meta-llama/llama-4-scout";
+  // const [selectedModel, setSelectedModel] = useState(model);
 
   return (
     <div
@@ -323,7 +500,11 @@ export default function ChatClient({
                     // )}
                     >
                       <ModelSwitcher
-                        selectedModel={selectedModel}
+                        selectedModel={
+                          selectedModel.length > 0
+                            ? selectedModel
+                            : "mmd-meta-llama/llama-3.3-8b-instruct:free"
+                        }
                         setSelectedModel={setSelectedModel}
                         showExperimentalModels={showExperimentalModels}
                         attachments={[]}

@@ -137,7 +137,7 @@ export default function MessageBar({
           {(status === "submitted" || status === "streaming") &&
             messages.length > 0 &&
             messages[messages.length - 1].role === "user" && (
-              <div className="h-[220px] w-full " />
+              <div className="h-[220px] w-2/5 " />
             )}
           <div ref={endOfMessagesRef} />
         </div>

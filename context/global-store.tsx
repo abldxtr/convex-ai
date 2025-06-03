@@ -17,6 +17,8 @@ type ContextType = {
   setIsNavigating: Dispatch<SetStateAction<boolean>>;
   getError: boolean;
   setGetError: Dispatch<SetStateAction<boolean>>;
+  active: boolean;
+  setActive: Dispatch<SetStateAction<boolean>>;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
@@ -26,6 +28,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [newChat, setNewChat] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const [getError, setGetError] = useState(false);
+  const [active, setActive] = useState(false);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -37,6 +41,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
         setIsNavigating,
         getError,
         setGetError,
+        active,
+        setActive,
       }}
     >
       {children}

@@ -26,6 +26,7 @@ import { redirect } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import { mmd } from "@/provider/providers";
 import { useAction } from "convex/react";
+import { revalidatePath } from "next/cache";
 
 function convertToUIMessage(message: any): UIMessage {
   const text = message.content ?? message.parts?.text ?? "";
@@ -189,6 +190,8 @@ export async function POST(req: Request) {
           },
           { token }
         );
+        revalidatePath("/(main)/chat/[chatId]", "layout");
+
         //   const createChat = useMutation(api.chat.createChat);
 
         // redirect(`/chat/${b}`);
@@ -275,6 +278,8 @@ export async function POST(req: Request) {
           },
           { token }
         );
+
+        revalidatePath("/(main)/chat/[chatId]", "layout");
         //   const createChat = useMutation(api.chat.createChat);
 
         // redirect(`/chat/${b}`);
