@@ -132,7 +132,10 @@ export default function IfNotChatClient({
         id,
         message: body.messages.at(-1),
         chatId: idChat ?? undefined,
-        model: selectedModel,
+        model:
+          selectedModel.length > 0
+            ? selectedModel
+            : "mmd-meta-llama/llama-3.3-8b-instruct:free",
       };
     },
     onError: (error) => {

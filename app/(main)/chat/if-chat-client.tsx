@@ -166,7 +166,10 @@ export default function IfChatClient({
           id,
           message: body.messages.at(-1),
           chatId: chatIdd,
-          model: selectedModel,
+          model:
+            selectedModel.length > 0
+              ? selectedModel
+              : "mmd-meta-llama/llama-3.3-8b-instruct:free",
         };
       },
       onError: (error) => {
