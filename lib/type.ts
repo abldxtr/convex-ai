@@ -72,3 +72,40 @@ export type ChatClientProps = {
 export type ChatClientPropsPartial = Partial<ChatClientProps>;
 
 export type UserType = Doc<"users"> | null;
+
+export type clientGetChatMessages =
+  | {
+      chatItem: {
+        _id: Id<"chats">;
+        _creationTime: number;
+        id: string;
+        title: string;
+        userId: Id<"users">;
+        isDeleted: boolean;
+      };
+      chatMessages: {
+        _id: Id<"vercelAiMessages">;
+        _creationTime: number;
+        parts?:
+          | {
+              type: string;
+              text: string;
+            }[]
+          | undefined;
+        attachments?:
+          | {
+              name: string;
+              url: string;
+              contentType: "image/png" | "image/jpg" | "image/jpeg";
+            }
+          | undefined;
+        id: string;
+        createdAt: number;
+        content: string;
+        role: "data" | "system" | "user" | "assistant";
+        userId: Id<"users">;
+        chatId: Id<"chats">;
+      }[];
+    }
+  | null
+  | undefined;

@@ -183,6 +183,15 @@ export default function IfChatClient({
         // router.refresh();
       },
     });
+    useEffect(() => {
+      if (messages.length === 0 && clientGetChatMessages) {
+        if (clientGetChatMessages.chatMessages.length > 0) {
+          setMessages(() =>
+            convertToUIMessages(clientGetChatMessages.chatMessages)
+          );
+        }
+      }
+    }, [messages, clientGetChatMessages]);
 
     useEffect(() => {
       if (status === "submitted") {
