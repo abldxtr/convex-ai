@@ -9,7 +9,8 @@ import { openrouter } from "@openrouter/ai-sdk-provider";
 // import { xai } from "@ai-sdk/xai";
 // import { groq } from "@ai-sdk/groq";
 // import { google } from "@ai-sdk/google";
-// import { anthropic } from "@ai-sdk/anthropic";
+// import { anthropic } from "@ai-sdk/anthropic"
+// meta-llama/llama-3.2-3b-instruct:free;
 
 const middleware = extractReasoningMiddleware({
   tagName: "think",

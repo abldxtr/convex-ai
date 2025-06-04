@@ -5,7 +5,6 @@ import { useScroll } from "@/hooks/use-scroll";
 import { useDirection } from "@/hooks/use-direction";
 import { MessageTools } from "./message-tools";
 import MarkdownRenderer from "./markdown";
-import { useLayoutEffect, useEffect } from "react";
 import { cx } from "class-variance-authority";
 import { motion } from "framer-motion";
 import AiLoading, { AiLoading2 } from "./ai-loading";

@@ -123,7 +123,7 @@ export default function ChatClient({
 
   useLayoutEffect(() => {
     const storedModel = sessionStorage.getItem("model");
-    if (storedModel) {
+    if (storedModel !== null) {
       setSelectedModel(storedModel);
     }
   }, [chatIdd]);

@@ -50,7 +50,9 @@ const schema = defineSchema({
   })
     .index("by_chatId", ["chatId"])
     .index("by_userId", ["userId"])
-    .index("by_chatId_userId", ["chatId", "userId"]),
+    .index("by_chatId_userId", ["chatId", "userId"])
+    .index("by_ID", ["id"])
+    .index("by_chatId_userId_id", ["chatId", "userId", "id"]),
 });
 
 export default schema;

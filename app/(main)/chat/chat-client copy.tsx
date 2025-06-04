@@ -1,18 +1,5 @@
 "use client";
-import { useChat, Message } from "@ai-sdk/react";
-import {
-  Fragment,
-  MouseEvent,
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { SidebarToggle } from "@/components/sidebar-toggle";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { useId, useMemo } from "react";
 
 import {
   LampIcon,
@@ -26,22 +13,9 @@ import {
   ArrowIcon,
   StopIcon,
 } from "@/components/icons";
-import MessageBar from "@/components/message-bar";
-import { useScroll } from "@/hooks/use-scroll";
-import TooltipContainer from "@/components/tooltip-container";
-import { toast } from "sonner";
-import { useParams, usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { useGlobalstate } from "@/context/global-store";
-import { ChatClientProps, ChatClientPropsPartial, chat } from "@/lib/type";
-import { ModelSwitcher } from "@/components/models";
-import { motion } from "framer-motion";
-import { useLinkStatus } from "next/link";
-import { usePreloadedQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { convertToUIMessages } from "@/lib/convert-to-uimessages";
-import { useQuery } from "convex-helpers/react/cache/hooks";
-import { Loader2 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ChatClientPropsPartial } from "@/lib/type";
+
 import IfChatClient from "./if-chat-client";
 import IfNotChatClient from "./if-not-chat-client";
 type IconComponent = ({ size }: { size?: number }) => React.ReactNode;

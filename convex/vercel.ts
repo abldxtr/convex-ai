@@ -35,6 +35,15 @@ export const createVercelAiMessage = mutation({
     // if (userId === null) {
     //   return null;
     // }
+    const isHasMessage = await ctx.db
+      .query("vercelAiMessages")
+      .withIndex("by_ID", (q) => q.eq("id", args.id))
+      .first();
+
+    if (isHasMessage) {
+      return null;
+    }
+
     const messages = await ctx.db.insert("vercelAiMessages", {
       chatId: args.chatId,
       id: args.id,

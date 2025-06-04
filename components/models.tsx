@@ -24,6 +24,7 @@ import { Attachment } from "ai";
 //     }),
 //     "mmd-o4-mini": openai.responses("o4-mini-2025-04-16"),
 //   }
+// mmd-meta-llama
 const models = [
   {
     value: "mmd-mistral",
