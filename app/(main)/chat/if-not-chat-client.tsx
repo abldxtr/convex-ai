@@ -190,14 +190,14 @@ export default function IfNotChatClient({
 
       {/* body */}
 
-      {/* {(active || status === "submitted" || status === "streaming") && (
+      {(active || status === "submitted" || status === "streaming") && (
         <MessageBar
           messages={messages}
           endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
           status={status}
           reload={reload}
         />
-      )} */}
+      )}
 
       {/* footer */}
 
