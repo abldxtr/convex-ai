@@ -85,6 +85,7 @@ export function AppSidebar({ user }: { user: UserType }) {
       toast.success("Chat deleted successfully");
       if (chatIdd === id) {
         router.replace("/chat");
+        router.refresh();
         setActive(false);
       }
     } catch (error) {
