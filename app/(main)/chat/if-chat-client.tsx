@@ -236,7 +236,7 @@ export default function IfChatClient({
         <div className="px-4 pt-3 pb-1">
           <SidebarToggle />
         </div>
-        {clientGetChatMessages === undefined && (
+        {clientGetChatMessages === undefined && messages.length === 0 && (
           <div className="flex items-center justify-center h-full w-full">
             <Loader2 className="size-6 animate-spin" />
           </div>
