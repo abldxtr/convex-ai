@@ -153,7 +153,9 @@ export function AppSidebar({ user }: { user: UserType }) {
             .map(([dateLabel, chats]) => (
               <SidebarGroup key={dateLabel}>
                 {/* ✅ اصلاح: مستقیماً از dateLabel استفاده کنید */}
-                <SidebarGroupLabel>{dateLabel}</SidebarGroupLabel>
+                <SidebarGroupLabel className="  ">
+                  {dateLabel}
+                </SidebarGroupLabel>
                 <SidebarGroupContent>
                   <SidebarMenu>
                     {chats
