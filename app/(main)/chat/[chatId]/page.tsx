@@ -1,15 +1,10 @@
-import { fetchQuery, preloadQuery } from "convex/nextjs";
-import ChatClient from "../chat-client";
+import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { redirect } from "next/navigation";
-import { Attachment, UIMessage } from "ai";
-import { ChatMessage } from "@/lib/type";
-import exa from "@/lib/exa";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 import ChatClientCopy from "../chat-client copy";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export default async function ChatPage({
   params,
