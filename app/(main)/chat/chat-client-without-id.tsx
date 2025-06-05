@@ -1,107 +1,46 @@
 "use client";
-import { useChat, Message } from "@ai-sdk/react";
+
+import type React from "react";
+
+import { useChat } from "@ai-sdk/react";
 import {
   Fragment,
-  MouseEvent,
   useEffect,
-  useId,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
+  useCallback,
 } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { motion } from "framer-motion";
+
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-
-import {
-  LampIcon,
-  EarthIcon,
-  MicrophoneIcon,
-  PlusIcon,
-  MicIcon,
-  PaintIcon,
-  SpeechIcon,
-  ThreeDotsIcon,
-  ArrowIcon,
-  StopIcon,
-} from "@/components/icons";
 import MessageBar from "@/components/message-bar";
 import TooltipContainer from "@/components/tooltip-container";
-import { toast } from "sonner";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { useGlobalstate } from "@/context/global-store";
-import { ChatClientProps, ChatClientPropsPartial } from "@/lib/type";
+import type { ChatClientPropsPartial } from "@/lib/type";
 import { ModelSwitcher } from "@/components/models";
-import { motion } from "framer-motion";
-type IconComponent = ({ size }: { size?: number }) => React.ReactNode;
+import { searchTools } from "@/lib/chat-tools";
 
-const tools = [
-  {
-    name: "Plus",
-    icon: PlusIcon,
-    description: "Add photos and files",
-  },
-  {
-    name: "Earth",
-    icon: EarthIcon,
-    description: "Search the web",
-  },
-  {
-    name: "Lamp",
-    icon: LampIcon,
-    description: "Think before responding",
-  },
-  {
-    name: "Microphone",
-    icon: MicrophoneIcon,
-    description: "Get detailed report",
-  },
-  {
-    name: "Paint",
-    icon: PaintIcon,
-    description: "Visualize anything",
-  },
-  {
-    name: "ThreeDots",
-    icon: ThreeDotsIcon,
-    description: "View tools",
-  },
-];
+interface ChatClientWithoutIdProps extends ChatClientPropsPartial {
+  id: string;
+  idChat: string;
+}
 
-const searchTools = [
-  {
-    name: "Mic",
-    icon: MicIcon as IconComponent,
-    description: "Dictate",
-  },
-  {
-    name: "ActionButton",
-    icon: SpeechIcon as IconComponent,
-    activeIcon: ArrowIcon as IconComponent,
-    stopIcon: StopIcon as IconComponent,
-    description: "Submit",
-  },
-];
-export default function IfNotChatClient({
-  //   chatItem,
-  //   chatMessages,
+export default function ChatClientWithoutId({
   id,
   idChat,
-}: ChatClientPropsPartial & { id: string; idChat: string }) {
-  const { newChat, setNewChat, getError, setGetError, active, setActive } =
-    useGlobalstate();
+}: ChatClientWithoutIdProps) {
+  const { setNewChat, setGetError, active, setActive } = useGlobalstate();
   const router = useRouter();
-  //   const pathname = usePathname();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
-  //   const id = useId();
-  //   const chatIdd = useMemo(
-  //     () => pathname.split("/chat/")[1] || undefined,
-  //     [pathname]
-  //   );
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const [selectedModel, setSelectedModel] = useState("");
+
+  // Load model preference from session storage
   useLayoutEffect(() => {
     const storedModel = sessionStorage.getItem("model");
     if (storedModel) {
@@ -109,11 +48,10 @@ export default function IfNotChatClient({
     }
   }, []);
 
+  // Set up chat with AI SDK
   const {
     messages,
     input,
-    handleInputChange,
-    append,
     handleSubmit,
     stop,
     setInput,
@@ -126,73 +64,65 @@ export default function IfNotChatClient({
     maxSteps: 2,
     api: "/api/chat",
     initialMessages: undefined,
-    experimental_prepareRequestBody: (body) => {
-      // // console.log({ body });
-      return {
-        id,
-        message: body.messages.at(-1),
-        chatId: idChat ?? undefined,
-        model:
-          selectedModel.length > 0
-            ? selectedModel
-            : "mmd-meta-llama/llama-3.3-8b-instruct:free",
-      };
-    },
+    experimental_prepareRequestBody: (body) => ({
+      id,
+      message: body.messages.at(-1),
+      chatId: idChat ?? undefined,
+      model:
+        selectedModel.length > 0
+          ? selectedModel
+          : "mmd-meta-llama/llama-3.3-8b-instruct:free",
+    }),
     onError: (error) => {
       console.log("error", error);
       setGetError(true);
-      // router.refresh();
-      // reload();
     },
     onFinish: () => {
       console.log("onFinish");
-      // router.refresh();
     },
   });
 
+  // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (status === "submitted") {
       endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, status]);
 
-  async function sendMessageAndCreateChatKeyBoard(
-    e: React.KeyboardEvent<HTMLTextAreaElement>
-  ) {
-    e.preventDefault();
+  // Handle keyboard submission - creates a new chat
+  const handleKeyboardSubmit = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+        e.preventDefault();
+        if (status !== "ready") {
+          toast.error("Please wait for the previous message to be sent");
+        } else {
+          localStorage.setItem("first-message", input);
+          setInput("");
+          setActive(true);
+          router.push(`/chat/${idChat}`);
+        }
+      }
+    },
+    [status, input, setInput, setActive, router, idChat]
+  );
+
+  // Handle click submission - creates a new chat
+  const handleClickSubmit = useCallback(() => {
     localStorage.setItem("first-message", input);
     setInput("");
     setActive(true);
-
     router.push(`/chat/${idChat}`);
-    // setInput("");
-  }
-  async function sendMessageAndCreateChatClick(e: MouseEvent<HTMLDivElement>) {
-    e.preventDefault();
-    localStorage.setItem("first-message", input);
-    setInput("");
-    setActive(true);
-    router.push(`/chat/${idChat}`);
-  }
-
-  //   useLayoutEffect(() => {
-  //     if (chatIdd) {
-  //       setActive(true);
-  //     } else {
-  //       setActive(false);
-  //     }
-  //   }, [chatIdd]);
+  }, [input, setInput, setActive, router, idChat]);
 
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
-      {/* header */}
-
+      {/* Header */}
       <div className="px-4 pt-3 pb-1">
         <SidebarToggle />
       </div>
 
-      {/* body */}
-
+      {/* Message display */}
       {(active || status === "submitted" || status === "streaming") && (
         <MessageBar
           messages={messages}
@@ -202,10 +132,9 @@ export default function IfNotChatClient({
         />
       )}
 
-      {/* footer */}
-
+      {/* Input form */}
       <form
-        onSubmit={() => sendMessageAndCreateChatClick}
+        onSubmit={(e) => e.preventDefault()}
         className={cn(
           "w-full",
           active ? "" : "h-full flex items-center justify-center"
@@ -214,34 +143,34 @@ export default function IfNotChatClient({
         <motion.div
           className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]"
           layoutId="chat-input"
-          transition={{
-            duration: 0.3,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          {/* header */}
+          {/* Title */}
           {!active && (
-            <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700    ">
+            <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700">
               What can I help with?
             </div>
           )}
+
+          {/* Input container */}
           <div className="flex items-center justify-center">
             <div
               className={cn(
-                "border-token-border-default bg-token-bg-primary flex  grow max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]  cursor-text flex-col items-center justify-center overflow-clip rounded-[28px] border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg dark:bg-[#303030] dark:shadow-none!",
-                //   chatIdd
-                //   ? "lg:[--thread-content-max-width:50rem]"
-                //   : "lg:[--thread-content-max-width:50rem]"
-                "lg:[--thread-content-max-width:50rem]"
+                "border-token-border-default bg-token-bg-primary flex grow",
+                "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
+                "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
+                "lg:[--thread-content-max-width:50rem]",
+                "cursor-text flex-col items-center justify-center overflow-clip rounded-[28px]",
+                "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
+                "dark:bg-[#303030] dark:shadow-none!"
               )}
             >
               <div
                 className={cn(
-                  "relative w-full p-[10px] flex flex-col justify-between ",
-                  //   chatIdd ? "min-h-[120px]" : "min-h-[120px]"
-                  "min-h-[120px]"
+                  "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
                 )}
               >
+                {/* Text input */}
                 <Textarea
                   id={id}
                   value={input}
@@ -250,24 +179,12 @@ export default function IfNotChatClient({
                   className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
                   onChange={(e) => setInput(e.target.value)}
                   disabled={status === "streaming" || status === "submitted"}
-                  onKeyDown={(e) => {
-                    if (
-                      e.key === "Enter" &&
-                      !e.shiftKey &&
-                      !e.nativeEvent.isComposing
-                    ) {
-                      e.preventDefault();
-                      if (status !== "ready") {
-                        toast.error(
-                          "Please wait for the previous message to be sent"
-                        );
-                      } else {
-                        sendMessageAndCreateChatKeyBoard(e);
-                      }
-                    }
-                  }}
+                  onKeyDown={handleKeyboardSubmit}
                 />
+
+                {/* Tools and actions */}
                 <div className="flex h-[36px] items-center justify-between gap-2">
+                  {/* Model switcher */}
                   <div className="flex items-center gap-2">
                     <div>
                       <ModelSwitcher
@@ -287,6 +204,8 @@ export default function IfNotChatClient({
                       />
                     </div>
                   </div>
+
+                  {/* Action buttons */}
                   <div className="flex items-center gap-2">
                     {searchTools.map((tool, index) => {
                       const Icon =
@@ -302,7 +221,7 @@ export default function IfNotChatClient({
                           <TooltipContainer
                             tooltipContent={
                               status === "streaming" || status === "submitted"
-                                ? "Stooping..."
+                                ? "Stopping..."
                                 : tool.description
                             }
                             key={tool.name}
@@ -321,7 +240,7 @@ export default function IfNotChatClient({
                               )}
                               onClick={(e) => {
                                 if (tool.activeIcon && input.length > 0) {
-                                  sendMessageAndCreateChatClick(e);
+                                  handleClickSubmit();
                                 }
                                 if (
                                   tool.stopIcon &&
