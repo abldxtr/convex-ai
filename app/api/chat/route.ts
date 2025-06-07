@@ -16,6 +16,18 @@ import { after, NextResponse } from "next/server";
 import { fetchMutation, fetchQuery, fetchAction } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { mmd } from "@/provider/providers";
+import { createOpenAI } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+const google = createGoogleGenerativeAI({
+  // custom settings
+  apiKey: process.env.GOOGLE_API_KEY,
+});
+
+const openai = createOpenAI({
+  // custom settings, e.g.
+  compatibility: "strict", // strict mode, enable when using the OpenAI API
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 function convertToUIMessage(message: any): UIMessage {
   const text = message.content ?? message.parts?.text ?? "";
@@ -130,6 +142,8 @@ export async function POST(req: Request) {
       model: mmd.languageModel(
         body.model ?? "meta-llama/llama-3.2-3b-instruct:free"
       ),
+      // model: openai("o3-mini"),
+      // model: google("gemini-1.5-flash"),
       // model: openrouter.chat("qwen/qwen-2.5-7b-instruct:free"),
       // model: openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
 
@@ -206,6 +220,8 @@ export async function POST(req: Request) {
       model: mmd.languageModel(
         body.model ?? "mmd-meta-llama/llama-3.3-8b-instruct:free"
       ),
+      // model: openai("o3-mini"),
+      // model: google("gemini-1.5-flash"),
       messages: allMessages,
       system:
         "You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.",

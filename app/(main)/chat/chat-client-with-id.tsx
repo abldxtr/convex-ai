@@ -30,6 +30,7 @@ import { api } from "@/convex/_generated/api";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 import { useQuery } from "convex-helpers/react/cache/hooks";
 import { searchTools } from "@/lib/chat-tools";
+import { useDirection } from "@/hooks/use-direction";
 
 interface ChatClientWithIdProps extends ChatClientPropsPartial {
   chatIdd: string;
@@ -44,8 +45,15 @@ export default function ChatClientWithId({
   id,
   idChat,
 }: ChatClientWithIdProps) {
-  const { newChat, setNewChat, setGetError, active, setActive } =
-    useGlobalstate();
+  const {
+    newChat,
+    setNewChat,
+    setGetError,
+    active,
+    setActive,
+    direction,
+    setDirection,
+  } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
@@ -233,7 +241,11 @@ export default function ChatClientWithId({
                   autoFocus
                   placeholder="Ask anything"
                   className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={(e) => {
+                    const direction = useDirection(e.target.value);
+                    setDirection(direction);
+                    setInput(e.target.value);
+                  }}
                   disabled={status === "streaming" || status === "submitted"}
                   onKeyDown={handleKeyboardSubmit}
                 />

@@ -19,6 +19,8 @@ type ContextType = {
   setGetError: Dispatch<SetStateAction<boolean>>;
   active: boolean;
   setActive: Dispatch<SetStateAction<boolean>>;
+  direction: "ltr" | "rtl";
+  setDirection: Dispatch<SetStateAction<"ltr" | "rtl">>;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
@@ -29,6 +31,7 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [isNavigating, setIsNavigating] = useState(false);
   const [getError, setGetError] = useState(false);
   const [active, setActive] = useState(false);
+  const [direction, setDirection] = useState<"ltr" | "rtl">("ltr");
 
   return (
     <GlobalContext.Provider
@@ -43,6 +46,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
         setGetError,
         active,
         setActive,
+        direction,
+        setDirection,
       }}
     >
       {children}

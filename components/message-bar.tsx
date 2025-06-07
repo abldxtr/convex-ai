@@ -30,7 +30,7 @@ export default function MessageBar({
     // console.log("stattttt", status);
     // console.log(messages[messages.length - 1].role);
   }
-  const { getError, setGetError } = useGlobalstate();
+  const { getError, setGetError, direction, setDirection } = useGlobalstate();
   // useEffect(() => {
   //   if (getError) {
   //     reload();
@@ -71,6 +71,7 @@ export default function MessageBar({
         <div className="relative z-[9] h-full w-full">
           {messages.map((message, index) => {
             const isLastMessage = messages.length - 1 === index;
+
             // const isEmptyMessage = message.parts.every((part, i) => {
             //   if (part.type === "text") {
             //     return part.text.length > 0;
@@ -168,7 +169,7 @@ export function UserMessage({
     >
       <div
         className={cn(
-          "w-full gap-4 text-base focus-visible:outline-hidden md:gap-5 lg:gap-6",
+          "w-full gap-4 text-base focus-visible:outline-hidden md:gap-5 lg:gap-6 break-words break-all ",
           direction !== "rtl"
             ? "flex items-center justify-start"
             : "flex items-center justify-end"
@@ -182,7 +183,7 @@ export function UserMessage({
                 <div
                   key={`${message.id}-${i}`}
                   dir="auto"
-                  className="flex w-fit rounded-3xl bg-[#e9e9e980] px-5 py-2.5"
+                  className="flex w-fit max-w-full break-words rounded-3xl bg-[#e9e9e980] px-5 py-2.5 "
                 >
                   {part.text}
                 </div>

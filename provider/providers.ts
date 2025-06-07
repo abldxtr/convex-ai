@@ -6,6 +6,9 @@ import {
 
 import { openai } from "@ai-sdk/openai";
 import { openrouter } from "@openrouter/ai-sdk-provider";
+import { google } from "@ai-sdk/google";
+import { vertex } from "@ai-sdk/google-vertex";
+
 // import { xai } from "@ai-sdk/xai";
 // import { groq } from "@ai-sdk/groq";
 // import { google } from "@ai-sdk/google";
@@ -19,6 +22,7 @@ const middleware = extractReasoningMiddleware({
 export const mmd = customProvider({
   languageModels: {
     "mmd-meta-llama": openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
+    "mmd-google-own": google("gemini-1.5-flash"),
     "mmd-qwen-2.5": openrouter.chat("qwen/qwen-2.5-7b-instruct:free"),
     "mmd-google": openrouter.chat("google/gemini-2.0-flash-exp:free"),
     "mmd-deepseek": openrouter.chat("deepseek/deepseek-r1-0528:free"),

@@ -29,7 +29,7 @@ export function MessageTools({
   return (
     <div
       className={cn(
-        "mx-auto flex h-[18px] w-full my-1 max-w-(--thread-content-max-width) items-center px-1 opacity-0 transition-all duration-300 [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] group-hover/turn-messages:opacity-100",
+        "mx-auto flex h-[18px] w-full my-2 max-w-(--thread-content-max-width) items-center px-1 opacity-0 transition-all duration-300 [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] group-hover/turn-messages:opacity-100",
         direction !== "rtl"
           ? "flex items-center justify-start"
           : "flex items-center justify-end"

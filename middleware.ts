@@ -4,7 +4,6 @@ import {
   isAuthenticatedNextjs,
   nextjsMiddlewareRedirect,
 } from "@convex-dev/auth/nextjs/server";
-import { NextResponse } from "next/server";
 const isSignInPage = createRouteMatcher(["/auth"]);
 const isProtectedRoute = createRouteMatcher(["/chat(.*)"]);
 const isHomePage = createRouteMatcher(["/"]);

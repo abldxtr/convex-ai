@@ -17,11 +17,11 @@ export default async function ChatLayout({
   ]);
   const isCollapsed = cookieStore.get("sidebar:state")?.value !== "true";
   const user = await fetchQuery(api.user.getUser, {}, { token });
-  const chatList = await fetchQuery(api.chat.getChat, {}, { token });
+  // const chatList = await fetchQuery(api.chat.getChat, {}, { token });
   // // console.log({ chatList });
 
   return (
-    <SidebarProvider defaultOpen={isCollapsed}>
+    <SidebarProvider defaultOpen={false}>
       {/* <AppSidebar chatList={chatList} /> */}
       <AppSidebar user={user} />
 
