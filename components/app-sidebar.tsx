@@ -151,11 +151,21 @@ export function AppSidebar({ user }: { user: UserType }) {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/chat" prefetch={true}>
+                <SidebarMenuButton
+                  asChild
+                  onClick={() => {
+                    setActive(false);
+                    router.push("/chat");
+                    setNewChat(() => !newChat);
+                    if (state === "expanded" && isMobile) {
+                      toggleSidebar();
+                    }
+                  }}
+                >
+                  <div className=" cursor-pointer ">
                     <NewChatIcon />
                     <span>New Chat</span>
-                  </Link>
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
