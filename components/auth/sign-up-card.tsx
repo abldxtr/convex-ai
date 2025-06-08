@@ -44,7 +44,9 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
       }
 
       void signIn("password", { name, email, password, flow: "signUp" })
-        .then(() => setSigningUp(true))
+        .then(() => {
+          // setSigningUp(true);
+        })
         .catch(() => {
           setError("Something went wrong!");
         })

@@ -36,14 +36,14 @@ export type chat = {
   }[];
 } | null;
 
-export type ChatItem = {
-  _id: Id<"chats">;
-  _creationTime: number;
-  id: string;
-  title: string;
-  userId: Id<"users">;
-  isDeleted: boolean;
-};
+// export type ChatItem = {
+//   _id: Id<"chats">;
+//   _creationTime: number;
+//   id: string;
+//   title: string;
+//   userId: Id<"users">;
+//   isDeleted: boolean;
+// };
 
 export type ChatMessage = {
   _id: Id<"vercelAiMessages">;
@@ -73,39 +73,14 @@ export type ChatClientPropsPartial = Partial<ChatClientProps>;
 
 export type UserType = Doc<"users"> | null;
 
+export type ChatItem = Doc<"chats">;
+
+export type chatMessages = Doc<"vercelAiMessages">;
+
 export type clientGetChatMessages =
   | {
-      chatItem: {
-        _id: Id<"chats">;
-        _creationTime: number;
-        id: string;
-        title: string;
-        userId: Id<"users">;
-        isDeleted: boolean;
-      };
-      chatMessages: {
-        _id: Id<"vercelAiMessages">;
-        _creationTime: number;
-        parts?:
-          | {
-              type: string;
-              text: string;
-            }[]
-          | undefined;
-        attachments?:
-          | {
-              name: string;
-              url: string;
-              contentType: "image/png" | "image/jpg" | "image/jpeg";
-            }
-          | undefined;
-        id: string;
-        createdAt: number;
-        content: string;
-        role: "data" | "system" | "user" | "assistant";
-        userId: Id<"users">;
-        chatId: Id<"chats">;
-      }[];
+      chatItem: ChatItem;
+      chatMessages: chatMessages[];
     }
   | null
   | undefined;

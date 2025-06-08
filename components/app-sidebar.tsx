@@ -36,6 +36,7 @@ import { useGlobalstate } from "@/context/global-store";
 import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
+import { NewChatIcon } from "./icons";
 
 export function AppSidebar({ user }: { user: UserType }) {
   const chatList = useQuery(api.chat.getChat, {});
@@ -140,12 +141,26 @@ export function AppSidebar({ user }: { user: UserType }) {
       </SidebarHeader>
 
       <SidebarContent>
-        {chatList === undefined && (
+        {/* {chatList === undefined && (
           <div className="flex items-center justify-center">
             <Loader2 className="size-6 animate-spin" />
           </div>
-        )}
-
+        )} */}
+        <SidebarGroup>
+          {/* <SidebarGroupLabel>Chats</SidebarGroupLabel> */}
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/chat" prefetch={true}>
+                    <NewChatIcon />
+                    <span>New Chat</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         {chatGroup &&
           Object.entries(chatGroup)
             .slice()

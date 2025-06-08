@@ -31,6 +31,7 @@ import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 import { useQuery } from "convex-helpers/react/cache/hooks";
 import { searchTools } from "@/lib/chat-tools";
 import { useDirection } from "@/hooks/use-direction";
+import { usePreloadedQuery } from "convex/react";
 
 interface ChatClientWithIdProps extends ChatClientPropsPartial {
   chatIdd: string;
@@ -44,6 +45,7 @@ export default function ChatClientWithId({
   chatIdd,
   id,
   idChat,
+  preloaded,
 }: ChatClientWithIdProps) {
   const {
     newChat,
@@ -55,12 +57,13 @@ export default function ChatClientWithId({
     setDirection,
   } = useGlobalstate();
   const router = useRouter();
+  const data = usePreloadedQuery(preloaded!);
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const [selectedModel, setSelectedModel] = useState("");
 
   // Get chat messages from Convex
-  const clientGetChatMessages = useQuery(api.chat.getChatById, { id: chatIdd });
+  // const clientGetChatMessages = useQuery(api.chat.getChatById, { id: chatIdd });
   const { pending } = useLinkStatus();
 
   // Load model preference from session storage
@@ -87,8 +90,11 @@ export default function ChatClientWithId({
     experimental_throttle: 100,
     maxSteps: 2,
     api: "/api/chat",
-    initialMessages: clientGetChatMessages?.chatMessages
-      ? convertToUIMessages(clientGetChatMessages.chatMessages)
+    // initialMessages: clientGetChatMessages?.chatMessages
+    //   ? convertToUIMessages(clientGetChatMessages.chatMessages)
+    //   : undefined,
+    initialMessages: data?.chatMessages
+      ? convertToUIMessages(data.chatMessages)
       : undefined,
     experimental_prepareRequestBody: (body) => ({
       id,
@@ -126,15 +132,25 @@ export default function ChatClientWithId({
   }, [append]);
 
   // Initialize messages from Convex if needed
+  // useEffect(() => {
+  //   if (
+  //     messages.length === 0 &&
+  //     clientGetChatMessages?.chatMessages &&
+  //     clientGetChatMessages.chatMessages.length > 0
+  //   ) {
+  //     setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
+  //   }
+  // }, [messages.length, clientGetChatMessages, setMessages]);
+
   useEffect(() => {
     if (
       messages.length === 0 &&
-      clientGetChatMessages?.chatMessages &&
-      clientGetChatMessages.chatMessages.length > 0
+      data?.chatMessages &&
+      data.chatMessages.length > 0
     ) {
-      setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
+      setMessages(convertToUIMessages(data.chatMessages));
     }
-  }, [messages.length, clientGetChatMessages, setMessages]);
+  }, [messages.length, data, setMessages]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -143,12 +159,14 @@ export default function ChatClientWithId({
     }
   }, [messages, status]);
 
-  // // Set active state based on chatIdd
-  // useLayoutEffect(() => {
-  //   if (chatIdd) {
-  //     setActive(true);
-  //   }
-  // }, [chatIdd]);
+  // Set active state based on chatIdd
+  useLayoutEffect(() => {
+    if (chatIdd) {
+      setActive(true);
+    } else {
+      setActive(false);
+    }
+  }, [chatIdd]);
 
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
@@ -182,12 +200,16 @@ export default function ChatClientWithId({
       </div>
 
       {/* Loading state */}
-      {clientGetChatMessages === undefined && messages.length === 0 && (
+      {/* {clientGetChatMessages === undefined && messages.length === 0 && (
+        <div className="flex items-center justify-center h-full w-full">
+          <Loader2 className="size-6 animate-spin" />
+        </div>
+      )} */}
+      {data === undefined && messages.length === 0 && (
         <div className="flex items-center justify-center h-full w-full">
           <Loader2 className="size-6 animate-spin" />
         </div>
       )}
-
       {/* Message display */}
       {(active || status === "submitted" || status === "streaming") && (
         <MessageBar
