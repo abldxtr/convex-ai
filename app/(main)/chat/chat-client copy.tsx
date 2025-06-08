@@ -25,6 +25,8 @@ export default function ChatClient({
   useLayoutEffect(() => {
     if (!chatIdd) {
       setActive(false);
+    } else {
+      setActive(true);
     }
   }, [chatIdd]);
 
