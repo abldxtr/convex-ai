@@ -65,7 +65,7 @@ export default function MessageBar({
         </div>
       )}
       <div
-        className="isolate h-full w-full flex-1 overflow-x-clip overflow-y-auto px-4"
+        className="isolate h-full w-full flex-1 overflow-x-clip overflow-y-scroll px-4"
         ref={scrollRef}
       >
         <div className="relative z-[9] h-full w-full">

@@ -143,10 +143,12 @@ export default function ChatClientWithId({
     }
   }, [messages, status]);
 
-  // Set active state based on chatIdd
-  useLayoutEffect(() => {
-    setActive(!!chatIdd);
-  }, [chatIdd, setActive]);
+  // // Set active state based on chatIdd
+  // useLayoutEffect(() => {
+  //   if (chatIdd) {
+  //     setActive(true);
+  //   }
+  // }, [chatIdd]);
 
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(

@@ -1,10 +1,11 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useId, useLayoutEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { ChatClientPropsPartial } from "@/lib/type";
 import ChatClientWithoutId from "./chat-client-without-id";
 import ChatClientWithId from "./chat-client-with-id";
+import { useGlobalstate } from "@/context/global-store";
 
 export default function ChatClient({
   chatItem,
@@ -13,12 +14,19 @@ export default function ChatClient({
   const id = useId();
   const pathname = usePathname();
   const router = useRouter();
+  const { active, setActive } = useGlobalstate();
 
   // Memoize the chat ID extraction from pathname
   const chatIdd = useMemo(
     () => pathname.split("/chat/")[1] || undefined,
     [pathname]
   );
+
+  useLayoutEffect(() => {
+    if (!chatIdd) {
+      setActive(false);
+    }
+  }, [chatIdd]);
 
   // Memoize the chat ID generation/retrieval
   const idChat = useMemo(() => chatItem?.id ?? crypto.randomUUID(), [chatItem]);
