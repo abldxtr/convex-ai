@@ -46,6 +46,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.56.4",
     "react-latex-next": "^3.0.0",
+    "react-loader-spinner": "^6.1.6",
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^15.6.1",
     "redis": "^5.1.0",

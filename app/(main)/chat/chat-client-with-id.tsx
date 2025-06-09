@@ -117,13 +117,13 @@ export default function ChatClientWithId({
   }, [newChat, setMessages, setNewChat]);
 
   // Handle first message from localStorage
-  useEffect(() => {
-    const msg = localStorage.getItem("first-message");
-    if (msg) {
-      append({ id: crypto.randomUUID(), content: msg, role: "user" });
-      localStorage.removeItem("first-message");
-    }
-  }, [append]);
+  // useEffect(() => {
+  //   const msg = localStorage.getItem("first-message");
+  //   if (msg) {
+  //     append({ id: crypto.randomUUID(), content: msg, role: "user" });
+  //     localStorage.removeItem("first-message");
+  //   }
+  // }, [append]);
 
   // Initialize messages from Convex if needed
   useEffect(() => {
@@ -143,12 +143,14 @@ export default function ChatClientWithId({
     }
   }, [messages, status]);
 
-  // // Set active state based on chatIdd
-  // useLayoutEffect(() => {
-  //   if (chatIdd) {
-  //     setActive(true);
-  //   }
-  // }, [chatIdd]);
+  // Set active state based on chatIdd
+  useLayoutEffect(() => {
+    if (chatIdd) {
+      setActive(true);
+    } else {
+      setActive(false);
+    }
+  }, [chatIdd]);
 
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(

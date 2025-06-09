@@ -2,6 +2,8 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { ThreeDots } from "react-loader-spinner";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -36,6 +38,7 @@ import { useGlobalstate } from "@/context/global-store";
 import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
+import { Skeleton } from "./ui/skeleton";
 
 export function AppSidebar({ user }: { user: UserType }) {
   const chatList = useQuery(api.chat.getChat, {});
@@ -163,19 +166,45 @@ export function AppSidebar({ user }: { user: UserType }) {
                       .reverse()
                       .map((chat) => (
                         <SidebarMenuItem key={chat._id}>
-                          <SidebarMenuButton
-                            asChild
-                            isActive={chatIdd === chat.id}
-                            onClick={() => {
-                              if (state === "expanded" && isMobile) {
-                                toggleSidebar();
-                              }
-                            }}
-                          >
-                            <Link href={`/chat/${chat.id}`} prefetch={true}>
-                              {chat.title || "Untitled Chat"}
-                            </Link>
-                          </SidebarMenuButton>
+                          {!chat.title ? (
+                            <SidebarMenuButton
+                              asChild
+                              isActive={chatIdd === chat.id}
+                              onClick={() => {
+                                if (state === "expanded" && isMobile) {
+                                  toggleSidebar();
+                                }
+                              }}
+                            >
+                              <Link href={`/chat/${chat.id}`} prefetch={true}>
+                                {/* <Skeleton className="h-full w-full rounded-full" /> */}
+                                <ThreeDots
+                                  visible={true}
+                                  height="20"
+                                  width="50"
+                                  color="black"
+                                  radius="9"
+                                  ariaLabel="three-dots-loading"
+                                  wrapperStyle={{}}
+                                  wrapperClass=""
+                                />
+                              </Link>
+                            </SidebarMenuButton>
+                          ) : (
+                            <SidebarMenuButton
+                              asChild
+                              isActive={chatIdd === chat.id}
+                              onClick={() => {
+                                if (state === "expanded" && isMobile) {
+                                  toggleSidebar();
+                                }
+                              }}
+                            >
+                              <Link href={`/chat/${chat.id}`} prefetch={true}>
+                                {chat.title || "Untitled Chat"}
+                              </Link>
+                            </SidebarMenuButton>
+                          )}
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <SidebarMenuAction

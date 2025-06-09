@@ -79,6 +79,7 @@ export default function ChatClientWithoutId({
     },
     onFinish: () => {
       console.log("onFinish");
+      router.push(`/chat/${idChat}`);
     },
   });
 
@@ -100,7 +101,8 @@ export default function ChatClientWithoutId({
           localStorage.setItem("first-message", input);
           setInput("");
           setActive(true);
-          router.push(`/chat/${idChat}`);
+          // router.push(`/chat/${idChat}`);
+          handleSubmit();
         }
       }
     },
@@ -112,7 +114,8 @@ export default function ChatClientWithoutId({
     localStorage.setItem("first-message", input);
     setInput("");
     setActive(true);
-    router.push(`/chat/${idChat}`);
+    // router.push(`/chat/${idChat}`);
+    handleSubmit();
   }, [input, setInput, setActive, router, idChat]);
 
   return (

@@ -70,7 +70,7 @@ export const createChatMutation = mutation({
   },
 });
 
-export const createChat = internalMutation({
+export const createChat = mutation({
   args: {
     title: v.string(),
     userId: v.id("users"),
@@ -87,6 +87,23 @@ export const createChat = internalMutation({
       // stream: streamId,
     });
     return chatId as Id<"chats">;
+  },
+});
+
+export const updateChatTitle = internalMutation({
+  args: {
+    title: v.string(),
+    chatId: v.id("chats"),
+  },
+  handler: async (ctx, args) => {
+    if (!args.chatId) {
+      return null;
+    }
+    // سنجش اینکه چت به این کاربر تعلق داره یا نه
+    await ctx.db.patch(args.chatId, {
+      title: args.title,
+    });
+    return "done!";
   },
 });
 

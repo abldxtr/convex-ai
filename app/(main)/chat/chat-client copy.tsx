@@ -13,22 +13,12 @@ export default function ChatClient({
 }: ChatClientPropsPartial) {
   const id = useId();
   const pathname = usePathname();
-  const router = useRouter();
-  const { active, setActive } = useGlobalstate();
 
   // Memoize the chat ID extraction from pathname
   const chatIdd = useMemo(
     () => pathname.split("/chat/")[1] || undefined,
     [pathname]
   );
-
-  useLayoutEffect(() => {
-    if (!chatIdd) {
-      setActive(false);
-    } else {
-      setActive(true);
-    }
-  }, [chatIdd]);
 
   // Memoize the chat ID generation/retrieval
   const idChat = useMemo(() => chatItem?.id ?? crypto.randomUUID(), [chatItem]);

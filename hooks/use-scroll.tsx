@@ -18,6 +18,8 @@ export function useScroll({
   messages: UIMessage[];
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const spacerRef = useRef<HTMLDivElement>(null);
+  const [spacerHeight, setSpacerHeight] = useState(0);
   const [showArrow, setShowArrow] = useState(false);
   const [clientHeight, setClientHeight] = useState(0);
   const [scrollHeight, setScrollHeight] = useState(0);
@@ -64,6 +66,24 @@ export function useScroll({
     };
   }, [handleScroll]);
 
+  useEffect(() => {
+    const el = scrollRef.current;
+    if ((status === "submitted" || status === "streaming") && el) {
+      el.scrollTop = el.scrollHeight; // اسکرول به پایین‌ترین بخش برای رزرو جا
+    }
+  }, [status]);
+
+  useEffect(() => {
+    if (
+      status === "submitted" &&
+      messages.length > 0 &&
+      messages[messages.length - 1].role === "user"
+    ) {
+      // مثلاً هر بار 220 پیکسل اضافه کن
+      setSpacerHeight((prev) => prev + 220);
+    }
+  }, [status, messages]);
+
   useLayoutEffect(() => {
     const storedScrollPosition = sessionStorage.getItem(
       `scrollPos-${messages.at(-1)?.id}`
@@ -88,7 +108,16 @@ export function useScroll({
         );
       }
     };
-  }, [messages.at(-1)?.id, endOfMessagesRef?.current, scrollRef.current]);
+  }, [messages.at(-1)?.id]);
 
-  return { scrollRef, showArrow, clientHeight, scrollHeight, offsetHeight };
+  return {
+    scrollRef,
+    showArrow,
+    clientHeight,
+    scrollHeight,
+    offsetHeight,
+    spacerRef,
+    spacerHeight,
+    setSpacerHeight,
+  };
 }

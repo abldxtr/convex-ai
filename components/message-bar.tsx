@@ -24,8 +24,16 @@ export default function MessageBar({
   status,
   reload,
 }: MessageBarProps) {
-  const { scrollRef, showArrow, clientHeight, scrollHeight, offsetHeight } =
-    useScroll({ status, endOfMessagesRef, messages });
+  const {
+    scrollRef,
+    showArrow,
+    clientHeight,
+    scrollHeight,
+    offsetHeight,
+    setSpacerHeight,
+    spacerHeight,
+    spacerRef,
+  } = useScroll({ status, endOfMessagesRef, messages });
   if (messages.length > 0) {
     // console.log("stattttt", status);
     // console.log(messages[messages.length - 1].role);
@@ -135,9 +143,16 @@ export default function MessageBar({
             messages.length > 0 &&
             messages[messages.length - 1].role === "user" && <AiLoading2 />}
           {(status === "submitted" || status === "streaming") &&
-            messages.length > 0 &&
-            messages[messages.length - 1].role === "user" && (
+            messages.length > 0 && (
+              // messages[messages.length - 1].role === "user" && (
               <div className="h-[220px] w-[20px] flex items-center justify-center " />
+              // <div
+              //   ref={spacerRef}
+              //   style={{
+              //     height: `${spacerHeight}px`,
+              //     transition: "height 0.3s ease",
+              //   }}
+              // />
             )}
           <div ref={endOfMessagesRef} />
         </div>
@@ -216,7 +231,12 @@ export function AIMessage({
   console.log("isLastMessage", isLastMessage);
 
   return (
-    <div className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] ">
+    <div
+      className={cn(
+        "group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] "
+        // (status === "streaming" || isLastMessage) && "min-h-[220px]"
+      )}
+    >
       {/* <div className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:48rem] @[48rem]:[--thread-content-max-width:48rem] @[64rem]:[--thread-content-max-width:48rem]"></div> */}
       <div
         className="gap-4 rounded-3xl px-5  text-base focus-visible:outline-hidden md:gap-5 lg:gap-6"

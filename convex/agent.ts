@@ -45,9 +45,10 @@ export const supportAgent = new Agent(components.agent, {
 export const createThread = action({
   args: {
     prompt: v.string(),
-    userId: v.id("users"),
-    id: v.string(),
-    isDeleted: v.boolean(),
+    // userId: v.id("users"),
+    // id: v.string(),
+    chatId: v.id("chats"),
+    // isDeleted: v.boolean(),
   },
   handler: async (ctx, args) => {
     // Start a new thread for the user.
@@ -59,14 +60,11 @@ export const createThread = action({
     const { threadId, thread } = await supportAgent.createThread(ctx);
     // Creates a user message with the prompt, and an assistant reply message.
     const result = await thread.generateText({ prompt: args.prompt });
-    const res: Id<"chats"> = await ctx.runMutation(internal.chat.createChat, {
+    await ctx.runMutation(internal.chat.updateChatTitle, {
       title: result.text,
-      userId: args.userId,
-      // userId,
-      id: args.id,
-      isDeleted: args.isDeleted,
+      chatId: args.chatId,
     });
-    return { threadId, title: result.text, chatId: res };
+    return "done!";
   },
 });
 

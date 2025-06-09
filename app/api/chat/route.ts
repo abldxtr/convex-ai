@@ -18,6 +18,7 @@ import { api } from "@/convex/_generated/api";
 import { mmd } from "@/provider/providers";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { Id } from "@/convex/_generated/dataModel";
 const google = createGoogleGenerativeAI({
   // custom settings
   apiKey: process.env.GOOGLE_API_KEY,
@@ -87,20 +88,23 @@ export async function POST(req: Request) {
   );
   // // console.log("get chat", getChat);
   if (!getChat?.chatItem) {
-    const chatId = await fetchAction(api.agent.createThread, {
-      prompt: body.message.content,
+    const chatId = await fetchMutation(api.chat.createChat, {
       id: body.chatId,
-      userId: userId._id,
       isDeleted: false,
+      title: "",
+      userId: userId._id,
     });
-    if (chatId === null) {
-      return NextResponse.json({ error: "Chat not found" }, { status: 401 });
-    }
+    // const chatId = await fetchAction(api.agent.createThread, {
+    //   prompt: body.message.content,
+    //   id: body.chatId,
+    //   userId: userId._id,
+    //   isDeleted: false,
+    // });
 
     await fetchMutation(
       api.vercel.createVercelAiMessage,
       {
-        chatId: chatId.chatId,
+        chatId: chatId,
         id: body.message.id || crypto.randomUUID(),
         content: body.message.content,
         role: "user",
@@ -111,7 +115,7 @@ export async function POST(req: Request) {
     );
     const getPreviousMessages = await fetchQuery(
       api.vercel.getVercelAiMessages,
-      { chatId: chatId.chatId },
+      { chatId: chatId },
       { token }
     );
 
@@ -157,10 +161,14 @@ export async function POST(req: Request) {
         chunking: "word",
       }),
       onFinish: async (result) => {
+        await fetchAction(api.agent.createThread, {
+          prompt: body.message.content,
+          chatId,
+        });
         const a = await fetchMutation(
           api.vercel.createVercelAiMessage,
           {
-            chatId: chatId.chatId,
+            chatId: chatId,
             id: crypto.randomUUID(),
             userId: userId._id,
             content: result.text,
