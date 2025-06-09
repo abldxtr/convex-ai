@@ -60,11 +60,17 @@ export const createThread = action({
     const { threadId, thread } = await supportAgent.createThread(ctx);
     // Creates a user message with the prompt, and an assistant reply message.
     const result = await thread.generateText({ prompt: args.prompt });
+    if (result.text) {
+      await ctx.runMutation(internal.chat.updateChatTitle, {
+        title: result.text,
+        chatId: args.chatId,
+      });
+      return "done!";
+    }
     await ctx.runMutation(internal.chat.updateChatTitle, {
-      title: result.text,
+      title: args.prompt.slice(0, 22),
       chatId: args.chatId,
     });
-    return "done!";
   },
 });
 
