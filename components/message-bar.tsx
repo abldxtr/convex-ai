@@ -9,8 +9,10 @@ import { cx } from "class-variance-authority";
 import { motion } from "framer-motion";
 import AiLoading, { AiLoading2 } from "./ai-loading";
 import { useGlobalstate } from "@/context/global-store";
+import { clientGetChatMessages } from "@/lib/type";
 type MessageBarProps = {
   messages: UIMessage[];
+  clientChatMessage?: clientGetChatMessages;
   endOfMessagesRef: React.RefObject<HTMLDivElement> | null;
   status: "error" | "submitted" | "streaming" | "ready";
   reload: (
@@ -23,6 +25,7 @@ export default function MessageBar({
   endOfMessagesRef,
   status,
   reload,
+  clientChatMessage,
 }: MessageBarProps) {
   const {
     scrollRef,

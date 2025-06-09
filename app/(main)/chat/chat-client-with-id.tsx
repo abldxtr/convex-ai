@@ -69,6 +69,11 @@ export default function ChatClientWithId({
     if (storedModel) {
       setSelectedModel(storedModel);
     }
+    if (chatIdd) {
+      setActive(true);
+    } else {
+      setActive(false);
+    }
   }, [chatIdd]);
 
   // Set up chat with AI SDK
@@ -144,13 +149,13 @@ export default function ChatClientWithId({
   }, [messages, status]);
 
   // Set active state based on chatIdd
-  useLayoutEffect(() => {
-    if (chatIdd) {
-      setActive(true);
-    } else {
-      setActive(false);
-    }
-  }, [chatIdd]);
+  // useLayoutEffect(() => {
+  //   if (chatIdd) {
+  //     setActive(true);
+  //   } else {
+  //     setActive(false);
+  //   }
+  // }, [chatIdd]);
 
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
@@ -177,23 +182,35 @@ export default function ChatClientWithId({
   );
 
   return (
+    // <div className={cn(" h-dvh w-dvw flex flex-col overflow-hidden ")}>
     <div className={cn("stretch flex h-full w-full flex-col")}>
       {/* Header */}
-      <div className="px-4 pt-3 pb-1">
+      <div className="px-4 pt-3 pb-1 shrink-0 h-[52px] ">
         <SidebarToggle />
       </div>
 
       {/* Loading state */}
       {clientGetChatMessages === undefined && messages.length === 0 && (
-        <div className="flex items-center justify-center h-full w-full">
-          <Loader2 className="size-6 animate-spin" />
+        <div className=" w-full h-full ">
+          <div className="flex items-center justify-center h-full w-full  shrink-0 ">
+            <Loader2 className="size-6 animate-spin" />
+          </div>
         </div>
       )}
 
       {/* Message display */}
-      {(active || status === "submitted" || status === "streaming") && (
+      {/* {(active || status === "submitted" || status === "streaming") && (
         <MessageBar
           messages={messages}
+          endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
+          status={status}
+          reload={reload}
+        />
+      )} */}
+      {clientGetChatMessages !== undefined && messages.length !== 0 && (
+        <MessageBar
+          messages={messages}
+          clientChatMessage={clientGetChatMessages}
           endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
           status={status}
           reload={reload}
@@ -214,11 +231,11 @@ export default function ChatClientWithId({
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           {/* Title */}
-          {!active && (
+          {/* {!active && (
             <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700">
               What can I help with?
             </div>
-          )}
+          )} */}
 
           {/* Input container */}
           <div className="flex items-center justify-center">

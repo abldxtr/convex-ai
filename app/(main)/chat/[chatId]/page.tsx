@@ -9,8 +9,12 @@ export default async function ChatPage({
 }: {
   params: Promise<{ chatId: string }>;
 }) {
-  const chatId = (await params).chatId;
-  const token = await convexAuthNextjsToken();
+  // const chatId = (await params).chatId;
+  // const token = await convexAuthNextjsToken();
+  const [{ chatId }, token] = await Promise.all([
+    params,
+    convexAuthNextjsToken(),
+  ]);
 
   const chat = await fetchQuery(
     api.chat.getChatById,
@@ -25,7 +29,7 @@ export default async function ChatPage({
   // });
   // console.log({ chat });
 
-  if (!chat) {
+  if (!chat || !chatId) {
     return (
       <>
         <ChatClientCopy />
