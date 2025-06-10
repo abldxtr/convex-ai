@@ -246,14 +246,32 @@ export default function ChatClientWithoutId({
   // Handle click submission - creates a new chat
   const handleClickSubmit = useCallback(() => {
     localStorage.setItem("first-message", input);
-    setInput("");
+    // setInput("");
     setActive(true);
     // router.push(`/chat/${idChat}`);
-    if (attachments.length > 0) {
+    if (files.length > 0) {
+      convert(files[0].file as File);
+      if (base64) {
+        // setAttachments([
+        //   {
+        //     url: base64,
+        //     name: files[0].file.name,
+        //     contentType: files[0].file.type,
+        //   },
+        // ]);
+        // console.log({ attachments });
+        console.log("base65");
+        handleSubmit(undefined, {
+          experimental_attachments: [
+            {
+              url: base64,
+              name: files[0].file.name,
+              contentType: files[0].file.type,
+            },
+          ],
+        });
+      }
       clearFiles();
-      handleSubmit(undefined, {
-        experimental_attachments: attachments,
-      });
       // setAttachments([]);
     } else {
       handleSubmit();
