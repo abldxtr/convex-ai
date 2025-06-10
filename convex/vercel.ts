@@ -75,3 +75,27 @@ export const getVercelAiMessages = query({
       .collect();
   },
 });
+
+export const generateUploadUrl = mutation({
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
+});
+
+export const getStorageUrl = query({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
+  },
+});
+
+// export const sendImage = mutation({
+//   args: { storageId: v.id("_storage"), author: v.string() },
+//   handler: async (ctx, args) => {
+//     await ctx.db.insert("messages", {
+//       body: args.storageId,
+//       author: args.author,
+//       format: "image",
+//     });
+//   },
+// });

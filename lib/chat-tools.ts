@@ -51,9 +51,9 @@ export const tools = [
 // Search tools for the input area
 export const searchTools = [
   {
-    name: "Mic",
+    name: "upload",
     icon: MicIcon as IconComponent,
-    description: "Dictate",
+    description: "Image Upload",
   },
   {
     name: "ActionButton",

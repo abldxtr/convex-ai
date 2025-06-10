@@ -13,7 +13,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +24,10 @@ import { useGlobalstate } from "@/context/global-store";
 import type { ChatClientPropsPartial } from "@/lib/type";
 import { ModelSwitcher } from "@/components/models";
 import { searchTools } from "@/lib/chat-tools";
+import { useFileUpload } from "@/hooks/use-file-upload";
+import PreviewImg from "@/components/preview-img";
+import { useFileToBase64 } from "@/hooks/use-file-base64";
+import { Attachment } from "ai";
 
 interface ChatClientWithoutIdProps extends ChatClientPropsPartial {
   id: string;
@@ -34,11 +38,93 @@ export default function ChatClientWithoutId({
   id,
   idChat,
 }: ChatClientWithoutIdProps) {
-  const { setNewChat, setGetError, active, setActive } = useGlobalstate();
+  console.log("noooooooooooooooooooooo");
+
+  const {
+    setNewChat,
+    setGetError,
+    active,
+    setActive,
+    attachments,
+    setAttachments,
+  } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
+  // const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+
+  const { base64, convert, error, loading } = useFileToBase64();
   const [selectedModel, setSelectedModel] = useState("");
+  // console.log(base64);
+
+  const [
+    { files, isDragging, errors },
+    {
+      handleDragEnter,
+      handleDragLeave,
+      handleDragOver,
+      handleDrop,
+      openFileDialog,
+      removeFile,
+      clearFiles,
+      getInputProps,
+    },
+  ] = useFileUpload({
+    accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif",
+    maxSize: 1024 * 1024 * 2,
+    multiple: true,
+    maxFiles: 1,
+    onFilesAdded: (e) => {
+      // (property) onFilesAdded?: ((addedFiles: FileWithPreview[]) => void) | undefined
+      console.log("onFilesAdded", e);
+      if (e.length > 0) {
+        convert(e[0].file as File);
+        if (base64) {
+          setAttachments([
+            {
+              url: base64,
+              name: e[0].file.name,
+              contentType: e[0].file.type,
+            },
+          ]);
+        }
+      }
+    },
+    onFilesChange: (e) => {
+      console.log("eeeeeeeeeeeeeeeeeee", e);
+      if (e.length > 0) {
+        convert(e[0].file as File);
+        if (base64) {
+          setAttachments([
+            {
+              url: base64,
+              name: e[0].file.name,
+              contentType: e[0].file.type,
+            },
+          ]);
+        }
+      }
+    },
+  });
+  console.log({ attachments });
+
+  // useEffect(() => {
+  //   if (files.length > 0) {
+  //     convert(files[0].file as File);
+  //     if (base64) {
+  //       setAttachments([
+  //         {
+  //           url: base64,
+  //           name: files[0].file.name,
+  //           contentType: files[0].file.type,
+  //         },
+  //       ]);
+  //     }
+  //   }
+  //   console.log({ attachments });
+  // }, [files]);
+  console.log({ isDragging });
+  console.log(files);
 
   // Load model preference from session storage
   useLayoutEffect(() => {
@@ -67,6 +153,7 @@ export default function ChatClientWithoutId({
     experimental_prepareRequestBody: (body) => ({
       id,
       message: body.messages.at(-1),
+
       chatId: idChat ?? undefined,
       model:
         selectedModel.length > 0
@@ -79,9 +166,14 @@ export default function ChatClientWithoutId({
     },
     onFinish: () => {
       console.log("onFinish");
+      if (attachments.length > 0) {
+        setAttachments([]);
+        clearFiles();
+      }
       router.push(`/chat/${idChat}`);
     },
   });
+  console.log(messages);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -102,11 +194,19 @@ export default function ChatClientWithoutId({
           setInput("");
           setActive(true);
           // router.push(`/chat/${idChat}`);
-          handleSubmit();
+          if (attachments.length > 0) {
+            handleSubmit(undefined, {
+              experimental_attachments: attachments,
+            });
+            // setAttachments([]);
+            // clearFiles();
+          } else {
+            handleSubmit();
+          }
         }
       }
     },
-    [status, input, setInput, setActive, router, idChat]
+    [status, input, setInput, setActive, router, idChat, attachments]
   );
 
   // Handle click submission - creates a new chat
@@ -115,8 +215,16 @@ export default function ChatClientWithoutId({
     setInput("");
     setActive(true);
     // router.push(`/chat/${idChat}`);
-    handleSubmit();
-  }, [input, setInput, setActive, router, idChat]);
+    if (attachments.length > 0) {
+      handleSubmit(undefined, {
+        experimental_attachments: attachments,
+      });
+      // setAttachments([]);
+      // clearFiles();
+    } else {
+      handleSubmit();
+    }
+  }, [input, setInput, setActive, router, idChat, attachments]);
 
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
@@ -140,7 +248,7 @@ export default function ChatClientWithoutId({
         onSubmit={(e) => e.preventDefault()}
         className={cn(
           "w-full",
-          active ? "" : "h-full flex items-center justify-center"
+          active ? "" : " h-full flex items-center justify-center"
         )}
       >
         <motion.div
@@ -150,14 +258,35 @@ export default function ChatClientWithoutId({
         >
           {/* Title */}
           {!active && (
-            <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700">
-              What can I help with?
-            </div>
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700"
+                // initial={{
+                //   y: -100,
+                // }}
+                // animate={{
+                //   y: 0,
+                //   transition: { duration: 3 },
+                // }}
+                // exit={{
+                //   opacity: 0,
+                //   transition: { duration: 2 },
+                // }}
+              >
+                What can I help with?
+              </motion.div>
+            </AnimatePresence>
           )}
 
           {/* Input container */}
           <div className="flex items-center justify-center">
             <div
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              data-dragging={isDragging || undefined}
+              data-files={files.length > 0 || undefined}
               className={cn(
                 "border-token-border-default bg-token-bg-primary flex grow",
                 "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
@@ -165,7 +294,8 @@ export default function ChatClientWithoutId({
                 "lg:[--thread-content-max-width:50rem]",
                 "cursor-text flex-col items-center justify-center overflow-clip rounded-[28px]",
                 "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
-                "dark:bg-[#303030] dark:shadow-none!"
+                "dark:bg-[#303030] dark:shadow-none!",
+                isDragging && "bg-blue-400"
               )}
             >
               <div
@@ -173,6 +303,11 @@ export default function ChatClientWithoutId({
                   "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
                 )}
               >
+                <PreviewImg
+                  files={files}
+                  clearFiles={clearFiles}
+                  removeFile={removeFile}
+                />
                 {/* Text input */}
                 <Textarea
                   id={id}
@@ -183,6 +318,11 @@ export default function ChatClientWithoutId({
                   onChange={(e) => setInput(e.target.value)}
                   disabled={status === "streaming" || status === "submitted"}
                   onKeyDown={handleKeyboardSubmit}
+                />
+                <input
+                  {...getInputProps()}
+                  className="sr-only"
+                  aria-label="Upload image file"
                 />
 
                 {/* Tools and actions */}
@@ -242,6 +382,7 @@ export default function ChatClientWithoutId({
                                   "opacity-50 hover:cursor-not-allowed pointer-events-none"
                               )}
                               onClick={(e) => {
+                                console.log(tool.name);
                                 if (tool.activeIcon && input.length > 0) {
                                   handleClickSubmit();
                                 }
@@ -251,6 +392,9 @@ export default function ChatClientWithoutId({
                                     status === "submitted")
                                 ) {
                                   stop();
+                                }
+                                if (tool.name === "upload") {
+                                  openFileDialog();
                                 }
                               }}
                             >

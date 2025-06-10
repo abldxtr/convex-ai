@@ -22,7 +22,7 @@ export function MessageTools({
     timeout: 2000,
   });
   const { getError, setGetError } = useGlobalstate();
-  console.log("getError", getError);
+  // console.log("getError", getError);
   const textPart = message.parts.find((part) => part.type === "text");
 
   const direction = useDirection(textPart?.text ?? "");

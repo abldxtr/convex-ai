@@ -19,7 +19,7 @@ import {
 } from "date-fns";
 
 export function getRelativeDateLabel(date: Date): string {
-  console.log({ date: date.getTime() });
+  // console.log({ date: date.getTime() });
 
   if (isNaN(date.getTime())) return "Invalid Date";
 
@@ -70,19 +70,19 @@ export function convertTimestampToDate3(timestamp: number): Date {
 export function testTimestampConversion() {
   const timestamp = 1748444511083.51;
 
-  console.log("Original timestamp:", timestamp);
+  // console.log("Original timestamp:", timestamp);
 
   // روش‌های مختلف تبدیل
   const date1 = convertTimestampToDate1(timestamp);
   const date2 = convertTimestampToDate2(timestamp);
   const date3 = convertTimestampToDate3(timestamp);
 
-  console.log("Method 1 (Math.floor):", date1.toString());
-  console.log("Method 2 (parseInt):", date2.toString());
-  console.log("Method 3 (Math.trunc):", date3.toString());
+  // console.log("Method 1 (Math.floor):", date1.toString());
+  // console.log("Method 2 (parseInt):", date2.toString());
+  // console.log("Method 3 (Math.trunc):", date3.toString());
 
   // تست relative date
-  console.log("Relative date:", getRelativeDateLabel(date3));
+  // console.log("Relative date:", getRelativeDateLabel(date3));
 
   return {
     original: timestamp,

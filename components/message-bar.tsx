@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import AiLoading, { AiLoading2 } from "./ai-loading";
 import { useGlobalstate } from "@/context/global-store";
 import { clientGetChatMessages } from "@/lib/type";
+import { PreviewAttachment } from "./preview-attachment";
 type MessageBarProps = {
   messages: UIMessage[];
   clientChatMessage?: clientGetChatMessages;
@@ -194,20 +195,43 @@ export function UserMessage({
         )}
         dir="auto"
       >
-        {message.parts.map((part, i) => {
-          switch (part.type) {
-            case "text":
-              return (
-                <div
-                  key={`${message.id}-${i}`}
-                  dir="auto"
-                  className="flex w-fit max-w-full break-words rounded-3xl bg-[#e9e9e980] px-5 py-2.5 "
-                >
-                  {part.text}
-                </div>
-              );
-          }
-        })}
+        <div
+          className="flex w-fit max-w-full break-words rounded-3xl bg-[#e9e9e980] p-1  flex-col"
+          dir={direction}
+        >
+          {message.experimental_attachments &&
+            message.experimental_attachments.length > 0 && (
+              <div
+                data-testid={`message-attachments`}
+                className="w-full  h-auto "
+              >
+                {message.experimental_attachments.map((attachment) => {
+                  // console.log("attachment", attachment);
+                  return (
+                    <PreviewAttachment
+                      key={attachment.url}
+                      attachment={attachment}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          {message.parts.map((part, i) => {
+            switch (part.type) {
+              case "text":
+                return (
+                  <div
+                    key={`${message.id}-${i}`}
+                    dir="auto"
+                    // className="flex w-fit max-w-full break-words rounded-3xl bg-[#e9e9e980] px-5 py-2.5 "
+                    className="flex w-fit max-w-full break-words  px-5 py-2.5 "
+                  >
+                    {part.text}
+                  </div>
+                );
+            }
+          })}
+        </div>
       </div>
       <MessageTools
         message={message}
@@ -230,14 +254,14 @@ export function AIMessage({
 }) {
   // const textPart = message.parts.find((part) => part.type === "text");
   // console.log("message", JSON.stringify(message, null, 2));
-  console.log("status", status);
-  console.log("isLastMessage", isLastMessage);
+  // console.log("status", status);
+  // console.log("isLastMessage", isLastMessage);
 
   return (
     <div
       className={cn(
-        "group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] "
-        // (status === "streaming" || isLastMessage) && "min-h-[220px]"
+        "group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] ",
+        (status === "streaming" || isLastMessage) && "min-h-[220px]"
       )}
     >
       {/* <div className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:48rem] @[48rem]:[--thread-content-max-width:48rem] @[64rem]:[--thread-content-max-width:48rem]"></div> */}

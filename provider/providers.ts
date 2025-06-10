@@ -37,5 +37,11 @@ export const mmd = customProvider({
       structuredOutputs: true,
     }),
     "mmd-o4-mini": openai.responses("o4-mini-2025-04-16"),
+    "mmd-meta-llama/llama-3.2-11b-vision-instruct:free": openrouter.chat(
+      "meta-llama/llama-3.2-11b-vision-instruct:free"
+    ),
+    "mmd-google/gemini-2.0-flash-exp:free": openrouter.chat(
+      "google/gemini-2.0-flash-exp:free"
+    ),
   },
 });

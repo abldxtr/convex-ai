@@ -21,14 +21,15 @@ export default function ChatClient({
   );
 
   // Memoize the chat ID generation/retrieval
-  const idChat = useMemo(() => chatItem?.id ?? crypto.randomUUID(), [chatItem]);
+  // const idChat = useMemo(() => chatItem?.id ?? crypto.randomUUID(), [chatItem]);
+  const idChat = useMemo(() => chatIdd ?? crypto.randomUUID(), [chatIdd]);
 
   // Render the appropriate component based on whether we have a chat ID
   return chatIdd ? (
     <ChatClientWithId
       chatIdd={chatIdd}
-      chatItem={chatItem}
-      chatMessages={chatMessages}
+      // chatItem={chatItem}
+      // chatMessages={chatMessages}
       id={id}
       idChat={idChat}
     />

@@ -1,4 +1,5 @@
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+
 import {
   appendClientMessage,
   createDataStream,
@@ -19,6 +20,7 @@ import { mmd } from "@/provider/providers";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { Id } from "@/convex/_generated/dataModel";
+import { base64ToBlob } from "@/lib/base64-to-blob";
 const google = createGoogleGenerativeAI({
   // custom settings
   apiKey: process.env.GOOGLE_API_KEY,
@@ -72,7 +74,7 @@ function getStreamContext() {
 
 export async function POST(req: Request) {
   const body = await req.json();
-  // // console.log({ body: JSON.stringify(body, null, 2) });
+  // console.log({ body: JSON.stringify(body, null, 2) });
   console.log("body.model", body.model);
   const token = await convexAuthNextjsToken();
   const userId = await fetchQuery(api.user.getUser, {}, { token });
@@ -86,6 +88,7 @@ export async function POST(req: Request) {
     },
     { token }
   );
+
   // // console.log("get chat", getChat);
   if (!getChat?.chatItem) {
     const chatId = await fetchMutation(api.chat.createChat, {
@@ -94,6 +97,105 @@ export async function POST(req: Request) {
       title: "",
       userId: userId._id,
     });
+
+    if (
+      body.message.experimental_attachments &&
+      body.message.experimental_attachments.length > 0
+    ) {
+      // console.log(
+      //   "body.message.experimental_attachments",
+      //   body.message.experimental_attachments
+      // );
+      console.log("imgggggggggggggggggg");
+      const attachment = body.message.experimental_attachments[0];
+      const attachmentUrl = attachment.url;
+      const attachmentName = attachment.name;
+      const attachmentContentType = attachment.contentType;
+      // console.log({ attachmentUrl, attachmentName, attachmentContentType });
+      const serverUrl = await fetchMutation(api.vercel.generateUploadUrl);
+      const blb = base64ToBlob(attachment.url);
+
+      const result = await fetch(serverUrl, {
+        method: "POST",
+        headers: { "Content-Type": attachmentContentType },
+        body: blb,
+      });
+      const { storageId } = await result.json();
+      const storageUrl = await fetchQuery(api.vercel.getStorageUrl, {
+        storageId,
+      });
+      if (!storageUrl) {
+        return NextResponse.json(
+          { error: "Storage URL not found" },
+          { status: 500 }
+        );
+      }
+      await fetchMutation(
+        api.vercel.createVercelAiMessage,
+        {
+          chatId: chatId,
+          id: body.message.id || crypto.randomUUID(),
+          content: body.message.content,
+          role: "user",
+          parts: [{ type: "text", text: body.message.content }],
+          userId: userId._id,
+          attachments: {
+            contentType: attachmentContentType,
+            name: attachmentName,
+            url: storageUrl,
+          },
+        },
+        { token }
+      );
+      console.log({ storageUrl });
+      const result2 = streamText({
+        model: mmd.languageModel("mmd-google/gemini-2.0-flash-exp:free"),
+
+        // prompt: "hello my dear, my name is bahar, who are you",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: body.message.content,
+              },
+              {
+                type: "image",
+                image: storageUrl,
+              },
+            ],
+          },
+        ],
+        system:
+          "You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.",
+
+        onFinish: async (result) => {
+          // console.log({ result });
+          await fetchAction(api.agent.createThread, {
+            prompt: body.message.content,
+            chatId,
+          });
+          const a = await fetchMutation(
+            api.vercel.createVercelAiMessage,
+            {
+              chatId: chatId,
+              id: crypto.randomUUID(),
+              userId: userId._id,
+              content: result.text,
+              role: "assistant",
+              parts: [{ type: "text", text: result.text }],
+            },
+            { token }
+          );
+        },
+        onError: async (e) => {
+          // console.log(e);
+        },
+      });
+
+      return result2.toDataStreamResponse();
+    }
     // const chatId = await fetchAction(api.agent.createThread, {
     //   prompt: body.message.content,
     //   id: body.chatId,
@@ -146,6 +248,7 @@ export async function POST(req: Request) {
       model: mmd.languageModel(
         body.model ?? "meta-llama/llama-3.2-3b-instruct:free"
       ),
+
       // model: openai("o3-mini"),
       // model: google("gemini-1.5-flash"),
       // model: openrouter.chat("qwen/qwen-2.5-7b-instruct:free"),
@@ -182,6 +285,100 @@ export async function POST(req: Request) {
 
     return result.toDataStreamResponse();
   } else {
+    if (
+      body.message.experimental_attachments &&
+      body.message.experimental_attachments.length > 0
+    ) {
+      // console.log(
+      //   "body.message.experimental_attachments",
+      //   body.message.experimental_attachments
+      // );
+      console.log("imgggggggggggggggggg");
+      const attachment = body.message.experimental_attachments[0];
+      const attachmentUrl = attachment.url;
+      const attachmentName = attachment.name;
+      const attachmentContentType = attachment.contentType;
+      // console.log({ attachmentUrl, attachmentName, attachmentContentType });
+      const serverUrl = await fetchMutation(api.vercel.generateUploadUrl);
+      const blb = base64ToBlob(attachment.url);
+
+      const result = await fetch(serverUrl, {
+        method: "POST",
+        headers: { "Content-Type": attachmentContentType },
+        body: blb,
+      });
+      const { storageId } = await result.json();
+      const storageUrl = await fetchQuery(api.vercel.getStorageUrl, {
+        storageId,
+      });
+      if (!storageUrl) {
+        return NextResponse.json(
+          { error: "Storage URL not found" },
+          { status: 500 }
+        );
+      }
+      await fetchMutation(
+        api.vercel.createVercelAiMessage,
+        {
+          chatId: getChat.chatItem._id,
+          id: body.message.id || crypto.randomUUID(),
+          content: body.message.content,
+          role: "user",
+          parts: [{ type: "text", text: body.message.content }],
+          userId: userId._id,
+          attachments: {
+            contentType: attachmentContentType,
+            name: attachmentName,
+            url: storageUrl,
+          },
+        },
+        { token }
+      );
+      console.log({ storageUrl });
+      const result2 = streamText({
+        model: mmd.languageModel("mmd-google/gemini-2.0-flash-exp:free"),
+
+        // prompt: "hello my dear, my name is bahar, who are you",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: body.message.content,
+              },
+              {
+                type: "image",
+                image: storageUrl,
+              },
+            ],
+          },
+        ],
+        system:
+          "You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.",
+
+        onFinish: async (result) => {
+          // console.log({ result });
+          const a = await fetchMutation(
+            api.vercel.createVercelAiMessage,
+            {
+              chatId: getChat.chatItem._id,
+              id: crypto.randomUUID(),
+              userId: userId._id,
+              content: result.text,
+              role: "assistant",
+              parts: [{ type: "text", text: result.text }],
+            },
+            { token }
+          );
+        },
+        onError: async (e) => {
+          // console.log(e);
+        },
+      });
+
+      return result2.toDataStreamResponse();
+    }
     const saveMessage = await fetchMutation(
       api.vercel.createVercelAiMessage,
       {

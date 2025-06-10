@@ -29,7 +29,8 @@ export default async function ChatPage({
   // });
   // console.log({ chat });
 
-  if (!chat || !chatId) {
+  // if (!chat || !chatId) {
+  if (!chatId) {
     return (
       <>
         <ChatClientCopy />
@@ -40,10 +41,10 @@ export default async function ChatPage({
   return (
     <>
       <ChatClientCopy
-        chatItem={chat.chatItem}
-        chatMessages={convertToUIMessages(chat.chatMessages)}
-        // preloaded={preloaded}
-        // chatId={chatId}
+      // chatItem={chat.chatItem}
+      // chatMessages={convertToUIMessages(chat.chatMessages)}
+      // preloaded={preloaded}
+      // chatId={chatId}
       />
     </>
   );

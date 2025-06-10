@@ -36,15 +36,6 @@ export const getThreadMessages = query({
   },
 });
 
-// export const getStreamId = query({
-//   args: { threadId: v.string() },
-//   handler: async (ctx, { threadId }) => {
-//     return await ctx.runQuery(components.persistentTextStreaming.lib.getStreamText,{
-//       streamId:""
-//     });
-//   },
-// });
-
 export const createChatMutation = mutation({
   args: {
     title: v.string(),
@@ -195,32 +186,6 @@ export const getChatBody = query({
   },
 });
 
-// Create an HTTP action that generates chunks of the chat body
-// and uses the component to stream them to the client and save them to the database.
-// export const streamChat = httpAction(async (ctx, request) => {
-//   const body = (await request.json()) as { streamId: string };
-//   // const generateChat = async (ctx, request, streamId, chunkAppender) => {
-//   //   await chunkAppender("Hi there!");
-//   //   await chunkAppender("How are you?");
-//   //   await chunkAppender("Pretend I'm an AI or something!");
-//   //   await chunkAppender("Hi tssshere!");
-//   //   await chunkAppender("Pretend I'm an AI or something!");
-//   // };
-
-//   // const response = await streamingComponent.stream(
-//   //   ctx,
-//   //   request,
-//   //   body.streamId as StreamId,
-//   //   // generateChat
-//   // );
-
-//   // Set CORS headers appropriately.
-//   // response.headers.set("Access-Control-Allow-Origin", "*");
-//   // response.headers.set("Vary", "Origin");
-//   // return response;
-//   return null
-// });
-
 export const updateThreadTitle = createTool({
   args: z.object({
     title: z.string().describe("The new title for the thread"),
@@ -332,6 +297,32 @@ export const saveMessageWithInternalAction = internalAction({
   },
 });
 
+// Create an HTTP action that generates chunks of the chat body
+// and uses the component to stream them to the client and save them to the database.
+// export const streamChat = httpAction(async (ctx, request) => {
+//   const body = (await request.json()) as { streamId: string };
+//   // const generateChat = async (ctx, request, streamId, chunkAppender) => {
+//   //   await chunkAppender("Hi there!");
+//   //   await chunkAppender("How are you?");
+//   //   await chunkAppender("Pretend I'm an AI or something!");
+//   //   await chunkAppender("Hi tssshere!");
+//   //   await chunkAppender("Pretend I'm an AI or something!");
+//   // };
+
+//   // const response = await streamingComponent.stream(
+//   //   ctx,
+//   //   request,
+//   //   body.streamId as StreamId,
+//   //   // generateChat
+//   // );
+
+//   // Set CORS headers appropriately.
+//   // response.headers.set("Access-Control-Allow-Origin", "*");
+//   // response.headers.set("Vary", "Origin");
+//   // return response;
+//   return null
+// });
+
 // export const getMessagesByThreadId = query({
 //   args: { threadId: v.string() },
 //   handler: async (ctx, args) => {
@@ -345,5 +336,14 @@ export const saveMessageWithInternalAction = internalAction({
 //       return [];
 //     }
 //     return allMessages;
+//   },
+// });
+
+// export const getStreamId = query({
+//   args: { threadId: v.string() },
+//   handler: async (ctx, { threadId }) => {
+//     return await ctx.runQuery(components.persistentTextStreaming.lib.getStreamText,{
+//       streamId:""
+//     });
 //   },
 // });

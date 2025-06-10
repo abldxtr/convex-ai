@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useChat } from "@ai-sdk/react";
 import {
   Fragment,
@@ -14,9 +13,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useLinkStatus } from "next/link";
 import { Loader2 } from "lucide-react";
-
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -31,6 +28,10 @@ import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 import { useQuery } from "convex-helpers/react/cache/hooks";
 import { searchTools } from "@/lib/chat-tools";
 import { useDirection } from "@/hooks/use-direction";
+import { useFileUpload } from "@/hooks/use-file-upload";
+import { useMutation } from "convex/react";
+import PreviewImg from "@/components/preview-img";
+import { useFileToBase64 } from "@/hooks/use-file-base64";
 
 interface ChatClientWithIdProps extends ChatClientPropsPartial {
   chatIdd: string;
@@ -45,6 +46,9 @@ export default function ChatClientWithId({
   id,
   idChat,
 }: ChatClientWithIdProps) {
+  console.log("yesssssssssssssssssss");
+  const clientGetChatMessages = useQuery(api.chat.getChatById, { id: chatIdd });
+
   const {
     newChat,
     setNewChat,
@@ -58,10 +62,66 @@ export default function ChatClientWithId({
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const [selectedModel, setSelectedModel] = useState("");
+  const { attachments, setAttachments } = useGlobalstate();
+  const { base64, convert, error, loading } = useFileToBase64();
+  console.log({ attachments });
+
+  const [
+    { files, isDragging, errors },
+    {
+      handleDragEnter,
+      handleDragLeave,
+      handleDragOver,
+      handleDrop,
+      openFileDialog,
+      removeFile,
+      clearFiles,
+      getInputProps,
+    },
+  ] = useFileUpload({
+    accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif",
+    maxSize: 1024 * 1024 * 2,
+    multiple: true,
+    maxFiles: 1,
+    onFilesAdded: (e) => {
+      // (property) onFilesAdded?: ((addedFiles: FileWithPreview[]) => void) | undefined
+      console.log("onFilesAdded", e);
+      if (e.length > 0) {
+        convert(e[0].file as File);
+        if (base64) {
+          setAttachments([
+            {
+              url: base64,
+              name: e[0].file.name,
+              contentType: e[0].file.type,
+            },
+          ]);
+        }
+      }
+    },
+    onFilesChange: (e) => {
+      console.log("eeeeeeeeeeeeeeeeeee", e);
+      if (e.length > 0) {
+        convert(e[0].file as File);
+        if (base64) {
+          setAttachments([
+            {
+              url: base64,
+              name: e[0].file.name,
+              contentType: e[0].file.type,
+            },
+          ]);
+        }
+      }
+    },
+    // onFilesAdded,
+  });
+  console.log({ isDragging });
+  console.log(files);
 
   // Get chat messages from Convex
-  const clientGetChatMessages = useQuery(api.chat.getChatById, { id: chatIdd });
-  const { pending } = useLinkStatus();
+  //upload img
+  // const generateUploadUrl = useMutation(api.vercel.generateUploadUrl);
 
   // Load model preference from session storage
   useLayoutEffect(() => {
@@ -110,6 +170,10 @@ export default function ChatClientWithId({
     },
     onFinish: () => {
       console.log("onFinish");
+      if (attachments.length > 0) {
+        setAttachments([]);
+        clearFiles();
+      }
     },
   });
 
@@ -121,6 +185,15 @@ export default function ChatClientWithId({
     }
   }, [newChat, setMessages, setNewChat]);
 
+  useEffect(() => {
+    if (
+      messages.length === 0 &&
+      clientGetChatMessages?.chatMessages &&
+      clientGetChatMessages.chatMessages.length > 0
+    ) {
+      setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
+    }
+  }, [messages, clientGetChatMessages, setMessages]);
   // Handle first message from localStorage
   // useEffect(() => {
   //   const msg = localStorage.getItem("first-message");
@@ -131,15 +204,6 @@ export default function ChatClientWithId({
   // }, [append]);
 
   // Initialize messages from Convex if needed
-  useEffect(() => {
-    if (
-      messages.length === 0 &&
-      clientGetChatMessages?.chatMessages &&
-      clientGetChatMessages.chatMessages.length > 0
-    ) {
-      setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
-    }
-  }, [messages.length, clientGetChatMessages, setMessages]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -148,15 +212,6 @@ export default function ChatClientWithId({
     }
   }, [messages, status]);
 
-  // Set active state based on chatIdd
-  // useLayoutEffect(() => {
-  //   if (chatIdd) {
-  //     setActive(true);
-  //   } else {
-  //     setActive(false);
-  //   }
-  // }, [chatIdd]);
-
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -164,8 +219,14 @@ export default function ChatClientWithId({
         e.preventDefault();
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
+        } else if (attachments.length > 0) {
+          handleSubmit(undefined, {
+            experimental_attachments: attachments,
+          });
+          // setAttachments([]);
+          // clearFiles();
         } else {
-          handleSubmit(e);
+          handleSubmit();
         }
       }
     },
@@ -173,13 +234,21 @@ export default function ChatClientWithId({
   );
 
   // Handle click submission
-  const handleClickSubmit = useCallback(
-    (e: MouseEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      handleSubmit(e as unknown as React.FormEvent);
-    },
-    [handleSubmit]
-  );
+  const handleClickSubmit = useCallback(() => {
+    // localStorage.setItem("first-message", input);
+    setInput("");
+    setActive(true);
+    // router.push(`/chat/${idChat}`);
+    if (attachments.length > 0) {
+      handleSubmit(undefined, {
+        experimental_attachments: attachments,
+      });
+      // setAttachments([]);
+      // clearFiles();
+    } else {
+      handleSubmit();
+    }
+  }, [input, setInput, setActive, router, idChat, attachments]);
 
   return (
     // <div className={cn(" h-dvh w-dvw flex flex-col overflow-hidden ")}>
@@ -207,22 +276,22 @@ export default function ChatClientWithId({
           reload={reload}
         />
       )} */}
-      {clientGetChatMessages !== undefined && messages.length !== 0 && (
-        <MessageBar
-          messages={messages}
-          clientChatMessage={clientGetChatMessages}
-          endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
-          status={status}
-          reload={reload}
-        />
-      )}
+      {/* {clientGetChatMessages !== undefined && messages.length !== 0 && ( */}
+      <MessageBar
+        messages={messages}
+        clientChatMessage={clientGetChatMessages}
+        endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
+        status={status}
+        reload={reload}
+      />
+      {/* )} */}
 
       {/* Input form */}
       <form
         onSubmit={(e) => e.preventDefault()}
         className={cn(
           "w-full",
-          active ? "" : "h-full flex items-center justify-center"
+          active ? "" : " h-full flex items-center justify-center"
         )}
       >
         <motion.div
@@ -238,7 +307,15 @@ export default function ChatClientWithId({
           )} */}
 
           {/* Input container */}
-          <div className="flex items-center justify-center">
+          <div
+            className="flex items-center justify-center"
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            data-dragging={isDragging || undefined}
+            data-files={files.length > 0 || undefined}
+          >
             <div
               className={cn(
                 "border-token-border-default bg-token-bg-primary flex grow",
@@ -247,7 +324,8 @@ export default function ChatClientWithId({
                 "lg:[--thread-content-max-width:50rem]",
                 "cursor-text flex-col items-center justify-center overflow-clip rounded-[28px]",
                 "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
-                "dark:bg-[#303030] dark:shadow-none!"
+                "dark:bg-[#303030] dark:shadow-none!",
+                isDragging && "bg-blue-400"
               )}
             >
               <div
@@ -255,13 +333,21 @@ export default function ChatClientWithId({
                   "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
                 )}
               >
+                <PreviewImg
+                  files={files}
+                  clearFiles={clearFiles}
+                  removeFile={removeFile}
+                />
                 {/* Text input */}
                 <Textarea
                   id={id}
                   value={input}
                   autoFocus
                   placeholder="Ask anything"
-                  className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
+                  className={cn(
+                    "field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50",
+                    files.length > 0 && "mb-2"
+                  )}
                   onChange={(e) => {
                     const direction = useDirection(e.target.value);
                     setDirection(direction);
@@ -270,7 +356,11 @@ export default function ChatClientWithId({
                   disabled={status === "streaming" || status === "submitted"}
                   onKeyDown={handleKeyboardSubmit}
                 />
-
+                <input
+                  {...getInputProps()}
+                  className="sr-only"
+                  aria-label="Upload image file"
+                />
                 {/* Tools and actions */}
                 <div className="flex h-[36px] items-center justify-between gap-2">
                   {/* Model switcher */}
@@ -330,7 +420,7 @@ export default function ChatClientWithId({
                               )}
                               onClick={(e) => {
                                 if (tool.activeIcon && input.length > 0) {
-                                  handleClickSubmit(e);
+                                  handleClickSubmit();
                                 }
                                 if (
                                   tool.stopIcon &&
@@ -338,6 +428,9 @@ export default function ChatClientWithId({
                                     status === "submitted")
                                 ) {
                                   stop();
+                                }
+                                if (tool.name === "upload") {
+                                  openFileDialog();
                                 }
                               }}
                             >
