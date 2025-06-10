@@ -13,7 +13,6 @@ import { vertex } from "@ai-sdk/google-vertex";
 // import { groq } from "@ai-sdk/groq";
 // import { google } from "@ai-sdk/google";
 // import { anthropic } from "@ai-sdk/anthropic"
-// meta-llama/llama-3.2-3b-instruct:free;
 
 const middleware = extractReasoningMiddleware({
   tagName: "think",

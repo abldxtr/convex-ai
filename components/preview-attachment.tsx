@@ -13,8 +13,8 @@ export const PreviewAttachment = ({
   // console.log("ddddddddddddddddddddddddddddddd");
 
   return (
-    <div data-testid="input-attachment-preview" className=" w-full ">
-      <div className="w-full max-w-80 aspect-video bg-muted rounded-md relative ">
+    <div data-testid="input-attachment-preview" className="  ">
+      <div className=" max-w-80 aspect-video   relative flex items-center justify-start  ">
         {contentType ? (
           contentType.startsWith("image") ? (
             // NOTE: it is recommended to use next/image for images
@@ -23,7 +23,7 @@ export const PreviewAttachment = ({
               key={url}
               src={url}
               alt={name ?? "An image attachment"}
-              className="rounded-md size-full object-cover"
+              className=" rounded-t-3xl object-contain  ml-auto "
             />
           ) : (
             <div className="" />

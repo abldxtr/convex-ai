@@ -1,5 +1,6 @@
 import ChatClient from "./chat-client";
 import ChatClientCopy from "./chat-client copy";
+import ChatClientWithoutId from "./chat-client-without-id";
 
 type Params = Promise<{ chatId: string }>;
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -19,7 +20,11 @@ export default async function Chat({
   return (
     <>
       {/* <ChatClient /> */}
-      <ChatClientCopy />
+      {/* <ChatClientCopy /> */}
+      <ChatClientWithoutId
+        id={crypto.randomUUID()}
+        idChat={crypto.randomUUID()}
+      />
     </>
   );
 }

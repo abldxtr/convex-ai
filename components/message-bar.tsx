@@ -146,18 +146,18 @@ export default function MessageBar({
           {(status === "submitted" || status === "streaming") &&
             messages.length > 0 &&
             messages[messages.length - 1].role === "user" && <AiLoading2 />}
-          {(status === "submitted" || status === "streaming") &&
+          {(status === "submitted" ||
+            status === "streaming" ||
+            status === "ready" ||
+            status === "error") &&
             messages.length > 0 && (
               // messages[messages.length - 1].role === "user" && (
               <div className="h-[220px] w-[20px] flex items-center justify-center " />
-              // <div
-              //   ref={spacerRef}
-              //   style={{
-              //     height: `${spacerHeight}px`,
-              //     transition: "height 0.3s ease",
-              //   }}
-              // />
             )}
+          {/* {isLastMessage && (
+              // messages[messages.length - 1].role === "user" && (
+              <div className="h-[220px] w-[20px] flex items-center justify-center " />
+            )} */}
           <div ref={endOfMessagesRef} />
         </div>
       </div>
@@ -260,8 +260,8 @@ export function AIMessage({
   return (
     <div
       className={cn(
-        "group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] ",
-        (status === "streaming" || isLastMessage) && "min-h-[220px]"
+        "group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] "
+        // (status === "streaming" || isLastMessage) && "min-h-[220px]"
       )}
     >
       {/* <div className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:48rem] @[48rem]:[--thread-content-max-width:48rem] @[64rem]:[--thread-content-max-width:48rem]"></div> */}

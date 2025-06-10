@@ -79,45 +79,32 @@ export default function ChatClientWithId({
       getInputProps,
     },
   ] = useFileUpload({
-    accept: "image/svg+xml,image/png,image/jpeg,image/jpg,image/gif",
+    accept: "image/png,image/jpeg,image/jpg",
     maxSize: 1024 * 1024 * 2,
     multiple: true,
     maxFiles: 1,
-    onFilesAdded: (e) => {
-      // (property) onFilesAdded?: ((addedFiles: FileWithPreview[]) => void) | undefined
-      console.log("onFilesAdded", e);
-      if (e.length > 0) {
-        convert(e[0].file as File);
-        if (base64) {
-          setAttachments([
-            {
-              url: base64,
-              name: e[0].file.name,
-              contentType: e[0].file.type,
-            },
-          ]);
-        }
-      }
-    },
-    onFilesChange: (e) => {
-      console.log("eeeeeeeeeeeeeeeeeee", e);
-      if (e.length > 0) {
-        convert(e[0].file as File);
-        if (base64) {
-          setAttachments([
-            {
-              url: base64,
-              name: e[0].file.name,
-              contentType: e[0].file.type,
-            },
-          ]);
-        }
-      }
-    },
+
     // onFilesAdded,
   });
-  console.log({ isDragging });
-  console.log(files);
+  // console.log({ isDragging });
+
+  console.log({ files });
+  useEffect(() => {
+    console.log("effect iiiiiiiiiiiiiimggggggggggggggggggg");
+    if (files.length > 0) {
+      console.log("files.length > 0");
+      convert(files[0].file as File);
+      if (base64) {
+        setAttachments([
+          {
+            url: base64,
+            name: files[0].file.name,
+            contentType: files[0].file.type,
+          },
+        ]);
+      }
+    }
+  }, [files]);
 
   // Get chat messages from Convex
   //upload img
@@ -172,7 +159,7 @@ export default function ChatClientWithId({
       console.log("onFinish");
       if (attachments.length > 0) {
         setAttachments([]);
-        clearFiles();
+        // clearFiles();
       }
     },
   });
@@ -219,14 +206,36 @@ export default function ChatClientWithId({
         e.preventDefault();
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
-        } else if (attachments.length > 0) {
-          handleSubmit(undefined, {
-            experimental_attachments: attachments,
-          });
-          // setAttachments([]);
-          // clearFiles();
         } else {
-          handleSubmit();
+          // setInput("");
+          setActive(true);
+          if (files.length > 0) {
+            convert(files[0].file as File);
+            if (base64) {
+              // setAttachments([
+              //   {
+              //     url: base64,
+              //     name: files[0].file.name,
+              //     contentType: files[0].file.type,
+              //   },
+              // ]);
+              // console.log({ attachments });
+              console.log("base65");
+              handleSubmit(undefined, {
+                experimental_attachments: [
+                  {
+                    url: base64,
+                    name: files[0].file.name,
+                    contentType: files[0].file.type,
+                  },
+                ],
+              });
+            }
+            clearFiles();
+            // setAttachments([]);
+          } else {
+            handleSubmit();
+          }
         }
       }
     },
@@ -239,12 +248,13 @@ export default function ChatClientWithId({
     setInput("");
     setActive(true);
     // router.push(`/chat/${idChat}`);
+
     if (attachments.length > 0) {
       handleSubmit(undefined, {
         experimental_attachments: attachments,
       });
+      clearFiles();
       // setAttachments([]);
-      // clearFiles();
     } else {
       handleSubmit();
     }
