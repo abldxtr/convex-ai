@@ -14,7 +14,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
@@ -254,165 +254,154 @@ export default function ChatClientWithoutId(
           active ? "" : " h-full flex items-center justify-center"
         )}
       >
-        <motion.div
-          className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]"
-          layoutId="chat-input"
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-        >
-          {/* Title */}
-          {!active && (
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700"
-                // initial={{
-                //   y: -100,
-                // }}
-                // animate={{
-                //   y: 0,
-                //   transition: { duration: 3 },
-                // }}
-                // exit={{
-                //   opacity: 0,
-                //   transition: { duration: 2 },
-                // }}
-              >
-                What can I help with?
-              </motion.div>
-            </AnimatePresence>
-          )}
+        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.3 }}>
+          <motion.div
+            className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]"
+            layoutId="chat-input"
+            layout="position"
 
-          {/* Input container */}
-          <div className="flex items-center justify-center">
-            <div
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              data-dragging={isDragging || undefined}
-              data-files={files.length > 0 || undefined}
-              className={cn(
-                "border-token-border-default bg-token-bg-primary flex grow",
-                "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
-                "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
-                "lg:[--thread-content-max-width:50rem]",
-                "cursor-text flex-col items-center justify-center overflow-clip rounded-[28px]",
-                "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
-                "dark:bg-[#303030] dark:shadow-none!",
-                isDragging && "bg-blue-400"
-              )}
-            >
+            // transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {/* Title */}
+            {/* {!active && ( */}
+            {/* <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700">
+              What can I help with?
+            </div> */}
+            {/* )} */}
+            {/* Input container */}
+            <div className="flex items-center justify-center">
               <div
+                onDragEnter={handleDragEnter}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                data-dragging={isDragging || undefined}
+                data-files={files.length > 0 || undefined}
                 className={cn(
-                  "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
+                  "border-token-border-default bg-token-bg-primary flex grow",
+                  "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
+                  "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
+                  "lg:[--thread-content-max-width:50rem]",
+                  "cursor-text flex-col items-center justify-center overflow-clip rounded-[28px]",
+                  "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
+                  "dark:bg-[#303030] dark:shadow-none!",
+                  isDragging && "bg-blue-400"
                 )}
               >
-                <PreviewImg
-                  files={files}
-                  clearFiles={clearFiles}
-                  removeFile={removeFile}
-                />
-                {/* Text input */}
-                <Textarea
-                  // id={idChat}
-                  value={input}
-                  autoFocus
-                  placeholder="Ask anything"
-                  className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={status === "streaming" || status === "submitted"}
-                  onKeyDown={handleKeyboardSubmit}
-                />
-                <input
-                  {...getInputProps()}
-                  className="sr-only"
-                  aria-label="Upload image file"
-                />
+                <div
+                  className={cn(
+                    "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
+                  )}
+                >
+                  <PreviewImg
+                    files={files}
+                    clearFiles={clearFiles}
+                    removeFile={removeFile}
+                  />
+                  {/* Text input */}
+                  <Textarea
+                    // id={idChat}
+                    value={input}
+                    autoFocus
+                    placeholder="Ask anything"
+                    className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
+                    onChange={(e) => setInput(e.target.value)}
+                    disabled={status === "streaming" || status === "submitted"}
+                    onKeyDown={handleKeyboardSubmit}
+                  />
+                  <input
+                    {...getInputProps()}
+                    className="sr-only"
+                    aria-label="Upload image file"
+                  />
 
-                {/* Tools and actions */}
-                <div className="flex h-[36px] items-center justify-between gap-2">
-                  {/* Model switcher */}
-                  <div className="flex items-center gap-2">
-                    <div>
-                      <ModelSwitcher
-                        selectedModel={
-                          selectedModel.length > 0
-                            ? selectedModel
-                            : "mmd-meta-llama/llama-3.3-8b-instruct:free"
-                        }
-                        setSelectedModel={setSelectedModel}
-                        showExperimentalModels={showExperimentalModels}
-                        attachments={[]}
-                        messages={messages}
-                        status={status}
-                        onModelSelect={(model) => {
-                          const isVisionModel = model.vision === true;
-                        }}
-                      />
+                  {/* Tools and actions */}
+                  <div className="flex h-[36px] items-center justify-between gap-2">
+                    {/* Model switcher */}
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <ModelSwitcher
+                          selectedModel={
+                            selectedModel.length > 0
+                              ? selectedModel
+                              : "mmd-meta-llama/llama-3.3-8b-instruct:free"
+                          }
+                          setSelectedModel={setSelectedModel}
+                          showExperimentalModels={showExperimentalModels}
+                          attachments={[]}
+                          messages={messages}
+                          status={status}
+                          onModelSelect={(model) => {
+                            const isVisionModel = model.vision === true;
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Action buttons */}
-                  <div className="flex items-center gap-2">
-                    {searchTools.map((tool, index) => {
-                      const Icon =
-                        index === 1 && input.length > 0
-                          ? tool.activeIcon!
-                          : index === 1 &&
-                              (status === "streaming" || status === "submitted")
-                            ? tool.stopIcon!
-                            : tool.icon;
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-2">
+                      {searchTools.map((tool, index) => {
+                        const Icon =
+                          index === 1 && input.length > 0
+                            ? tool.activeIcon!
+                            : index === 1 &&
+                                (status === "streaming" ||
+                                  status === "submitted")
+                              ? tool.stopIcon!
+                              : tool.icon;
 
-                      return (
-                        <Fragment key={tool.name}>
-                          <TooltipContainer
-                            tooltipContent={
-                              status === "streaming" || status === "submitted"
-                                ? "Stopping..."
-                                : tool.description
-                            }
-                            key={tool.name}
-                          >
-                            <div
+                        return (
+                          <Fragment key={tool.name}>
+                            <TooltipContainer
+                              tooltipContent={
+                                status === "streaming" || status === "submitted"
+                                  ? "Stopping..."
+                                  : tool.description
+                              }
                               key={tool.name}
-                              className={cn(
-                                "flex h-9 w-9 items-center justify-center rounded-full border fill-[#5d5d5d] hover:cursor-pointer",
-                                index === 1 && "bg-black",
-                                index === 0 &&
-                                  "transition-all duration-300 hover:cursor-pointer hover:bg-gray-100",
-                                index === 0 &&
-                                  (status === "submitted" ||
-                                    status === "streaming") &&
-                                  "opacity-50 hover:cursor-not-allowed pointer-events-none"
-                              )}
-                              onClick={(e) => {
-                                console.log(tool.name);
-                                if (tool.activeIcon && input.length > 0) {
-                                  handleClickSubmit();
-                                }
-                                if (
-                                  tool.stopIcon &&
-                                  (status === "streaming" ||
-                                    status === "submitted")
-                                ) {
-                                  stop();
-                                }
-                                if (tool.name === "upload") {
-                                  openFileDialog();
-                                }
-                              }}
                             >
-                              <Icon />
-                            </div>
-                          </TooltipContainer>
-                        </Fragment>
-                      );
-                    })}
+                              <div
+                                key={tool.name}
+                                className={cn(
+                                  "flex h-9 w-9 items-center justify-center rounded-full border fill-[#5d5d5d] hover:cursor-pointer",
+                                  index === 1 && "bg-black",
+                                  index === 0 &&
+                                    "transition-[color] duration-300 hover:cursor-pointer hover:bg-gray-100",
+                                  index === 0 &&
+                                    (status === "submitted" ||
+                                      status === "streaming") &&
+                                    "opacity-50 hover:cursor-not-allowed pointer-events-none"
+                                )}
+                                onClick={(e) => {
+                                  console.log(tool.name);
+                                  if (tool.activeIcon && input.length > 0) {
+                                    handleClickSubmit();
+                                  }
+                                  if (
+                                    tool.stopIcon &&
+                                    (status === "streaming" ||
+                                      status === "submitted")
+                                  ) {
+                                    stop();
+                                  }
+                                  if (tool.name === "upload") {
+                                    openFileDialog();
+                                  }
+                                }}
+                              >
+                                <Icon />
+                              </div>
+                            </TooltipContainer>
+                          </Fragment>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </MotionConfig>
       </form>
     </div>
   );
