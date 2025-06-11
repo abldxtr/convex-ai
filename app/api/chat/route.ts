@@ -75,7 +75,7 @@ function getStreamContext() {
 export async function POST(req: Request) {
   const body = await req.json();
   // console.log({ body: JSON.stringify(body, null, 2) });
-  console.log("body.model", body.model);
+  // console.log("body.model", body.model);
   const token = await convexAuthNextjsToken();
   const userId = await fetchQuery(api.user.getUser, {}, { token });
   if (!userId) {
@@ -97,16 +97,18 @@ export async function POST(req: Request) {
       title: "",
       userId: userId._id,
     });
+    console.log("*****************");
 
     if (
       body.message.experimental_attachments &&
       body.message.experimental_attachments.length > 0
     ) {
+      console.log("piccccccccccccccc");
+
       // console.log(
       //   "body.message.experimental_attachments",
       //   body.message.experimental_attachments
       // );
-      console.log("imgggggggggggggggggg");
       const attachment = body.message.experimental_attachments[0];
       const attachmentUrl = attachment.url;
       const attachmentName = attachment.name;
@@ -147,7 +149,7 @@ export async function POST(req: Request) {
         },
         { token }
       );
-      console.log({ storageUrl });
+      // console.log({ storageUrl });
       const result2 = streamText({
         model: mmd.languageModel("mmd-google/gemini-2.0-flash-exp:free"),
 
@@ -171,7 +173,9 @@ export async function POST(req: Request) {
           "You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.",
 
         onFinish: async (result) => {
-          // console.log({ result });
+          console.log("pic finish");
+
+          console.log({ result });
           await fetchAction(api.agent.createThread, {
             prompt: body.message.content,
             chatId,
@@ -190,18 +194,14 @@ export async function POST(req: Request) {
           );
         },
         onError: async (e) => {
-          // console.log(e);
+          console.log("pic Error");
+
+          console.log(e);
         },
       });
 
       return result2.toDataStreamResponse();
     }
-    // const chatId = await fetchAction(api.agent.createThread, {
-    //   prompt: body.message.content,
-    //   id: body.chatId,
-    //   userId: userId._id,
-    //   isDeleted: false,
-    // });
 
     await fetchMutation(
       api.vercel.createVercelAiMessage,
@@ -264,6 +264,8 @@ export async function POST(req: Request) {
         chunking: "word",
       }),
       onFinish: async (result) => {
+        console.log("text finish");
+
         await fetchAction(api.agent.createThread, {
           prompt: body.message.content,
           chatId,
@@ -281,6 +283,10 @@ export async function POST(req: Request) {
           { token }
         );
       },
+      onError: async (e) => {
+        console.log("text error");
+        console.log(e);
+      },
     });
 
     return result.toDataStreamResponse();
@@ -293,7 +299,7 @@ export async function POST(req: Request) {
       //   "body.message.experimental_attachments",
       //   body.message.experimental_attachments
       // );
-      console.log("imgggggggggggggggggg");
+      // console.log("imgggggggggggggggggg");
       const attachment = body.message.experimental_attachments[0];
       const attachmentUrl = attachment.url;
       const attachmentName = attachment.name;
@@ -334,7 +340,7 @@ export async function POST(req: Request) {
         },
         { token }
       );
-      console.log({ storageUrl });
+      // console.log({ storageUrl });
       const result2 = streamText({
         model: mmd.languageModel("mmd-google/gemini-2.0-flash-exp:free"),
 

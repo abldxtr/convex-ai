@@ -5,12 +5,14 @@ import ChatClientWithoutId from "./chat-client-without-id";
 type Params = Promise<{ chatId: string }>;
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export default async function Chat({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const searchparams = await searchParams;
+export default async function Chat(
+  {
+    // searchParams,
+  }: {
+    // searchParams: SearchParams;
+  }
+) {
+  // const searchparams = await searchParams;
   // const chatId = searchparams.chatId as string | undefined;
 
   // if (!chatId) {
@@ -22,8 +24,8 @@ export default async function Chat({
       {/* <ChatClient /> */}
       {/* <ChatClientCopy /> */}
       <ChatClientWithoutId
-        id={crypto.randomUUID()}
-        idChat={crypto.randomUUID()}
+      // id={crypto.randomUUID()}
+      // idChat={crypto.randomUUID()}
       />
     </>
   );

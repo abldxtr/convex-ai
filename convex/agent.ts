@@ -31,11 +31,11 @@ export const supportAgent = new Agent(components.agent, {
   chat: openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
   // textEmbedding: openai.textEmbedding("text-embedding-3-small"),
   instructions: `\n
+  - what the language of the user is, you must respond in the same language
     - you will generate a short title based on the first message a user begins a conversation with
     - ensure it is not more than 32 characters long
     - the title should be a summary of the user's message
     - do not use quotes or colons
-    - what the language of the user is, you must respond in the same language
     `,
   usageHandler: async (ctx, args) => {
     // console.log({ args });
@@ -59,18 +59,21 @@ export const createThread = action({
     // console.log("createThread");
     const { threadId, thread } = await supportAgent.createThread(ctx);
     // Creates a user message with the prompt, and an assistant reply message.
-    const result = await thread.generateText({ prompt: args.prompt });
-    if (result.text) {
+    try {
+      const result = await thread.generateText({ prompt: args.prompt });
+      if (result.text) {
+        await ctx.runMutation(internal.chat.updateChatTitle, {
+          title: result.text,
+          chatId: args.chatId,
+        });
+        return "done!";
+      }
+    } catch {
       await ctx.runMutation(internal.chat.updateChatTitle, {
-        title: result.text,
+        title: args.prompt.slice(0, 22),
         chatId: args.chatId,
       });
-      return "done!";
     }
-    await ctx.runMutation(internal.chat.updateChatTitle, {
-      title: args.prompt.slice(0, 22),
-      chatId: args.chatId,
-    });
   },
 });
 

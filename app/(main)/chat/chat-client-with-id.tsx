@@ -81,7 +81,7 @@ export default function ChatClientWithId({
   ] = useFileUpload({
     accept: "image/png,image/jpeg,image/jpg",
     maxSize: 1024 * 1024 * 2,
-    multiple: true,
+    multiple: false,
     maxFiles: 1,
 
     // onFilesAdded,
@@ -89,22 +89,22 @@ export default function ChatClientWithId({
   // console.log({ isDragging });
 
   console.log({ files });
-  useEffect(() => {
-    console.log("effect iiiiiiiiiiiiiimggggggggggggggggggg");
-    if (files.length > 0) {
-      console.log("files.length > 0");
-      convert(files[0].file as File);
-      if (base64) {
-        setAttachments([
-          {
-            url: base64,
-            name: files[0].file.name,
-            contentType: files[0].file.type,
-          },
-        ]);
-      }
-    }
-  }, [files]);
+  // useEffect(() => {
+  //   console.log("effect iiiiiiiiiiiiiimggggggggggggggggggg");
+  //   if (files.length > 0) {
+  //     console.log("files.length > 0");
+  //     convert(files[0].file as File);
+  //     if (base64) {
+  //       setAttachments([
+  //         {
+  //           url: base64,
+  //           name: files[0].file.name,
+  //           contentType: files[0].file.type,
+  //         },
+  //       ]);
+  //     }
+  //   }
+  // }, [files]);
 
   // Get chat messages from Convex
   //upload img
@@ -201,7 +201,7 @@ export default function ChatClientWithId({
 
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
         if (status !== "ready") {
@@ -210,28 +210,21 @@ export default function ChatClientWithId({
           // setInput("");
           setActive(true);
           if (files.length > 0) {
-            convert(files[0].file as File);
-            if (base64) {
-              // setAttachments([
-              //   {
-              //     url: base64,
-              //     name: files[0].file.name,
-              //     contentType: files[0].file.type,
-              //   },
-              // ]);
-              // console.log({ attachments });
-              console.log("base65");
+            try {
+              const result = await convert(files[0].file as File);
               handleSubmit(undefined, {
                 experimental_attachments: [
                   {
-                    url: base64,
+                    url: result,
                     name: files[0].file.name,
                     contentType: files[0].file.type,
                   },
                 ],
               });
+              clearFiles();
+            } catch (err) {
+              toast.error("خطا در تبدیل فایل به base64");
             }
-            clearFiles();
             // setAttachments([]);
           } else {
             handleSubmit();
@@ -243,35 +236,24 @@ export default function ChatClientWithId({
   );
 
   // Handle click submission
-  const handleClickSubmit = useCallback(() => {
-    // localStorage.setItem("first-message", input);
-    // setInput("");
+  const handleClickSubmit = useCallback(async () => {
     setActive(true);
-    // router.push(`/chat/${idChat}`);
-
     if (files.length > 0) {
-      convert(files[0].file as File);
-      if (base64) {
-        // setAttachments([
-        //   {
-        //     url: base64,
-        //     name: files[0].file.name,
-        //     contentType: files[0].file.type,
-        //   },
-        // ]);
-        // console.log({ attachments });
-        console.log("base65");
+      try {
+        const result = await convert(files[0].file as File);
         handleSubmit(undefined, {
           experimental_attachments: [
             {
-              url: base64,
+              url: result,
               name: files[0].file.name,
               contentType: files[0].file.type,
             },
           ],
         });
+        clearFiles();
+      } catch (err) {
+        toast.error("خطا در تبدیل فایل به base64");
       }
-      clearFiles();
       // setAttachments([]);
     } else {
       handleSubmit();

@@ -5,23 +5,29 @@ export function useFileToBase64() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const convert = useCallback((file: File) => {
-    setLoading(true);
-    setError(null);
+  const convert = useCallback((file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      setLoading(true);
+      setError(null);
 
-    const reader = new FileReader();
+      const reader = new FileReader();
 
-    reader.onload = () => {
-      setBase64(reader.result as string); // data: URL
-      setLoading(false);
-    };
+      reader.onload = () => {
+        const result = reader.result as string;
+        setBase64(result);
+        setLoading(false);
+        resolve(result);
+      };
 
-    reader.onerror = () => {
-      setError("خطا در خواندن فایل");
-      setLoading(false);
-    };
+      reader.onerror = () => {
+        const message = "خطا در خواندن فایل";
+        setError(message);
+        setLoading(false);
+        reject(new Error(message));
+      };
 
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    });
   }, []);
 
   return { base64, error, loading, convert };

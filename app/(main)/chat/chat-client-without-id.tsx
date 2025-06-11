@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -30,14 +31,16 @@ import { useFileToBase64 } from "@/hooks/use-file-base64";
 import { Attachment } from "ai";
 
 interface ChatClientWithoutIdProps extends ChatClientPropsPartial {
-  id: string;
-  idChat: string;
+  id?: string;
+  idChat?: string;
 }
 
-export default function ChatClientWithoutId({
-  id,
-  idChat,
-}: ChatClientWithoutIdProps) {
+export default function ChatClientWithoutId(
+  {
+    // id,
+    // idChat,
+  }: ChatClientWithoutIdProps
+) {
   console.log("noooooooooooooooooooooo");
 
   const {
@@ -52,6 +55,7 @@ export default function ChatClientWithoutId({
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   // const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+  const idChat = useMemo(() => crypto.randomUUID(), []);
 
   const { base64, convert, error, loading } = useFileToBase64();
   const [selectedModel, setSelectedModel] = useState("");
@@ -72,73 +76,18 @@ export default function ChatClientWithoutId({
   ] = useFileUpload({
     accept: "image/png,image/jpeg,image/jpg",
     maxSize: 1024 * 1024 * 2,
-    multiple: true,
+    multiple: false,
     maxFiles: 1,
-    // onFilesAdded: (e) => {
-    //   // (property) onFilesAdded?: ((addedFiles: FileWithPreview[]) => void) | undefined
-    //   console.log("onFilesAdded", e);
-    //   if (e.length > 0) {
-    //     convert(e[0].file as File);
-    //     if (base64) {
-    //       setAttachments([
-    //         {
-    //           url: base64,
-    //           name: e[0].file.name,
-    //           contentType: e[0].file.type,
-    //         },
-    //       ]);
-    //     }
-    //   }
-    // },
-    // onFilesChange: (e) => {
-    //   console.log("eeeeeeeeeeeeeeeeeee", e);
-    //   if (e.length > 0) {
-    //     convert(e[0].file as File);
-    //     if (base64) {
-    //       setAttachments([
-    //         {
-    //           url: base64,
-    //           name: e[0].file.name,
-    //           contentType: e[0].file.type,
-    //         },
-    //       ]);
-    //     }
-    //   }
-    // },
   });
+  // useEffect(() => {
+  //   if (files.length > 1) {
+  //     toast.error("فقط یک تصویر مجاز است. تصویر اضافی نادیده گرفته شد.");
+  //     removeFile(files[1].id); // فایل دوم رو حذف کن
+  //   }
+  // }, [files]);
   console.log({ attachments });
   console.log({ files });
-  // useEffect(() => {
-  //   console.log("effect iiiiiiiiiiiiiimggggggggggggggggggg");
-  //   if (files.length > 0) {
-  //     convert(files[0].file as File);
-  //     if (base64) {
-  //       setAttachments([
-  //         {
-  //           url: base64,
-  //           name: files[0].file.name,
-  //           contentType: files[0].file.type,
-  //         },
-  //       ]);
-  //     }
-  //   }
-  // }, [files.length]);
 
-  // useEffect(() => {
-  //   if (files.length > 0) {
-  //     convert(files[0].file as File);
-  //     if (base64) {
-  //       setAttachments([
-  //         {
-  //           url: base64,
-  //           name: files[0].file.name,
-  //           contentType: files[0].file.type,
-  //         },
-  //       ]);
-  //     }
-  //   }
-  //   console.log({ attachments });
-  // }, [files]);
   console.log({ isDragging });
   console.log(files);
 
@@ -163,14 +112,17 @@ export default function ChatClientWithoutId({
   } = useChat({
     id: idChat,
     experimental_throttle: 100,
+
     maxSteps: 2,
     api: "/api/chat",
     initialMessages: undefined,
     experimental_prepareRequestBody: (body) => ({
-      id,
+      id: idChat,
       message: body.messages.at(-1),
 
-      chatId: idChat ?? undefined,
+      // chatId: idChat ?? undefined,
+      chatId: idChat,
+
       model:
         selectedModel.length > 0
           ? selectedModel
@@ -196,11 +148,27 @@ export default function ChatClientWithoutId({
     if (status === "submitted") {
       endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, status]);
+  }, [status]);
+
+  // useEffect(() => {
+  //   if (base64 && files.length > 0 && active && status === "ready") {
+  //     handleSubmit(undefined, {
+  //       experimental_attachments: [
+  //         {
+  //           url: base64,
+  //           name: files[0].file.name,
+  //           contentType: files[0].file.type,
+  //         },
+  //       ],
+  //     });
+  //     clearFiles();
+  //     setAttachments([]);
+  //   }
+  // }, [base64]);
 
   // Handle keyboard submission - creates a new chat
   const handleKeyboardSubmit = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
         if (status !== "ready") {
@@ -211,28 +179,21 @@ export default function ChatClientWithoutId({
           setActive(true);
           // router.push(`/chat/${idChat}`);
           if (files.length > 0) {
-            convert(files[0].file as File);
-            if (base64) {
-              // setAttachments([
-              //   {
-              //     url: base64,
-              //     name: files[0].file.name,
-              //     contentType: files[0].file.type,
-              //   },
-              // ]);
-              // console.log({ attachments });
-              console.log("base65");
+            try {
+              const result = await convert(files[0].file as File);
               handleSubmit(undefined, {
                 experimental_attachments: [
                   {
-                    url: base64,
+                    url: result,
                     name: files[0].file.name,
                     contentType: files[0].file.type,
                   },
                 ],
               });
+              clearFiles();
+            } catch (err) {
+              toast.error("خطا در تبدیل فایل به base64");
             }
-            clearFiles();
             // setAttachments([]);
           } else {
             handleSubmit();
@@ -244,39 +205,29 @@ export default function ChatClientWithoutId({
   );
 
   // Handle click submission - creates a new chat
-  const handleClickSubmit = useCallback(() => {
-    localStorage.setItem("first-message", input);
-    // setInput("");
+  const handleClickSubmit = useCallback(async () => {
     setActive(true);
-    // router.push(`/chat/${idChat}`);
+
     if (files.length > 0) {
-      convert(files[0].file as File);
-      if (base64) {
-        // setAttachments([
-        //   {
-        //     url: base64,
-        //     name: files[0].file.name,
-        //     contentType: files[0].file.type,
-        //   },
-        // ]);
-        // console.log({ attachments });
-        console.log("base65");
+      try {
+        const result = await convert(files[0].file as File);
         handleSubmit(undefined, {
           experimental_attachments: [
             {
-              url: base64,
+              url: result,
               name: files[0].file.name,
               contentType: files[0].file.type,
             },
           ],
         });
+        clearFiles();
+      } catch (err) {
+        toast.error("خطا در تبدیل فایل به base64");
       }
-      clearFiles();
-      // setAttachments([]);
     } else {
       handleSubmit();
     }
-  }, [input, setInput, setActive, router, idChat, attachments]);
+  }, [files, convert, handleSubmit, setActive]);
 
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
@@ -362,7 +313,7 @@ export default function ChatClientWithoutId({
                 />
                 {/* Text input */}
                 <Textarea
-                  id={id}
+                  // id={idChat}
                   value={input}
                   autoFocus
                   placeholder="Ask anything"
