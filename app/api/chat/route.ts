@@ -195,6 +195,10 @@ export async function POST(req: Request) {
         },
         onError: async (e) => {
           console.log("pic Error");
+          await fetchAction(api.agent.createThread, {
+            prompt: body.message.content,
+            chatId,
+          });
 
           console.log(e);
         },
@@ -285,6 +289,10 @@ export async function POST(req: Request) {
       },
       onError: async (e) => {
         console.log("text error");
+        await fetchAction(api.agent.createThread, {
+          prompt: body.message.content,
+          chatId,
+        });
         console.log(e);
       },
     });

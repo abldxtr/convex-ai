@@ -251,10 +251,13 @@ export default function ChatClientWithoutId(
         onSubmit={(e) => e.preventDefault()}
         className={cn(
           "w-full",
-          active ? "" : " h-full flex items-center justify-center"
+          active ? "" : " h-full flex flex-col items-center justify-center  "
         )}
       >
-        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.3 }}>
+        <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700">
+          What can I help with?
+        </div>
+        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
           <motion.div
             className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]"
             layoutId="chat-input"
@@ -269,7 +272,7 @@ export default function ChatClientWithoutId(
             </div> */}
             {/* )} */}
             {/* Input container */}
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center relative ">
               <div
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
@@ -282,22 +285,22 @@ export default function ChatClientWithoutId(
                   "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
                   "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
                   "lg:[--thread-content-max-width:50rem]",
-                  "cursor-text flex-col items-center justify-center overflow-clip rounded-[28px]",
+                  "cursor-text flex-col items-center justify-center  rounded-[28px]",
                   "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
-                  "dark:bg-[#303030] dark:shadow-none!",
+                  "dark:bg-[#303030] dark:shadow-none! relative ",
                   isDragging && "bg-blue-400"
                 )}
               >
+                <PreviewImg
+                  files={files}
+                  clearFiles={clearFiles}
+                  removeFile={removeFile}
+                />
                 <div
                   className={cn(
                     "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
                   )}
                 >
-                  <PreviewImg
-                    files={files}
-                    clearFiles={clearFiles}
-                    removeFile={removeFile}
-                  />
                   {/* Text input */}
                   <Textarea
                     // id={idChat}

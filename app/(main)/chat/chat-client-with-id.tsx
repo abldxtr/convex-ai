@@ -64,7 +64,6 @@ export default function ChatClientWithId({
   const [selectedModel, setSelectedModel] = useState("");
   const { attachments, setAttachments } = useGlobalstate();
   const { base64, convert, error, loading } = useFileToBase64();
-  console.log({ attachments });
 
   const [
     { files, isDragging, errors },
@@ -83,32 +82,7 @@ export default function ChatClientWithId({
     maxSize: 1024 * 1024 * 2,
     multiple: false,
     maxFiles: 1,
-
-    // onFilesAdded,
   });
-  // console.log({ isDragging });
-
-  console.log({ files });
-  // useEffect(() => {
-  //   console.log("effect iiiiiiiiiiiiiimggggggggggggggggggg");
-  //   if (files.length > 0) {
-  //     console.log("files.length > 0");
-  //     convert(files[0].file as File);
-  //     if (base64) {
-  //       setAttachments([
-  //         {
-  //           url: base64,
-  //           name: files[0].file.name,
-  //           contentType: files[0].file.type,
-  //         },
-  //       ]);
-  //     }
-  //   }
-  // }, [files]);
-
-  // Get chat messages from Convex
-  //upload img
-  // const generateUploadUrl = useMutation(api.vercel.generateUploadUrl);
 
   // Load model preference from session storage
   useLayoutEffect(() => {
@@ -181,16 +155,6 @@ export default function ChatClientWithId({
       setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
     }
   }, [messages, clientGetChatMessages, setMessages]);
-  // Handle first message from localStorage
-  // useEffect(() => {
-  //   const msg = localStorage.getItem("first-message");
-  //   if (msg) {
-  //     append({ id: crypto.randomUUID(), content: msg, role: "user" });
-  //     localStorage.removeItem("first-message");
-  //   }
-  // }, [append]);
-
-  // Initialize messages from Convex if needed
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -277,16 +241,6 @@ export default function ChatClientWithId({
         </div>
       )}
 
-      {/* Message display */}
-      {/* {(active || status === "submitted" || status === "streaming") && (
-        <MessageBar
-          messages={messages}
-          endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
-          status={status}
-          reload={reload}
-        />
-      )} */}
-      {/* {clientGetChatMessages !== undefined && messages.length !== 0 && ( */}
       <MessageBar
         messages={messages}
         clientChatMessage={clientGetChatMessages}
@@ -294,34 +248,24 @@ export default function ChatClientWithId({
         status={status}
         reload={reload}
       />
-      {/* )} */}
 
       {/* Input form */}
       <form
         onSubmit={(e) => e.preventDefault()}
         className={cn(
-          "w-full",
+          "w-full bg-transparent ",
           active ? "" : " h-full flex items-center justify-center"
         )}
       >
-        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.3 }}>
+        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
           <motion.div
-            className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]"
+            className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px] bg-transparent  "
             layoutId="chat-input"
             layout="position"
-
-            // transition={{}}
           >
-            {/* Title */}
-            {/* {!active && (
-            <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700">
-              What can I help with?
-            </div>
-          )} */}
-
             {/* Input container */}
             <div
-              className="flex items-center justify-center"
+              className="flex items-center justify-center relative bg-transparent "
               onDragEnter={handleDragEnter}
               onDragLeave={handleDragLeave}
               onDragOver={handleDragOver}
@@ -335,22 +279,22 @@ export default function ChatClientWithId({
                   "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
                   "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
                   "lg:[--thread-content-max-width:50rem]",
-                  "cursor-text flex-col items-center justify-center overflow-clip rounded-[28px]",
+                  "cursor-text flex-col items-center justify-center rounded-[28px]",
                   "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
-                  "dark:bg-[#303030] dark:shadow-none!",
+                  "dark:bg-[#303030] dark:shadow-none! relative ",
                   isDragging && "bg-blue-400"
                 )}
               >
+                <PreviewImg
+                  files={files}
+                  clearFiles={clearFiles}
+                  removeFile={removeFile}
+                />
                 <div
                   className={cn(
                     "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
                   )}
                 >
-                  <PreviewImg
-                    files={files}
-                    clearFiles={clearFiles}
-                    removeFile={removeFile}
-                  />
                   {/* Text input */}
                   <Textarea
                     id={id}
