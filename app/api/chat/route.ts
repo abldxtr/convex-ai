@@ -19,7 +19,6 @@ import { api } from "@/convex/_generated/api";
 import { mmd } from "@/provider/providers";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { Id } from "@/convex/_generated/dataModel";
 import { base64ToBlob } from "@/lib/base64-to-blob";
 const google = createGoogleGenerativeAI({
   // custom settings
@@ -151,7 +150,9 @@ export async function POST(req: Request) {
       );
       // console.log({ storageUrl });
       const result2 = streamText({
-        model: mmd.languageModel("mmd-google/gemini-2.0-flash-exp:free"),
+        model: mmd.languageModel(
+          body.model ?? "mmd-google/gemini-2.0-flash-exp:free"
+        ),
 
         // prompt: "hello my dear, my name is bahar, who are you",
         messages: [
@@ -169,9 +170,10 @@ export async function POST(req: Request) {
             ],
           },
         ],
-        system:
-          "You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.",
-
+        system: `\n
+        -You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.
+        - what the language of the user is, you must respond in the same language
+    `,
         onFinish: async (result) => {
           console.log("pic finish");
 
@@ -260,8 +262,10 @@ export async function POST(req: Request) {
 
       // prompt: "hello my dear, my name is bahar, who are you",
       messages: allMessages,
-      system:
-        "You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.",
+      system: `\n
+        -You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.
+        - what the language of the user is, you must respond in the same language
+    `,
 
       experimental_transform: smoothStream({
         delayInMs: 20,
@@ -350,7 +354,9 @@ export async function POST(req: Request) {
       );
       // console.log({ storageUrl });
       const result2 = streamText({
-        model: mmd.languageModel("mmd-google/gemini-2.0-flash-exp:free"),
+        model: mmd.languageModel(
+          body.model ?? "mmd-google/gemini-2.0-flash-exp:free"
+        ),
 
         // prompt: "hello my dear, my name is bahar, who are you",
         messages: [
@@ -368,8 +374,10 @@ export async function POST(req: Request) {
             ],
           },
         ],
-        system:
-          "You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.",
+        system: `\n
+        -You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.
+        - what the language of the user is, you must respond in the same language
+    `,
 
         onFinish: async (result) => {
           // console.log({ result });
@@ -442,8 +450,10 @@ export async function POST(req: Request) {
       // model: openai("o3-mini"),
       // model: google("gemini-1.5-flash"),
       messages: allMessages,
-      system:
-        "You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.",
+      system: `\n
+        -You are a helpful assistant that can answer questions and help with tasks. the output must be in markdown format.
+        - what the language of the user is, you must respond in the same language
+    `,
 
       experimental_transform: smoothStream({
         delayInMs: 20,

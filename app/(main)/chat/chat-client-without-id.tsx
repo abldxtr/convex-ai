@@ -254,7 +254,12 @@ export default function ChatClientWithoutId(
           active ? "" : " h-full flex flex-col items-center justify-center  "
         )}
       >
-        <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700">
+        <div
+          className={cn(
+            "px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700",
+            active && "sr-only"
+          )}
+        >
           What can I help with?
         </div>
         <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
