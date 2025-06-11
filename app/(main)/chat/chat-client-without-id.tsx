@@ -23,7 +23,7 @@ import MessageBar from "@/components/message-bar";
 import TooltipContainer from "@/components/tooltip-container";
 import { useGlobalstate } from "@/context/global-store";
 import type { ChatClientPropsPartial } from "@/lib/type";
-import { ModelSwitcher } from "@/components/models";
+import { models, ModelSwitcher } from "@/components/models";
 import { searchTools } from "@/lib/chat-tools";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
@@ -50,6 +50,10 @@ export default function ChatClientWithoutId(
     setActive,
     attachments,
     setAttachments,
+    setFileExists,
+    fileExists,
+    selectedModel,
+    setSelectedModel,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -58,7 +62,6 @@ export default function ChatClientWithoutId(
   const idChat = useMemo(() => crypto.randomUUID(), []);
 
   const { base64, convert, error, loading } = useFileToBase64();
-  const [selectedModel, setSelectedModel] = useState("");
   // console.log(base64);
 
   const [
@@ -79,12 +82,16 @@ export default function ChatClientWithoutId(
     multiple: false,
     maxFiles: 1,
   });
-  // useEffect(() => {
-  //   if (files.length > 1) {
-  //     toast.error("فقط یک تصویر مجاز است. تصویر اضافی نادیده گرفته شد.");
-  //     removeFile(files[1].id); // فایل دوم رو حذف کن
-  //   }
-  // }, [files]);
+  useEffect(() => {
+    setFileExists(files.length > 0);
+    const visionModel = models.every((item) => {
+      item.value === selectedModel;
+    });
+    if (!visionModel) {
+      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
+    }
+  }, [files, setFileExists]);
+
   console.log({ attachments });
   console.log({ files });
 
@@ -126,7 +133,9 @@ export default function ChatClientWithoutId(
       model:
         selectedModel.length > 0
           ? selectedModel
-          : "mmd-meta-llama/llama-3.3-8b-instruct:free",
+          : fileExists
+            ? "mmd-google/gemini-2.0-flash-exp:free"
+            : "mmd-meta-llama/llama-3.3-8b-instruct:free",
     }),
     onError: (error) => {
       console.log("error", error);
@@ -149,22 +158,6 @@ export default function ChatClientWithoutId(
       endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [status]);
-
-  // useEffect(() => {
-  //   if (base64 && files.length > 0 && active && status === "ready") {
-  //     handleSubmit(undefined, {
-  //       experimental_attachments: [
-  //         {
-  //           url: base64,
-  //           name: files[0].file.name,
-  //           contentType: files[0].file.type,
-  //         },
-  //       ],
-  //     });
-  //     clearFiles();
-  //     setAttachments([]);
-  //   }
-  // }, [base64]);
 
   // Handle keyboard submission - creates a new chat
   const handleKeyboardSubmit = useCallback(
@@ -332,7 +325,9 @@ export default function ChatClientWithoutId(
                           selectedModel={
                             selectedModel.length > 0
                               ? selectedModel
-                              : "mmd-meta-llama/llama-3.3-8b-instruct:free"
+                              : fileExists
+                                ? "mmd-google/gemini-2.0-flash-exp:free"
+                                : "mmd-meta-llama/llama-3.3-8b-instruct:free"
                           }
                           setSelectedModel={setSelectedModel}
                           showExperimentalModels={showExperimentalModels}

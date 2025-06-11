@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Message } from "@ai-sdk/react";
 import { Attachment } from "ai";
+import { useGlobalstate } from "@/context/global-store";
 // languageModels: {
 //     "mmd-meta-llama": openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
 //     "mmd-qwen-2.5": openrouter.chat("qwen/qwen-2.5-7b-instruct:free"),
@@ -25,7 +26,7 @@ import { Attachment } from "ai";
 //     "mmd-o4-mini": openai.responses("o4-mini-2025-04-16"),
 //   }
 // mmd-meta-llama
-const models = [
+export const models = [
   {
     value: "mmd-google/gemini-2.0-flash-exp:free",
     label: "google/gemini-2.0-flash-exp:free",
@@ -186,6 +187,7 @@ export const ModelSwitcher: React.FC<ModelSwitcherProps> = ({
   status,
   onModelSelect,
 }) => {
+  const { fileExists } = useGlobalstate();
   const selectedModelData = models.find(
     (model) => model.value === selectedModel
   );
@@ -193,12 +195,13 @@ export const ModelSwitcher: React.FC<ModelSwitcherProps> = ({
   const isProcessing = status === "submitted" || status === "streaming";
 
   // Check for attachments in current and previous messages
-  const hasAttachments =
-    attachments.length > 0 ||
-    messages.some(
-      (msg) =>
-        msg.experimental_attachments && msg.experimental_attachments.length > 0
-    );
+  // const hasAttachments =
+  //   attachments.length > 0 ||
+  //   messages.some(
+  //     (msg) =>
+  //       msg.experimental_attachments && msg.experimental_attachments.length > 0
+  //   );
+  const hasAttachments = fileExists;
 
   // Filter models based on attachments first, then experimental status
   const filteredModels = hasAttachments

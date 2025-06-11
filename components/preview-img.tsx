@@ -5,6 +5,7 @@ import {
   formatBytes,
   useFileUpload,
 } from "@/hooks/use-file-upload";
+import { useGlobalstate } from "@/context/global-store";
 
 export default function PreviewImg({
   files,
@@ -15,6 +16,8 @@ export default function PreviewImg({
   removeFile: (id: string) => void;
   clearFiles: () => void;
 }) {
+  const { setFileExists } = useGlobalstate();
+
   return (
     <>
       {/* File list */}
@@ -33,7 +36,10 @@ export default function PreviewImg({
                       size="icon"
                       variant="ghost"
                       className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent absolute -top-4 -right-2 rounded-full    "
-                      onClick={() => removeFile(file.id)}
+                      onClick={() => {
+                        removeFile(file.id);
+                        setFileExists(false);
+                      }}
                       aria-label="Remove file"
                     >
                       <XIcon aria-hidden="true" color="red" />

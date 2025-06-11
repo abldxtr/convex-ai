@@ -21,7 +21,7 @@ import MessageBar from "@/components/message-bar";
 import TooltipContainer from "@/components/tooltip-container";
 import { useGlobalstate } from "@/context/global-store";
 import type { ChatClientPropsPartial } from "@/lib/type";
-import { ModelSwitcher } from "@/components/models";
+import { models, ModelSwitcher } from "@/components/models";
 import { motion, MotionConfig } from "framer-motion";
 import { api } from "@/convex/_generated/api";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
@@ -57,11 +57,14 @@ export default function ChatClientWithId({
     setActive,
     direction,
     setDirection,
+    setFileExists,
+    fileExists,
+    selectedModel,
+    setSelectedModel,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
-  const [selectedModel, setSelectedModel] = useState("");
   const { attachments, setAttachments } = useGlobalstate();
   const { base64, convert, error, loading } = useFileToBase64();
 
@@ -83,6 +86,19 @@ export default function ChatClientWithId({
     multiple: false,
     maxFiles: 1,
   });
+
+  useEffect(() => {
+    setFileExists(files.length > 0);
+    const visionModel = models.every((item) => {
+      item.value === selectedModel;
+    });
+    if (!visionModel) {
+      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
+    }
+  }, [files, setFileExists]);
+  useEffect(() => {
+    setFileExists(files.length > 0);
+  }, [files, setFileExists]);
 
   // Load model preference from session storage
   useLayoutEffect(() => {
@@ -123,13 +139,16 @@ export default function ChatClientWithId({
       model:
         selectedModel.length > 0
           ? selectedModel
-          : "mmd-meta-llama/llama-3.3-8b-instruct:free",
+          : fileExists
+            ? "mmd-google/gemini-2.0-flash-exp:free"
+            : "mmd-meta-llama/llama-3.3-8b-instruct:free",
     }),
     onError: (error) => {
       console.log("error", error);
       setGetError(true);
     },
     onFinish: () => {
+      // "mmd-google/gemini-2.0-flash-exp:free"
       console.log("onFinish");
       if (attachments.length > 0) {
         setAttachments([]);
@@ -327,7 +346,9 @@ export default function ChatClientWithId({
                           selectedModel={
                             selectedModel.length > 0
                               ? selectedModel
-                              : "mmd-meta-llama/llama-3.3-8b-instruct:free"
+                              : fileExists
+                                ? "mmd-google/gemini-2.0-flash-exp:free"
+                                : "mmd-meta-llama/llama-3.3-8b-instruct:free"
                           }
                           setSelectedModel={setSelectedModel}
                           showExperimentalModels={showExperimentalModels}
@@ -375,6 +396,9 @@ export default function ChatClientWithId({
                                     (status === "submitted" ||
                                       status === "streaming") &&
                                     "opacity-50 hover:cursor-not-allowed pointer-events-none"
+                                  // index === 0 &&
+                                  //   fileExists &&
+                                  //   "opacity-50 hover:cursor-not-allowed pointer-events-none"
                                 )}
                                 onClick={(e) => {
                                   if (tool.activeIcon && input.length > 0) {

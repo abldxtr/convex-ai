@@ -24,6 +24,10 @@ type ContextType = {
   setDirection: Dispatch<SetStateAction<"ltr" | "rtl">>;
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
+  fileExists: boolean;
+  setFileExists: Dispatch<SetStateAction<boolean>>;
+  selectedModel: string;
+  setSelectedModel: Dispatch<SetStateAction<string>>;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
@@ -36,6 +40,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [active, setActive] = useState(false);
   const [direction, setDirection] = useState<"ltr" | "rtl">("ltr");
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
+  const [fileExists, setFileExists] = useState(false);
+  const [selectedModel, setSelectedModel] = useState("");
 
   return (
     <GlobalContext.Provider
@@ -54,6 +60,10 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
         setDirection,
         attachments,
         setAttachments,
+        fileExists,
+        setFileExists,
+        selectedModel,
+        setSelectedModel,
       }}
     >
       {children}
