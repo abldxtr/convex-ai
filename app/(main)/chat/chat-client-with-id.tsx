@@ -250,7 +250,7 @@ export default function ChatClientWithId({
 
   return (
     // <div className={cn(" h-dvh w-dvw flex flex-col overflow-hidden ")}>
-    <div className={cn("stretch flex h-full w-full flex-col")}>
+    <div className={cn(" flex h-full w-full flex-col")}>
       {/* Header */}
       <div className="px-4 pt-3 pb-1 shrink-0 h-[52px] ">
         <SidebarToggle />
@@ -258,27 +258,29 @@ export default function ChatClientWithId({
 
       {/* Loading state */}
       {clientGetChatMessages === undefined && messages.length === 0 && (
-        <div className=" w-full h-full ">
+        <div className=" w-full h-full    ">
           <div className="flex items-center justify-center h-full w-full  shrink-0 ">
             <Loader2 className="size-6 animate-spin" />
           </div>
         </div>
       )}
 
-      <MessageBar
-        messages={messages}
-        clientChatMessage={clientGetChatMessages}
-        endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
-        status={status}
-        reload={reload}
-      />
+      {messages.length > 0 && (
+        <MessageBar
+          messages={messages}
+          clientChatMessage={clientGetChatMessages}
+          endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
+          status={status}
+          reload={reload}
+        />
+      )}
 
       {/* Input form */}
       <form
         onSubmit={(e) => e.preventDefault()}
         className={cn(
-          "w-full bg-transparent ",
-          active ? "" : " h-full flex items-center justify-center"
+          "w-full bg-transparent  ",
+          active ? "" : " flex items-center justify-center"
         )}
       >
         <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>

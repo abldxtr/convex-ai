@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
   },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 };
 
 export default nextConfig;
