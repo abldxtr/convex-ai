@@ -108,8 +108,9 @@ export function AppSidebar({ user }: { user: UserType }) {
         <SidebarMenu>
           <div className="flex flex-row items-center justify-between">
             <Link
-              href="/"
+              href="/chat"
               onClick={() => {
+                setActive(false);
                 setOpenMobile(false);
               }}
               className="flex flex-row items-center gap-3"

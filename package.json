@@ -19,6 +19,7 @@
     "@convex-dev/persistent-text-streaming": "^0.2.2",
     "@convex-dev/workflow": "^0.2.4",
     "@convex-dev/workpool": "^0.2.10",
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@faker-js/faker": "^9.8.0",
     "@hookform/resolvers": "^5.0.1",
     "@monaco-editor/react": "^4.7.0",
