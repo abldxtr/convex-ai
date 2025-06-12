@@ -87,7 +87,7 @@ export default function ChatClientWithoutId(
     const visionModel = models.every((item) => {
       item.value === selectedModel;
     });
-    if (!visionModel) {
+    if (!visionModel && selectedModel.length > 0) {
       setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
     }
   }, [files, setFileExists]);

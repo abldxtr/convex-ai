@@ -29,7 +29,6 @@ import { useQuery } from "convex-helpers/react/cache/hooks";
 import { searchTools } from "@/lib/chat-tools";
 import { useDirection } from "@/hooks/use-direction";
 import { useFileUpload } from "@/hooks/use-file-upload";
-import { useMutation } from "convex/react";
 import PreviewImg from "@/components/preview-img";
 import { useFileToBase64 } from "@/hooks/use-file-base64";
 
@@ -92,7 +91,7 @@ export default function ChatClientWithId({
     const visionModel = models.every((item) => {
       item.value === selectedModel;
     });
-    if (!visionModel) {
+    if (!visionModel && selectedModel.length > 0) {
       setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
     }
   }, [files, setFileExists]);
@@ -103,6 +102,12 @@ export default function ChatClientWithId({
   // Load model preference from session storage
   useLayoutEffect(() => {
     const storedModel = sessionStorage.getItem("model");
+    // const visionModel = models.every((item) => {
+    //   item.value === selectedModel;
+    // });
+    // if (!visionModel) {
+    //   setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
+    // }
     if (storedModel) {
       setSelectedModel(storedModel);
     }

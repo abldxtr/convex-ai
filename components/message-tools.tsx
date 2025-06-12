@@ -47,11 +47,11 @@ export function MessageTools({
       >
         {isCopied ? <Check /> : <CopyIcon />}
       </Button>
-      {role === "user" && (
+      {/* {role === "user" && (
         <Button variant="ghost" size="smIcon">
           <Pencil />
         </Button>
-      )}
+      )} */}
 
       {role === "user" && isLastMessage && getError && (
         <Button
