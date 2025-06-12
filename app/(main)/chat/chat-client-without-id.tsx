@@ -92,14 +92,9 @@ export default function ChatClientWithoutId(
     }
   }, [files, setFileExists]);
 
-  console.log({ attachments });
-  console.log({ files });
-
-  console.log({ isDragging });
-  console.log(files);
-
   // Load model preference from session storage
   useLayoutEffect(() => {
+    setActive(false);
     const storedModel = sessionStorage.getItem("model");
     if (storedModel) {
       setSelectedModel(storedModel);
