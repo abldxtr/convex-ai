@@ -17,7 +17,7 @@ import { vertex } from "@ai-sdk/google-vertex";
 const middleware = extractReasoningMiddleware({
   tagName: "think",
 });
-//mamad custon ai provider
+//mamad custom ai provider
 export const mmd = customProvider({
   languageModels: {
     "mmd-meta-llama": openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),

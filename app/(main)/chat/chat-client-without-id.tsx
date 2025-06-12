@@ -29,6 +29,7 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useFileToBase64 } from "@/hooks/use-file-base64";
 import { Attachment } from "ai";
+import { useDirection } from "@/hooks/use-direction";
 
 interface ChatClientWithoutIdProps extends ChatClientPropsPartial {
   id?: string;
@@ -54,6 +55,7 @@ export default function ChatClientWithoutId(
     fileExists,
     selectedModel,
     setSelectedModel,
+    setDirection,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -301,7 +303,11 @@ export default function ChatClientWithoutId(
                     autoFocus
                     placeholder="Ask anything"
                     className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={(e) => {
+                      const direction = useDirection(e.target.value);
+                      setDirection(direction);
+                      setInput(e.target.value);
+                    }}
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
                   />

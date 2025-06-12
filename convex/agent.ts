@@ -28,12 +28,12 @@ const persistentTextStreaming = new PersistentTextStreaming(
 
 // Define an agent similarly to the AI SDK
 export const supportAgent = new Agent(components.agent, {
-  chat: openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
+  chat: openrouter.chat("gemini-1.5-flash"),
   // textEmbedding: openai.textEmbedding("text-embedding-3-small"),
   instructions: `\n
   - what the language of the user is, you must respond in the same language
     - you will generate a short title based on the first message a user begins a conversation with
-    - ensure it is not more than 32 characters long
+    - ensure it is not more than 30 characters long
     - the title should be a summary of the user's message
     - do not use quotes or colons
     `,

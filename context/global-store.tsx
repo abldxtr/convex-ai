@@ -7,6 +7,7 @@ import React, {
   ReactNode,
   Dispatch,
   SetStateAction,
+  useMemo,
 } from "react";
 
 type ContextType = {
@@ -43,39 +44,51 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [fileExists, setFileExists] = useState(false);
   const [selectedModel, setSelectedModel] = useState("");
 
+  const contextValue = useMemo(
+    () => ({
+      firstText,
+      setFirstText,
+      newChat,
+      setNewChat,
+      isNavigating,
+      setIsNavigating,
+      getError,
+      setGetError,
+      active,
+      setActive,
+      direction,
+      setDirection,
+      attachments,
+      setAttachments,
+      fileExists,
+      setFileExists,
+      selectedModel,
+      setSelectedModel,
+    }),
+    [
+      firstText,
+      newChat,
+      isNavigating,
+      getError,
+      active,
+      direction,
+      attachments,
+      fileExists,
+      selectedModel,
+    ]
+  );
+
   return (
-    <GlobalContext.Provider
-      value={{
-        firstText,
-        setFirstText,
-        newChat,
-        setNewChat,
-        isNavigating,
-        setIsNavigating,
-        getError,
-        setGetError,
-        active,
-        setActive,
-        direction,
-        setDirection,
-        attachments,
-        setAttachments,
-        fileExists,
-        setFileExists,
-        selectedModel,
-        setSelectedModel,
-      }}
-    >
+    <GlobalContext.Provider value={contextValue}>
       {children}
     </GlobalContext.Provider>
   );
 }
 
 export function useGlobalstate() {
-  const State = React.useContext(GlobalContext);
-  if (State === null) {
-    throw new Error("useMessage must be used within a CounterProvider");
+  const state = React.useContext(GlobalContext);
+  if (state === null) {
+    throw new Error("useGlobalstate must be used within a GlobalStoreProvider");
   }
-
-  return State;
+  return state;
 }

@@ -284,7 +284,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
 
         thead({ children, ...props }) {
           return (
-            <thead className="bg-zinc-50 dark:bg-zinc-800/50" {...props}>
+            <thead
+              className="bg-zinc-50 dark:bg-zinc-800/50"
+              {...props}
+              dir="auto"
+            >
               {children}
             </thead>
           );
@@ -295,6 +299,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
             <tbody
               className="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-transparent"
               {...props}
+              dir="auto"
             >
               {children}
             </tbody>
@@ -306,6 +311,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
             <tr
               className="transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/30"
               {...props}
+              dir="auto"
             >
               {children}
             </tr>
@@ -317,6 +323,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
             <th
               className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
               {...props}
+              dir="auto"
             >
               {children}
             </th>
@@ -328,6 +335,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
             <td
               className="px-4 py-3 text-sm text-zinc-900 dark:text-zinc-100"
               {...props}
+              dir="auto"
             >
               {children}
             </td>
