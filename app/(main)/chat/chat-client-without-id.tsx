@@ -64,6 +64,14 @@ export default function ChatClientWithoutId(
   const idChat = useMemo(() => crypto.randomUUID(), []);
 
   const { base64, convert, error, loading } = useFileToBase64();
+  const visionModel = useMemo(() => {
+    return models.every((item) => {
+      if (item.value === selectedModel) {
+        return item.vision === true;
+      }
+      return false;
+    });
+  }, [models, selectedModel]);
   // console.log(base64);
 
   const [
@@ -86,13 +94,14 @@ export default function ChatClientWithoutId(
   });
   useEffect(() => {
     setFileExists(files.length > 0);
-    const visionModel = models.every((item) => {
-      item.value === selectedModel;
-    });
-    if (!visionModel && selectedModel.length > 0) {
-      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
+
+    // if (!visionModel && selectedModel.length > 0) {
+    //   setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
+    // }
+    if (files.length > 0 && !visionModel) {
+      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free"); // مدل پیش‌فرض با قابلیت پردازش تصویر
     }
-  }, [files, setFileExists]);
+  }, [files, setFileExists, visionModel, setSelectedModel]);
 
   // Load model preference from session storage
   useLayoutEffect(() => {
@@ -127,11 +136,17 @@ export default function ChatClientWithoutId(
       // chatId: idChat ?? undefined,
       chatId: idChat,
 
+      // model:
+      //   selectedModel.length > 0
+      //     ? selectedModel
+      //     : fileExists && visionModel
+      //       ? selectedModel
+      //       : "mmd-google/gemini-2.0-flash-exp:free",
       model:
-        selectedModel.length > 0
-          ? selectedModel
-          : fileExists
-            ? "mmd-google/gemini-2.0-flash-exp:free"
+        files.length > 0 && !visionModel
+          ? "mmd-google/gemini-2.0-flash-exp:free"
+          : selectedModel.length > 0
+            ? selectedModel
             : "mmd-meta-llama/llama-3.3-8b-instruct:free",
     }),
     onError: (error) => {
@@ -150,11 +165,11 @@ export default function ChatClientWithoutId(
   console.log(messages);
 
   // Scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (status === "submitted") {
-      endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [status]);
+  // useEffect(() => {
+  //   if (status === "submitted") {
+  //     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [status]);
 
   // Handle keyboard submission - creates a new chat
   const handleKeyboardSubmit = useCallback(
@@ -323,11 +338,19 @@ export default function ChatClientWithoutId(
                     <div className="flex items-center gap-2">
                       <div>
                         <ModelSwitcher
+                          // selectedModel={
+                          //   selectedModel.length > 0
+                          //     ? selectedModel
+                          //     : fileExists
+                          //       ? "mmd-google/gemini-2.0-flash-exp:free"
+                          //       : "mmd-meta-llama/llama-3.3-8b-instruct:free"
+                          // }
+
                           selectedModel={
-                            selectedModel.length > 0
-                              ? selectedModel
-                              : fileExists
-                                ? "mmd-google/gemini-2.0-flash-exp:free"
+                            files.length > 0 && !visionModel
+                              ? "mmd-google/gemini-2.0-flash-exp:free"
+                              : selectedModel.length > 0
+                                ? selectedModel
                                 : "mmd-meta-llama/llama-3.3-8b-instruct:free"
                           }
                           setSelectedModel={setSelectedModel}

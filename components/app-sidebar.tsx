@@ -113,6 +113,7 @@ export function AppSidebar({ user }: { user: UserType }) {
                 setActive(false);
                 setOpenMobile(false);
               }}
+              prefetch={true}
               className="flex flex-row items-center gap-3"
             >
               <span className="hover:bg-muted cursor-pointer rounded-md px-2 text-lg font-semibold">

@@ -52,6 +52,7 @@ export function useScroll({
     } else {
       setShowArrow(false);
     }
+    return scrollPercent;
   }, []);
 
   useEffect(() => {
@@ -66,12 +67,12 @@ export function useScroll({
     };
   }, [handleScroll]);
 
-  useEffect(() => {
-    const el = scrollRef.current;
-    if ((status === "submitted" || status === "streaming") && el) {
-      el.scrollTop = el.scrollHeight; // اسکرول به پایین‌ترین بخش برای رزرو جا
-    }
-  }, [status]);
+  // useEffect(() => {
+  //   const el = scrollRef.current;
+  //   if ((status === "submitted" || status === "streaming") && el) {
+  //     el.scrollTop = el.scrollHeight; // اسکرول به پایین‌ترین بخش برای رزرو جا
+  //   }
+  // }, [status]);
 
   useEffect(() => {
     if (
@@ -108,7 +109,35 @@ export function useScroll({
         );
       }
     };
-  }, [messages.at(-1)?.id]);
+  }, []);
+
+  useEffect(() => {
+    const scrollPercent = handleScroll();
+
+    const el = scrollRef.current;
+    // if ((status === "submitted" || status === "streaming") && el) {
+    //   el.scrollTop = el.scrollHeight; // اسکرول به پایین‌ترین بخش برای رزرو جا
+    // }
+
+    if (
+      status === "submitted" &&
+      endOfMessagesRef?.current &&
+      scrollPercent &&
+      scrollPercent > 30
+    ) {
+      endOfMessagesRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+
+    // if (scrollPercent && scrollPercent > 30 && endOfMessagesRef?.current) {
+    //   endOfMessagesRef.current.scrollIntoView({
+    //     behavior: "smooth",
+    //     block: "center",
+    //   });
+    // }
+  }, [messages.at(-1)]);
 
   return {
     scrollRef,

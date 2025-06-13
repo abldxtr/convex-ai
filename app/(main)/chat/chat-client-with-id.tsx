@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
   useCallback,
+  useMemo,
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -66,6 +67,14 @@ export default function ChatClientWithId({
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const { attachments, setAttachments } = useGlobalstate();
   const { base64, convert, error, loading } = useFileToBase64();
+  const visionModel = useMemo(() => {
+    return models.every((item) => {
+      if (item.value === selectedModel) {
+        return item.vision === true;
+      }
+      return false;
+    });
+  }, [models, selectedModel]);
 
   const [
     { files, isDragging, errors },
@@ -88,13 +97,16 @@ export default function ChatClientWithId({
 
   useEffect(() => {
     setFileExists(files.length > 0);
-    const visionModel = models.every((item) => {
-      item.value === selectedModel;
-    });
-    if (!visionModel && selectedModel.length > 0) {
-      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
+    // const visionModel = models.every((item) => {
+    //   item.value === selectedModel;
+    // });
+    // if (!visionModel && selectedModel.length > 0) {
+    //   setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
+    // }
+    if (files.length > 0 && !visionModel) {
+      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free"); // مدل پیش‌فرض با قابلیت پردازش تصویر
     }
-  }, [files, setFileExists]);
+  }, [files, setFileExists, visionModel, setSelectedModel]);
   useEffect(() => {
     setFileExists(files.length > 0);
   }, [files, setFileExists]);
@@ -142,10 +154,10 @@ export default function ChatClientWithId({
       message: body.messages.at(-1),
       chatId: chatIdd,
       model:
-        selectedModel.length > 0
-          ? selectedModel
-          : fileExists
-            ? "mmd-google/gemini-2.0-flash-exp:free"
+        files.length > 0 && !visionModel
+          ? "mmd-google/gemini-2.0-flash-exp:free"
+          : selectedModel.length > 0
+            ? selectedModel
             : "mmd-meta-llama/llama-3.3-8b-instruct:free",
     }),
     onError: (error) => {
@@ -181,11 +193,14 @@ export default function ChatClientWithId({
   }, [messages, clientGetChatMessages, setMessages]);
 
   // Scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (status === "submitted") {
-      endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, status]);
+  // useEffect(() => {
+  //   if (status === "submitted") {
+  //     endOfMessagesRef.current?.scrollIntoView({
+  //       behavior: "smooth",
+  //       block: "center",
+  //     });
+  //   }
+  // }, [status]);
 
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
@@ -351,10 +366,10 @@ export default function ChatClientWithId({
                       <div>
                         <ModelSwitcher
                           selectedModel={
-                            selectedModel.length > 0
-                              ? selectedModel
-                              : fileExists
-                                ? "mmd-google/gemini-2.0-flash-exp:free"
+                            files.length > 0 && !visionModel
+                              ? "mmd-google/gemini-2.0-flash-exp:free"
+                              : selectedModel.length > 0
+                                ? selectedModel
                                 : "mmd-meta-llama/llama-3.3-8b-instruct:free"
                           }
                           setSelectedModel={setSelectedModel}

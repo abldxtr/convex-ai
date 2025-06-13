@@ -201,11 +201,11 @@ export default function ChatClient({
     },
   });
 
-  useEffect(() => {
-    if (status === "submitted") {
-      endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, status]);
+  // useEffect(() => {
+  //   if (status === "submitted") {
+  //     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  //   }
+  // }, [messages, status]);
 
   async function sendMessageAndCreateChatKeyBoard(
     e: React.KeyboardEvent<HTMLTextAreaElement>

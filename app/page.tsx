@@ -3,7 +3,9 @@ import Link from "next/link";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import CurrentUser from "@/components/current-user";
+import { redirect } from "next/navigation";
 export default async function HomePage() {
+  return redirect("/chat");
   const token = await convexAuthNextjsToken();
   // console.log({ token });
   // const isAuth = await isAuthenticatedNextjs();
