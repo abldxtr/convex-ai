@@ -340,6 +340,18 @@ export async function POST(req: Request) {
         },
         onError: async (e) => {
           console.log(e);
+          // await fetchMutation(
+          //   api.vercel.createVercelAiMessage,
+          //   {
+          //     chatId: getChat.chatItem._id,
+          //     id: crypto.randomUUID(),
+          //     userId: userId._id,
+          //     content: result.text,
+          //     role: "assistant",
+          //     parts: [{ type: "text", text: result.text }],
+          //   },
+          //   { token }
+          // );
         },
       });
 

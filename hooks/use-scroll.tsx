@@ -1,9 +1,11 @@
 import { UIMessage } from "ai";
+import { usePathname } from "next/navigation";
 import {
   RefObject,
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -84,16 +86,33 @@ export function useScroll({
       setSpacerHeight((prev) => prev + 220);
     }
   }, [status, messages]);
+  const pathname = usePathname();
+
+  // Memoize the chat ID extraction from pathname
+  const chatIdd = useMemo(
+    () => pathname.split("/chat/")[1] || undefined,
+    [pathname]
+  );
 
   useLayoutEffect(() => {
     const storedScrollPosition = sessionStorage.getItem(
       `scrollPos-${messages.at(-1)?.id}`
     );
+    // sessionStorage.setItem(`disable-scroll`, idChat);
+    const isScroll = sessionStorage.getItem("disable-scroll");
+
     // console.log("storedScrollPosition", storedScrollPosition);
     // if (messages) {
     if (storedScrollPosition && scrollRef.current) {
       scrollRef.current.scrollTop = parseInt(storedScrollPosition, 10);
     } else if (endOfMessagesRef?.current) {
+      if (isScroll) {
+        const newPageCreation = isScroll === chatIdd;
+        if (newPageCreation) {
+          // sessionStorage.setItem("disable-scroll", "");
+          return;
+        }
+      }
       endOfMessagesRef.current.scrollIntoView({
         behavior: "instant",
         block: "center",

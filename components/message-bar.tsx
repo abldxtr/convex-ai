@@ -11,6 +11,7 @@ import AiLoading, { AiLoading2 } from "./ai-loading";
 import { useGlobalstate } from "@/context/global-store";
 import { clientGetChatMessages } from "@/lib/type";
 import { PreviewAttachment } from "./preview-attachment";
+import { AIMessageError } from "./error-message-ai";
 type MessageBarProps = {
   messages: UIMessage[];
   clientChatMessage?: clientGetChatMessages;
@@ -139,6 +140,11 @@ export default function MessageBar({
                       isLastMessage={isLastMessage}
                     />
                   </>
+                )}
+
+                {/* delete mmmmmmmmmmmm */}
+                {getError && isLastMessage && status === "error" && (
+                  <AIMessageError reload={reload} />
                 )}
               </div>
             );

@@ -136,12 +136,6 @@ export default function ChatClientWithoutId(
       // chatId: idChat ?? undefined,
       chatId: idChat,
 
-      // model:
-      //   selectedModel.length > 0
-      //     ? selectedModel
-      //     : fileExists && visionModel
-      //       ? selectedModel
-      //       : "mmd-google/gemini-2.0-flash-exp:free",
       model:
         files.length > 0 && !visionModel
           ? "mmd-google/gemini-2.0-flash-exp:free"
@@ -159,6 +153,7 @@ export default function ChatClientWithoutId(
         setAttachments([]);
         clearFiles();
       }
+      sessionStorage.setItem(`disable-scroll`, idChat);
       router.push(`/chat/${idChat}`);
     },
   });
@@ -367,59 +362,68 @@ export default function ChatClientWithoutId(
 
                     {/* Action buttons */}
                     <div className="flex items-center gap-2">
-                      {searchTools.map((tool, index) => {
+                      {searchTools.map((tool) => {
+                        const isStreaming =
+                          status === "streaming" || status === "submitted";
+                        const isInputEmpty = input.trim().length === 0;
+
+                        // فقط upload و ActionButton را نمایش بده
+                        if (tool.name === "StopButton") return null;
+
+                        // تغییر آیکن دکمه ActionButton در حالت استریم
                         const Icon =
-                          index === 1 && input.length > 0
-                            ? tool.activeIcon!
-                            : index === 1 &&
-                                (status === "streaming" ||
-                                  status === "submitted")
-                              ? tool.stopIcon!
-                              : tool.icon;
+                          tool.name === "ActionButton"
+                            ? isStreaming
+                              ? searchTools.find((t) => t.name === "StopButton")
+                                  ?.icon || tool.icon
+                              : tool.icon
+                            : tool.icon;
+
+                        // اصلاح شده: فقط وقتی ورودی خالی باشه و در حالت idle باشیم دکمه غیرفعاله
+                        const isDisabled =
+                          (tool.name === "upload" && isStreaming) ||
+                          (tool.name === "ActionButton" &&
+                            isInputEmpty &&
+                            !isStreaming);
+
+                        const handleClick = () => {
+                          if (tool.name === "upload" && !isStreaming) {
+                            openFileDialog();
+                          }
+
+                          if (tool.name === "ActionButton") {
+                            if (isStreaming) {
+                              stop();
+                            } else if (!isInputEmpty) {
+                              handleClickSubmit();
+                            }
+                          }
+                        };
 
                         return (
-                          <Fragment key={tool.name}>
-                            <TooltipContainer
-                              tooltipContent={
-                                status === "streaming" || status === "submitted"
-                                  ? "Stopping..."
-                                  : tool.description
-                              }
-                              key={tool.name}
+                          <TooltipContainer
+                            key={tool.name}
+                            tooltipContent={
+                              isStreaming && tool.name === "ActionButton"
+                                ? "Stopping..."
+                                : tool.description
+                            }
+                          >
+                            <div
+                              className={cn(
+                                "flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 fill-[#5d5d5d]",
+                                tool.name === "upload" && "hover:bg-gray-100",
+                                tool.name === "ActionButton" &&
+                                  "bg-black fill-white",
+                                isDisabled &&
+                                  "opacity-50 pointer-events-none hover:cursor-not-allowed",
+                                !isDisabled && "hover:cursor-pointer"
+                              )}
+                              onClick={handleClick}
                             >
-                              <div
-                                key={tool.name}
-                                className={cn(
-                                  "flex h-9 w-9 items-center justify-center rounded-full border fill-[#5d5d5d] hover:cursor-pointer",
-                                  index === 1 && "bg-black",
-                                  index === 0 &&
-                                    "transition-[color] duration-300 hover:cursor-pointer hover:bg-gray-100",
-                                  index === 0 &&
-                                    (status === "submitted" ||
-                                      status === "streaming") &&
-                                    "opacity-50 hover:cursor-not-allowed pointer-events-none"
-                                )}
-                                onClick={(e) => {
-                                  console.log(tool.name);
-                                  if (tool.activeIcon && input.length > 0) {
-                                    handleClickSubmit();
-                                  }
-                                  if (
-                                    tool.stopIcon &&
-                                    (status === "streaming" ||
-                                      status === "submitted")
-                                  ) {
-                                    stop();
-                                  }
-                                  if (tool.name === "upload") {
-                                    openFileDialog();
-                                  }
-                                }}
-                              >
-                                <Icon />
-                              </div>
-                            </TooltipContainer>
-                          </Fragment>
+                              <Icon />
+                            </div>
+                          </TooltipContainer>
                         );
                       })}
                     </div>

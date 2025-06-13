@@ -47,6 +47,7 @@ const schema = defineSchema({
       })
     ),
     createdAt: v.number(),
+    error: v.optional(v.boolean()),
   })
     .index("by_chatId", ["chatId"])
     .index("by_userId", ["userId"])
