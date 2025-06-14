@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+// import { Analytics } from "@vercel/analytics/react";
+// import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { Viewport, type Metadata } from "next";
 import { Geist } from "next/font/google";
@@ -80,8 +80,8 @@ export default function RootLayout({
             <ConvexClientProvider>
               <ConvexQueryCacheProvider>{children}</ConvexQueryCacheProvider>
             </ConvexClientProvider>
-            <Analytics />
-            <SpeedInsights />
+            {/* <Analytics />
+            <SpeedInsights /> */}
           </body>
         </GlobalStoreProvider>
       </html>
