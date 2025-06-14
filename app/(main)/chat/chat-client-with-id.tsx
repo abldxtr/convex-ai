@@ -61,20 +61,22 @@ export default function ChatClientWithId({
     fileExists,
     selectedModel,
     setSelectedModel,
+    visionModel,
+    setVisionModel,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const { attachments, setAttachments } = useGlobalstate();
   const { base64, convert, error, loading } = useFileToBase64();
-  const visionModel = useMemo(() => {
-    return models.every((item) => {
-      if (item.value === selectedModel) {
-        return item.vision === true;
-      }
-      return false;
-    });
-  }, [models, selectedModel]);
+  // const visionModel = useMemo(() => {
+  //   return models.every((item) => {
+  //     if (item.value === selectedModel) {
+  //       return item.vision === true;
+  //     }
+  //     return false;
+  //   });
+  // }, [models, selectedModel, setSelectedModel]);
 
   const [
     { files, isDragging, errors },
@@ -97,11 +99,26 @@ export default function ChatClientWithId({
 
   useEffect(() => {
     setFileExists(files.length > 0);
+    const visionModel = models.every((item) => {
+      if (item.value === selectedModel) {
+        return item.vision === true;
+      }
+      return false;
+    });
+
+    setVisionModel(() => visionModel);
 
     if (files.length > 0 && !visionModel) {
       setSelectedModel("mmd-google/gemini-2.0-flash-exp:free"); // مدل پیش‌فرض با قابلیت پردازش تصویر
     }
-  }, [files, setFileExists, visionModel, setSelectedModel]);
+  }, [
+    files,
+    setFileExists,
+    selectedModel,
+    setSelectedModel,
+    visionModel,
+    setVisionModel,
+  ]);
   useEffect(() => {
     setFileExists(files.length > 0);
   }, [files, setFileExists]);

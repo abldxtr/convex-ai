@@ -12,6 +12,7 @@ import { useGlobalstate } from "@/context/global-store";
 import { clientGetChatMessages } from "@/lib/type";
 import { PreviewAttachment } from "./preview-attachment";
 import { AIMessageError } from "./error-message-ai";
+import EditMessage from "./edit-message";
 type MessageBarProps = {
   messages: UIMessage[];
   clientChatMessage?: clientGetChatMessages;
@@ -106,6 +107,7 @@ export default function MessageBar({
                       isLastMessage={isLastMessage}
                       reload={reload}
                     />
+                    {/* <EditMessage message={message} /> */}
                   </>
                 ) : message.role === "user" ? (
                   <>
@@ -114,16 +116,11 @@ export default function MessageBar({
                       isLastMessage={isLastMessage}
                       reload={reload}
                     />
+                    {/* <EditMessage message={message} /> */}
                   </>
                 ) : message.role === "assistant" &&
                   (status === "submitted" || status === "streaming") ? (
                   <>
-                    {/* Hmm... */}
-                    {/*  isLastMessage &&  */}
-                    {/* {(status === "streaming" || status === "submitted") && ( */}
-                    {/* <AiLoading /> */}
-
-                    {/* )} */}
                     <AIMessage
                       message={message}
                       status={status}
@@ -132,8 +129,6 @@ export default function MessageBar({
                   </>
                 ) : (
                   <>
-                    {/* <AiLoading /> */}
-
                     <AIMessage
                       message={message}
                       status={status}

@@ -1,5 +1,8 @@
 import "@/styles/globals.css";
 
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import { Viewport, type Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
@@ -49,7 +52,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0A0A0A" },
+  ],
 };
 
 const geist = Geist({
@@ -69,6 +80,8 @@ export default function RootLayout({
             <ConvexClientProvider>
               <ConvexQueryCacheProvider>{children}</ConvexQueryCacheProvider>
             </ConvexClientProvider>
+            <Analytics />
+            <SpeedInsights />
           </body>
         </GlobalStoreProvider>
       </html>

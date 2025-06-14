@@ -29,6 +29,8 @@ type ContextType = {
   setFileExists: Dispatch<SetStateAction<boolean>>;
   selectedModel: string;
   setSelectedModel: Dispatch<SetStateAction<string>>;
+  visionModel: boolean;
+  setVisionModel: Dispatch<SetStateAction<boolean>>;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
@@ -43,6 +45,7 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const [fileExists, setFileExists] = useState(false);
   const [selectedModel, setSelectedModel] = useState("");
+  const [visionModel, setVisionModel] = useState(false);
 
   const contextValue = useMemo(
     () => ({
@@ -64,6 +67,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       setFileExists,
       selectedModel,
       setSelectedModel,
+      visionModel,
+      setVisionModel,
     }),
     [
       firstText,
@@ -75,6 +80,7 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       attachments,
       fileExists,
       selectedModel,
+      visionModel,
     ]
   );
 

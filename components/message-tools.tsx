@@ -1,10 +1,12 @@
-import { Check, CopyIcon, Pencil, RefreshCw } from "lucide-react";
+import { Check, Copy, Pencil, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import type { ChatRequestOptions, UIMessage } from "ai";
 import { useDirection } from "@/hooks/use-direction";
 import { useGlobalstate } from "@/context/global-store";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"; // Removed TooltipProvider as it should be higher up
+
 export function MessageTools({
   message,
   role,
@@ -21,50 +23,77 @@ export function MessageTools({
   const { isCopied, copyToClipboard } = useCopyToClipboard({
     timeout: 2000,
   });
-  const { getError, setGetError } = useGlobalstate();
-  // console.log("getError", getError);
-  const textPart = message.parts.find((part) => part.type === "text");
+  const { getError } = useGlobalstate();
 
-  const direction = useDirection(textPart?.text ?? "");
+  const textPart = message.parts.find((part) => part.type === "text");
+  const messageText = textPart?.text ?? "";
+  const direction = useDirection(messageText);
+
   return (
     <div
       className={cn(
-        "mx-auto flex h-[18px] w-full my-2 max-w-(--thread-content-max-width) items-center px-1 opacity-0 transition-all duration-300 [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] group-hover/turn-messages:opacity-100",
+        "mx-auto flex h-[18px] w-full my-2 max-w-[--thread-content-max-width] items-center px-1 opacity-0 transition-all duration-300 [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] group-hover/turn-messages:opacity-100",
         direction !== "rtl"
           ? "flex items-center justify-start"
           : "flex items-center justify-end"
       )}
     >
-      <Button
-        variant="ghost"
-        size="smIcon"
-        onClick={() => {
-          const textPart = message.parts.find((part) => part.type === "text");
-          if (textPart && "text" in textPart) {
-            copyToClipboard(textPart.text);
-          }
-        }}
-      >
-        {isCopied ? <Check /> : <CopyIcon />}
-      </Button>
+      {/* Copy Button with Tooltip */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="smIcon"
+            onClick={() => {
+              if (messageText) {
+                copyToClipboard(messageText);
+              }
+            }}
+          >
+            {isCopied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {isCopied ? "Copied!" : "Copy to clipboard"}
+        </TooltipContent>
+      </Tooltip>
+
+      {/* Edit Button (commented out in original, but added for completeness with tooltip) */}
       {/* {role === "user" && (
-        <Button variant="ghost" size="smIcon">
-          <Pencil />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="smIcon">
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Edit message
+          </TooltipContent>
+        </Tooltip>
       )} */}
 
+      {/* Regenerate Button with Tooltip */}
       {role === "user" && isLastMessage && getError && (
-        <Button
-          variant="ghost"
-          size="smIcon"
-          onClick={() => {
-            if (reload) {
-              reload();
-            }
-          }}
-        >
-          <RefreshCw />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="smIcon"
+              onClick={() => {
+                if (reload) {
+                  reload();
+                }
+              }}
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Regenerate response</TooltipContent>
+        </Tooltip>
       )}
     </div>
   );
