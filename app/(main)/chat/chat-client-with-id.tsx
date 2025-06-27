@@ -27,11 +27,18 @@ import { motion, MotionConfig } from "framer-motion";
 import { api } from "@/convex/_generated/api";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 import { useQuery } from "convex-helpers/react/cache/hooks";
+import {
+  useQuery as TanstackUseQuery,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { searchTools } from "@/lib/chat-tools";
 import { useDirection } from "@/hooks/use-direction";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useFileToBase64 } from "@/hooks/use-file-base64";
+import { usePreloadedQuery } from "convex/react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AllUserData } from "@/lib/server-get-all-data";
 
 interface ChatClientWithIdProps extends ChatClientPropsPartial {
   chatIdd: string;
@@ -45,9 +52,37 @@ export default function ChatClientWithId({
   chatIdd,
   id,
   idChat,
+  preloaded,
 }: ChatClientWithIdProps) {
   console.log("yesssssssssssssssssss");
-  const clientGetChatMessages = useQuery(api.chat.getChatById, { id: chatIdd });
+  // const clientGetChatMessages = usePreloadedQuery(preloaded!);
+  const { data: clientGetChatMessages } = useSuspenseQuery({
+    queryKey: ["posts", chatIdd], // chatIdd رو به queryKey اضافه کن
+    queryFn: async ({ queryKey }) => {
+      const [, chatId] = queryKey; // استخراج chatId از queryKey
+      const response = await fetch(`/api/user-data?chatId=${chatId}`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch chat messages");
+      }
+
+      const json = await response.json();
+      console.log("ddddddddddddddddddddddddddddddd");
+
+      console.log(json);
+
+      return json.chat;
+    },
+  });
+
+  // const clientGetChatMessages = useQuery(api.chat.getChatById, { id: chatIdd });
+  // const clientGetChatMessages = TanstackUseQuery(convexQuery(api.chat.getChatById, { id: 123 }), { id: chatIdd });
+
+  // useQuery(
+  //   convexQuery(api.functions.myQuery, { id: 123 }),
+  // );
 
   const {
     newChat,
@@ -99,12 +134,14 @@ export default function ChatClientWithId({
 
   useEffect(() => {
     setFileExists(files.length > 0);
-    const visionModel = models.every((item) => {
+    const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
         return item.vision === true;
+      } else {
+        return false;
       }
-      return false;
     });
+    console.log({ visionModel });
 
     setVisionModel(() => visionModel);
 
@@ -148,6 +185,7 @@ export default function ChatClientWithId({
     setMessages,
     reload,
     append,
+    experimental_resume,
   } = useChat({
     id: idChat,
     experimental_throttle: 100,
@@ -267,15 +305,15 @@ export default function ChatClientWithId({
       <div className="px-4 pt-3 pb-1 shrink-0 h-[52px] ">
         <SidebarToggle />
       </div>
-
+      <ScrollArea></ScrollArea>
       {/* Loading state */}
-      {clientGetChatMessages === undefined && messages.length === 0 && (
+      {/* {clientGetChatMessages === undefined && messages.length === 0 && (
         <div className=" w-full h-full    ">
           <div className="flex items-center justify-center h-full w-full  shrink-0 ">
             <Loader2 className="size-6 animate-spin" />
           </div>
         </div>
-      )}
+      )} */}
 
       {messages.length > 0 && (
         <MessageBar
@@ -285,6 +323,9 @@ export default function ChatClientWithId({
           status={status}
           reload={reload}
         />
+      )}
+      {messages.length === 0 && (
+        <div className="relative h-full w-full flex-1 overflow-hidden"></div>
       )}
 
       {/* Input form */}
@@ -330,7 +371,7 @@ export default function ChatClientWithId({
                 />
                 <div
                   className={cn(
-                    "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
+                    "relative w-full p-[10px] flex flex-col justify-between "
                   )}
                 >
                   {/* Text input */}
@@ -340,7 +381,7 @@ export default function ChatClientWithId({
                     autoFocus
                     placeholder="Ask anything"
                     className={cn(
-                      "field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50",
+                      "field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50",
                       files.length > 0 && "mb-2"
                     )}
                     onChange={(e) => {

@@ -36,12 +36,11 @@ interface ChatClientWithoutIdProps extends ChatClientPropsPartial {
   idChat?: string;
 }
 
-export default function ChatClientWithoutId(
-  {
-    // id,
-    // idChat,
-  }: ChatClientWithoutIdProps
-) {
+export default function ChatClientWithoutId({
+  // id,
+  // idChat,
+  preloaded,
+}: ChatClientWithoutIdProps) {
   console.log("noooooooooooooooooooooo");
 
   const {
@@ -96,12 +95,13 @@ export default function ChatClientWithoutId(
   });
   useEffect(() => {
     setFileExists(files.length > 0);
-    const visionModel = models.every((item) => {
+    const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
         return item.vision === true;
       }
       return false;
     });
+    console.log({ visionModel });
 
     setVisionModel(() => visionModel);
 
@@ -136,6 +136,8 @@ export default function ChatClientWithoutId(
     status,
     setMessages,
     reload,
+    experimental_resume,
+    append,
   } = useChat({
     id: idChat,
     experimental_throttle: 100,
@@ -172,6 +174,9 @@ export default function ChatClientWithoutId(
     },
   });
   console.log(messages);
+  useEffect(() => {
+    experimental_resume();
+  }, []);
 
   // Scroll to bottom when new messages arrive
   // useEffect(() => {
@@ -185,34 +190,34 @@ export default function ChatClientWithoutId(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
-        if (status !== "ready") {
-          toast.error("Please wait for the previous message to be sent");
-        } else {
-          // localStorage.setItem("first-message", input);
-          // setInput("");
-          setActive(true);
-          // router.push(`/chat/${idChat}`);
-          if (files.length > 0) {
-            try {
-              const result = await convert(files[0].file as File);
-              handleSubmit(undefined, {
-                experimental_attachments: [
-                  {
-                    url: result,
-                    name: files[0].file.name,
-                    contentType: files[0].file.type,
-                  },
-                ],
-              });
-              clearFiles();
-            } catch (err) {
-              toast.error("خطا در تبدیل فایل به base64");
-            }
-            // setAttachments([]);
-          } else {
-            handleSubmit();
+        // if (status !== "ready") {
+        //   toast.error("Please wait for the previous message to be sent");
+        // } else {
+        // localStorage.setItem("first-message", input);
+        // setInput("");
+        setActive(true);
+        // router.push(`/chat/${idChat}`);
+        if (files.length > 0) {
+          try {
+            const result = await convert(files[0].file as File);
+            handleSubmit(undefined, {
+              experimental_attachments: [
+                {
+                  url: result,
+                  name: files[0].file.name,
+                  contentType: files[0].file.type,
+                },
+              ],
+            });
+            clearFiles();
+          } catch (err) {
+            toast.error("خطا در تبدیل فایل به base64");
           }
+          // setAttachments([]);
+        } else {
+          handleSubmit();
         }
+        // }
       }
     },
     [status, input, setInput, setActive, router, idChat, attachments]
@@ -246,7 +251,7 @@ export default function ChatClientWithoutId(
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
       {/* Header */}
-      <div className="px-4 pt-3 pb-1">
+      <div className="px-4 pt-3 pb-1 shrink-0 h-[52px]">
         <SidebarToggle />
       </div>
 

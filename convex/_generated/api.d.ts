@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as chat from "../chat.js";
 import type * as example from "../example.js";
 import type * as http from "../http.js";
+import type * as stream from "../stream.js";
 import type * as streaming from "../streaming.js";
 import type * as user from "../user.js";
 import type * as vercel from "../vercel.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   chat: typeof chat;
   example: typeof example;
   http: typeof http;
+  stream: typeof stream;
   streaming: typeof streaming;
   user: typeof user;
   vercel: typeof vercel;

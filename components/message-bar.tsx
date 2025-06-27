@@ -13,6 +13,7 @@ import { clientGetChatMessages } from "@/lib/type";
 import { PreviewAttachment } from "./preview-attachment";
 import { AIMessageError } from "./error-message-ai";
 import EditMessage from "./edit-message";
+import { ScrollArea } from "./ui/scroll-area";
 type MessageBarProps = {
   messages: UIMessage[];
   clientChatMessage?: clientGetChatMessages;
@@ -78,10 +79,14 @@ export default function MessageBar({
           </div>
         </div>
       )}
-      <div
-        className="isolate h-full w-full flex-1 overflow-x-clip overflow-y-scroll px-4"
+      <ScrollArea
+        className="isolate h-full w-full flex-1 overflow-x-clip px-4"
         ref={scrollRef}
       >
+        {/* <div
+          className="isolate h-full w-full flex-1 overflow-x-clip overflow-y-scroll px-4"
+          ref={scrollRef}
+        > */}
         <div className="relative z-[9] h-full w-full">
           {messages.map((message, index) => {
             const isLastMessage = messages.length - 1 === index;
@@ -160,8 +165,9 @@ export default function MessageBar({
               <div className="h-[220px] w-[20px] flex items-center justify-center " />
             )} */}
           <div ref={endOfMessagesRef} />
+          {/* </div> */}
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 }

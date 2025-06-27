@@ -1,6 +1,7 @@
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import {
   appendClientMessage,
+  createDataStream,
   smoothStream,
   streamText,
   type Attachment,
@@ -19,6 +20,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { base64ToBlob } from "@/lib/base64-to-blob";
 import { Doc, Id } from "@/convex/_generated/dataModel";
+import { differenceInSeconds } from "date-fns";
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY,
@@ -402,3 +404,115 @@ export async function POST(req: Request) {
     return result.toDataStreamResponse();
   }
 }
+
+// export async function GET(request: Request) {
+//   const streamContext = getStreamContext();
+//   const resumeRequestedAt = new Date();
+
+//   if (!streamContext) {
+//     return new Response(null, { status: 204 });
+//   }
+
+//   const { searchParams } = new URL(request.url);
+//   const chatId = searchParams.get("chatId");
+
+//   if (!chatId) {
+//     return new Response("id is required", { status: 400 });
+//   }
+
+//   const token = await convexAuthNextjsToken();
+//   if (!token) {
+//     return NextResponse.json({ error: "User not found" }, { status: 401 });
+//   }
+
+//   const userId = await fetchQuery(api.user.getUser, {}, { token });
+
+//   if (!userId) {
+//     return new Response("Unauthorized", { status: 401 });
+//   }
+
+//   let chat: {
+//     chatItem: Doc<"chats">;
+//     chatMessages: Doc<"vercelAiMessages">[];
+//   } | null;
+
+//   try {
+//     chat = await fetchQuery(api.chat.getChatById, { id: chatId }, { token });
+//   } catch {
+//     return new Response("Not found", { status: 404 });
+//   }
+
+//   if (!chat) {
+//     return new Response("Not found", { status: 404 });
+//   }
+
+//   if (
+//     chat.chatItem.visibility === "private" &&
+//     chat.chatItem.userId !== userId._id
+//   ) {
+//     return new Response("Forbidden", { status: 403 });
+//   }
+
+//   let streamIds: string[] = [];
+
+//   try {
+//     streamIds = await fetchQuery(
+//       api.stream.getStream,
+//       { chatId },
+//       { token }
+//     );
+//   } catch {
+//     return new Response("No streams found", { status: 404 });
+//   }
+
+//   if (!streamIds.length) {
+//     return new Response("No streams found", { status: 404 });
+//   }
+
+//   const recentStreamId = streamIds.at(-1);
+
+//   if (!recentStreamId) {
+//     return new Response("No recent stream found", { status: 404 });
+//   }
+
+//   const emptyDataStream = createDataStream({
+//     execute: () => {},
+//   });
+
+//   const stream = await streamContext.resumableStream(
+//     recentStreamId,
+//     () => emptyDataStream
+//   );
+
+//   if (!stream) {
+//     const messages = await getMessagesByChatId({ id: chatId });
+//     const mostRecentMessage = messages.at(-1);
+
+//     if (!mostRecentMessage) {
+//       return new Response(emptyDataStream, { status: 200 });
+//     }
+
+//     if (mostRecentMessage.role !== "assistant") {
+//       return new Response(emptyDataStream, { status: 200 });
+//     }
+
+//     const messageCreatedAt = new Date(mostRecentMessage.createdAt);
+
+//     if (differenceInSeconds(resumeRequestedAt, messageCreatedAt) > 15) {
+//       return new Response(emptyDataStream, { status: 200 });
+//     }
+
+//     const restoredStream = createDataStream({
+//       execute: (buffer) => {
+//         buffer.writeData({
+//           type: "append-message",
+//           message: JSON.stringify(mostRecentMessage),
+//         });
+//       },
+//     });
+
+//     return new Response(restoredStream, { status: 200 });
+//   }
+
+//   return new Response(stream, { status: 200 });
+// }

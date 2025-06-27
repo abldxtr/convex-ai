@@ -3,6 +3,7 @@ import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 // import { StreamIdValidator } from "@convex-dev/persistent-text-streaming";
 // "user" | "data" | "system" | "assistant"
+// visibility: varchar('visibility', { enum: ['public', 'private'] })
 
 const schema = defineSchema({
   ...authTables,
@@ -12,6 +13,7 @@ const schema = defineSchema({
     title: v.string(),
     userId: v.id("users"),
     isDeleted: v.boolean(),
+    visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
   })
     .index("by_userId", ["userId"])
     .index("by_createId", ["id"]),
@@ -54,6 +56,12 @@ const schema = defineSchema({
     .index("by_chatId_userId", ["chatId", "userId"])
     .index("by_ID", ["id"])
     .index("by_chatId_userId_id", ["chatId", "userId", "id"]),
+  stream: defineTable({
+    id: v.string(),
+    chatId: v.id("chats"),
+    createdAt: v.number(),
+    userId: v.id("users"),
+  }).index("by_chatId", ["chatId"]),
 });
 
 export default schema;

@@ -22,7 +22,7 @@ import {
   type StreamId,
 } from "@convex-dev/persistent-text-streaming";
 import { streamingComponent } from "./streaming";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 
 export const getThreadMessages = query({
   args: { threadId: v.string() },
@@ -67,6 +67,7 @@ export const createChat = mutation({
     userId: v.id("users"),
     id: v.string(),
     isDeleted: v.boolean(),
+    visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
   },
   handler: async (ctx, args): Promise<Id<"chats">> => {
     // const streamId = await streamingComponent.createStream(ctx);
@@ -75,9 +76,45 @@ export const createChat = mutation({
       title: args.title,
       userId: args.userId,
       isDeleted: args.isDeleted,
+      visibility: args.visibility ?? "private",
       // stream: streamId,
     });
     return chatId as Id<"chats">;
+  },
+});
+
+export const changeChatVisibility = mutation({
+  args: {
+    userId: v.id("users"),
+    chatId: v.id("chats"),
+    visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
+  },
+  handler: async (ctx, args): Promise<Id<"chats"> | null> => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) {
+      return null;
+    }
+    // const chatOwn = await ctx.db.query("chats").withIndex("by_userId",)
+    const chat = await ctx.db.get(args.chatId);
+
+    if (chat === null) {
+      // throw new Error("Chat not found.");
+      return null;
+    }
+
+    // Ensure the authenticated user owns the chat they are trying to modify
+    if (chat.userId !== userId) {
+      // You might want to throw an error for unauthorized modification
+      // throw new Error(
+      //   "You do not have permission to change this chat's visibility."
+      // );
+      return null;
+    }
+
+    await ctx.db.patch(args.chatId, {
+      visibility: args.visibility,
+    });
+    return args.chatId;
   },
 });
 
@@ -120,7 +157,13 @@ export const getChat = query({
 
 export const getChatById = query({
   args: { id: v.string() },
-  handler: async (ctx, args) => {
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    chatItem: Doc<"chats">;
+    chatMessages: Doc<"vercelAiMessages">[];
+  } | null> => {
     // return await ctx.db.get(args.chatId);
     const userId = await getAuthUserId(ctx);
     if (userId === null) {
