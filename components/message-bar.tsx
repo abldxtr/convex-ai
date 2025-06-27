@@ -14,6 +14,8 @@ import { PreviewAttachment } from "./preview-attachment";
 import { AIMessageError } from "./error-message-ai";
 import EditMessage from "./edit-message";
 import { ScrollArea } from "./ui/scroll-area";
+import { AnimatedMarkdown } from "flowtoken";
+import "flowtoken/dist/styles.css";
 type MessageBarProps = {
   messages: UIMessage[];
   clientChatMessage?: clientGetChatMessages;
@@ -294,7 +296,13 @@ export function AIMessage({
                       // <ThinkingMessage />
                     )} */}
                   {/* {part.text} */}
-                  <MarkdownRenderer content={part.text} />
+                  <AnimatedMarkdown
+                    content={part.text}
+                    animation="None"
+                    // animationDuration="0.5s"
+                    // animationTimingFunction="ease-in-out"
+                  />
+                  {/* <MarkdownRenderer content={part.text} /> */}
                 </div>
               );
           }
