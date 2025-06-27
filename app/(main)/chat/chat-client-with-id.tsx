@@ -318,9 +318,9 @@ export default function ChatClientWithId({
           reload={reload}
         />
       )}
-      {messages.length === 0 && (
+      {/* {messages.length === 0 && (
         <div className="relative h-full w-full flex-1 overflow-hidden"></div>
-      )}
+      )} */}
 
       {/* Input form */}
       <form
