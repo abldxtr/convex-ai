@@ -13,9 +13,11 @@ function getHostname() {
   return process.env.VERCEL_BRANCH_URL;
 }
 
+Promise<{ rest: string[] }>;
+
 export async function GET(
   request: NextRequest,
-  context: { params: { rest: string[] } }
+  context: { params: Promise<{ rest: string[] }> }
 ) {
   const schema = process.env.NODE_ENV === "development" ? "http" : "https";
   const host = getHostname();
@@ -23,8 +25,9 @@ export async function GET(
   if (!host) {
     return new Response("Failed to get hostname from env", { status: 500 });
   }
+  const param = await context.params;
 
-  const href = context.params.rest.join("/");
+  const href = param.rest.join("/");
 
   if (!href) {
     return new Response("Missing url parameter", { status: 400 });
