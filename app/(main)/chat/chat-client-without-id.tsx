@@ -191,11 +191,13 @@ export default function ChatClientWithoutId({
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
         if (status !== "ready") {
-          //   toast.error("Please wait for the previous message to be sent");
+          toast.error("Please wait for the previous message to be sent");
         } else {
           // localStorage.setItem("first-message", input);
           // setInput("");
           setActive(true);
+          window.history.pushState({}, "", `/chat/${idChat}`);
+
           // router.push(`/chat/${idChat}`);
           if (files.length > 0) {
             try {

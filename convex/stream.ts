@@ -33,7 +33,6 @@ export const createStream = mutation({
   args: {
     // chatId:v.string(),
     chatId: v.id("chats"),
-    createdAt: v.number(),
     userId: v.id("users"),
     id: v.string(),
   },
@@ -44,7 +43,6 @@ export const createStream = mutation({
     }
     ctx.db.insert("stream", {
       chatId: args.chatId,
-      createdAt: args.createdAt,
       id: args.id,
       userId,
     });

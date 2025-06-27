@@ -479,3 +479,35 @@ export async function POST(req: Request) {
   }
   // return result.toUIMessageStreamResponse();
 }
+
+// streamText({
+//   model: mmd.languageModel(body.model ?? DEFAULT_MODEL),
+//   messages: allMessages,
+//   system: SYSTEM_PROMPT,
+//   experimental_transform: smoothStream({ delayInMs: 20, chunking: "word" }),
+//   onFinish: async (result) => {
+//     await fetchAction(api.agent.createThread, {
+//       prompt: body.message.content,
+//       chatId,
+//     });
+//     await fetchMutation(
+//       api.vercel.createVercelAiMessage,
+//       {
+//         chatId,
+//         id: crypto.randomUUID(),
+//         userId: userId._id,
+//         content: result.text,
+//         role: "assistant",
+//         parts: [{ type: "text", text: result.text }],
+//       },
+//       { token }
+//     );
+//   },
+//   onError: async (e) => {
+//     await fetchAction(api.agent.createThread, {
+//       prompt: body.message.content,
+//       chatId,
+//     });
+//     console.log(e);
+//   },
+// })

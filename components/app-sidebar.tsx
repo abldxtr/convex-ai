@@ -40,6 +40,7 @@ import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
 import { Skeleton } from "./ui/skeleton";
 import { Link } from "@/lib/link";
+import { Spinner } from "./spinner";
 
 export function AppSidebar({ user }: { user: UserType }) {
   const chatList = useQuery(api.chat.getChat, {});
@@ -148,7 +149,8 @@ export function AppSidebar({ user }: { user: UserType }) {
       <SidebarContent>
         {chatList === undefined && (
           <div className="flex items-center justify-center">
-            <Loader2 className="size-6 animate-spin" />
+            {/* <Loader2 className="size-6 animate-spin" /> */}
+            <Spinner />
           </div>
         )}
 

@@ -59,7 +59,6 @@ const schema = defineSchema({
   stream: defineTable({
     id: v.string(),
     chatId: v.id("chats"),
-    createdAt: v.number(),
     userId: v.id("users"),
   }).index("by_chatId", ["chatId"]),
 });

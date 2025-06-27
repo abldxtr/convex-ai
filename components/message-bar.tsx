@@ -296,13 +296,13 @@ export function AIMessage({
                       // <ThinkingMessage />
                     )} */}
                   {/* {part.text} */}
-                  <AnimatedMarkdown
+                  {/* <AnimatedMarkdown
                     content={part.text}
                     animation="None"
                     // animationDuration="0.5s"
                     // animationTimingFunction="ease-in-out"
-                  />
-                  {/* <MarkdownRenderer content={part.text} /> */}
+                  /> */}
+                  <MarkdownRenderer content={part.text} />
                 </div>
               );
           }
