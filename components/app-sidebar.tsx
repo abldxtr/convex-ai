@@ -26,7 +26,7 @@ import {
   SidebarGroupLabel,
   SidebarMenuAction,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
+// import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { PlusIcon, Ellipsis, Trash2, Loader2 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
@@ -39,6 +39,7 @@ import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
 import { Skeleton } from "./ui/skeleton";
+import { Link } from "@/lib/link";
 
 export function AppSidebar({ user }: { user: UserType }) {
   const chatList = useQuery(api.chat.getChat, {});

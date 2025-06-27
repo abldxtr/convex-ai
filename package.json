@@ -43,6 +43,7 @@
     "date-fns": "^4.1.0",
     "exa-js": "^1.7.3",
     "framer-motion": "^12.15.0",
+    "linkedom": "^0.18.11",
     "lucide-react": "^0.511.0",
     "marked-react": "^3.0.0",
     "monacopilot": "^0.12.10",

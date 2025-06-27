@@ -174,9 +174,9 @@ export default function ChatClientWithoutId({
     },
   });
   console.log(messages);
-  useEffect(() => {
-    experimental_resume();
-  }, []);
+  // useEffect(() => {
+  //   experimental_resume();
+  // }, []);
 
   // Scroll to bottom when new messages arrive
   // useEffect(() => {
@@ -190,34 +190,34 @@ export default function ChatClientWithoutId({
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
-        // if (status !== "ready") {
-        //   toast.error("Please wait for the previous message to be sent");
-        // } else {
-        // localStorage.setItem("first-message", input);
-        // setInput("");
-        setActive(true);
-        // router.push(`/chat/${idChat}`);
-        if (files.length > 0) {
-          try {
-            const result = await convert(files[0].file as File);
-            handleSubmit(undefined, {
-              experimental_attachments: [
-                {
-                  url: result,
-                  name: files[0].file.name,
-                  contentType: files[0].file.type,
-                },
-              ],
-            });
-            clearFiles();
-          } catch (err) {
-            toast.error("خطا در تبدیل فایل به base64");
-          }
-          // setAttachments([]);
+        if (status !== "ready") {
+          //   toast.error("Please wait for the previous message to be sent");
         } else {
-          handleSubmit();
+          // localStorage.setItem("first-message", input);
+          // setInput("");
+          setActive(true);
+          // router.push(`/chat/${idChat}`);
+          if (files.length > 0) {
+            try {
+              const result = await convert(files[0].file as File);
+              handleSubmit(undefined, {
+                experimental_attachments: [
+                  {
+                    url: result,
+                    name: files[0].file.name,
+                    contentType: files[0].file.type,
+                  },
+                ],
+              });
+              clearFiles();
+            } catch (err) {
+              toast.error("خطا در تبدیل فایل به base64");
+            }
+            // setAttachments([]);
+          } else {
+            handleSubmit();
+          }
         }
-        // }
       }
     },
     [status, input, setInput, setActive, router, idChat, attachments]
@@ -247,6 +247,8 @@ export default function ChatClientWithoutId({
       handleSubmit();
     }
   }, [files, convert, handleSubmit, setActive]);
+  const stopIcon = searchTools.find((t) => t.name === "StopButton")?.icon;
+  console.log({ status });
 
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
@@ -381,36 +383,30 @@ export default function ChatClientWithoutId({
 
                     {/* Action buttons */}
                     <div className="flex items-center gap-2">
-                      {searchTools.map((tool) => {
+                      {searchTools.map(({ name, icon, description }) => {
                         const isStreaming =
                           status === "streaming" || status === "submitted";
                         const isInputEmpty = input.trim().length === 0;
 
-                        // فقط upload و ActionButton را نمایش بده
-                        if (tool.name === "StopButton") return null;
+                        if (name === "StopButton") return null;
 
-                        // تغییر آیکن دکمه ActionButton در حالت استریم
                         const Icon =
-                          tool.name === "ActionButton"
-                            ? isStreaming
-                              ? searchTools.find((t) => t.name === "StopButton")
-                                  ?.icon || tool.icon
-                              : tool.icon
-                            : tool.icon;
+                          name === "ActionButton" && isStreaming && stopIcon
+                            ? stopIcon
+                            : icon;
 
-                        // اصلاح شده: فقط وقتی ورودی خالی باشه و در حالت idle باشیم دکمه غیرفعاله
                         const isDisabled =
-                          (tool.name === "upload" && isStreaming) ||
-                          (tool.name === "ActionButton" &&
+                          (name === "upload" && isStreaming) ||
+                          (name === "ActionButton" &&
                             isInputEmpty &&
                             !isStreaming);
 
                         const handleClick = () => {
-                          if (tool.name === "upload" && !isStreaming) {
+                          if (name === "upload" && !isStreaming) {
                             openFileDialog();
                           }
 
-                          if (tool.name === "ActionButton") {
+                          if (name === "ActionButton") {
                             if (isStreaming) {
                               stop();
                             } else if (!isInputEmpty) {
@@ -419,24 +415,22 @@ export default function ChatClientWithoutId({
                           }
                         };
 
+                        const tooltip =
+                          isStreaming && name === "ActionButton"
+                            ? "Stopping..."
+                            : description;
+
                         return (
-                          <TooltipContainer
-                            key={tool.name}
-                            tooltipContent={
-                              isStreaming && tool.name === "ActionButton"
-                                ? "Stopping..."
-                                : tool.description
-                            }
-                          >
+                          <TooltipContainer key={name} tooltipContent={tooltip}>
                             <div
                               className={cn(
                                 "flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 fill-[#5d5d5d]",
-                                tool.name === "upload" && "hover:bg-gray-100",
-                                tool.name === "ActionButton" &&
+                                name === "upload" && "hover:bg-gray-100",
+                                name === "ActionButton" &&
                                   "bg-black fill-white",
-                                isDisabled &&
-                                  "opacity-50 pointer-events-none hover:cursor-not-allowed",
-                                !isDisabled && "hover:cursor-pointer"
+                                isDisabled
+                                  ? "opacity-50 pointer-events-none hover:cursor-not-allowed"
+                                  : "hover:cursor-pointer"
                               )}
                               onClick={handleClick}
                             >
