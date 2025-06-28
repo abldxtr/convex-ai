@@ -254,6 +254,20 @@ export default function ChatClientWithoutId(
     }
   }, []);
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // ذخیره زمان بسته شدن صفحه
+      // localStorage.setItem('pageClosedTime', Date.now().toString());
+      removeValue();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
       {/* Header */}
