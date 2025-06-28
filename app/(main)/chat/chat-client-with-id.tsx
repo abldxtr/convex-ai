@@ -99,6 +99,9 @@ export default function ChatClientWithId({
     setSelectedModel,
     visionModel,
     setVisionModel,
+    value,
+    setValue,
+    removeValue,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -244,6 +247,7 @@ export default function ChatClientWithId({
           toast.error("Please wait for the previous message to be sent");
         } else {
           // setInput("");
+          setValue("");
           setActive(true);
           if (files.length > 0) {
             try {
@@ -274,6 +278,8 @@ export default function ChatClientWithId({
   // Handle click submission
   const handleClickSubmit = useCallback(async () => {
     setActive(true);
+    setValue("");
+
     if (files.length > 0) {
       try {
         const result = await convert(files[0].file as File);
@@ -297,22 +303,20 @@ export default function ChatClientWithId({
   }, [input, setInput, setActive, router, idChat, attachments]);
   const stopIcon = searchTools.find((t) => t.name === "StopButton")?.icon;
 
+  const [disableLayout, setDisableLayout] = useState(false);
+
+  useLayoutEffect(() => {
+    if (value.length > 0) {
+      setInput(value);
+    }
+  }, []);
+
   return (
-    // <div className={cn(" h-dvh w-dvw flex flex-col overflow-hidden ")}>
     <div className={cn(" flex h-full w-full flex-col")}>
       {/* Header */}
       <div className="px-4 pt-3 pb-1 shrink-0 h-[52px] ">
         <SidebarToggle />
       </div>
-      {/* <ScrollArea></ScrollArea> */}
-      {/* Loading state */}
-      {/* {clientGetChatMessages === undefined && messages.length === 0 && (
-        <div className=" w-full h-full    ">
-          <div className="flex items-center justify-center h-full w-full  shrink-0 ">
-            <Loader2 className="size-6 animate-spin" />
-          </div>
-        </div>
-      )} */}
 
       {messages.length > 0 && (
         <MessageBar
@@ -323,9 +327,6 @@ export default function ChatClientWithId({
           reload={reload}
         />
       )}
-      {/* {messages.length === 0 && (
-        <div className="relative h-full w-full flex-1 overflow-hidden"></div>
-      )} */}
 
       {/* Input form */}
       <form
@@ -338,8 +339,10 @@ export default function ChatClientWithId({
         <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
           <motion.div
             className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px] bg-transparent  "
-            layoutId="chat-input"
-            layout="position"
+            layoutId={disableLayout ? undefined : "chat-input"}
+            // layout="position"
+            // layout="preserve-aspect"
+            layout={disableLayout ? false : "position"}
           >
             {/* Input container */}
             <div
@@ -384,10 +387,17 @@ export default function ChatClientWithId({
                       files.length > 0 && "mb-2"
                     )}
                     onChange={(e) => {
+                      if (e.target.value.length > 50) {
+                        setDisableLayout(true);
+                      }
                       const direction = useDirection(e.target.value);
                       setDirection(direction);
                       setInput(e.target.value);
+                      setValue(e.target.value);
                     }}
+                    // onBlur={() => {
+                    //   setDisableLayout(false);
+                    // }}
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
                   />

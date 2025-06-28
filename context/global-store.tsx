@@ -9,6 +9,7 @@ import React, {
   SetStateAction,
   useMemo,
 } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 type ContextType = {
   firstText: string;
@@ -31,6 +32,9 @@ type ContextType = {
   setSelectedModel: Dispatch<SetStateAction<string>>;
   visionModel: boolean;
   setVisionModel: Dispatch<SetStateAction<boolean>>;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+  value: string;
+  removeValue: () => void;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
@@ -46,6 +50,7 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [fileExists, setFileExists] = useState(false);
   const [selectedModel, setSelectedModel] = useState("");
   const [visionModel, setVisionModel] = useState(false);
+  const [value, setValue, removeValue] = useLocalStorage("InputText", "");
 
   const contextValue = useMemo(
     () => ({
@@ -69,6 +74,9 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       setSelectedModel,
       visionModel,
       setVisionModel,
+      value,
+      setValue,
+      removeValue,
     }),
     [
       firstText,
@@ -81,6 +89,9 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       fileExists,
       selectedModel,
       visionModel,
+      value,
+      setValue,
+      removeValue,
     ]
   );
 

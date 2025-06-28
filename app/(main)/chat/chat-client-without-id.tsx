@@ -58,6 +58,9 @@ export default function ChatClientWithoutId(
     setDirection,
     visionModel,
     setVisionModel,
+    value,
+    setValue,
+    removeValue,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -187,6 +190,8 @@ export default function ChatClientWithoutId(
           // localStorage.setItem("first-message", input);
           // setInput("");
           setActive(true);
+          setValue("");
+
           // router.push(`/chat/${idChat}`);
           window.history.pushState({}, "", `/chat/${idChat}`);
           if (files.length > 0) {
@@ -219,6 +224,7 @@ export default function ChatClientWithoutId(
   const handleClickSubmit = useCallback(async () => {
     setActive(true);
     window.history.pushState({}, "", `/chat/${idChat}`);
+    setValue("");
 
     if (files.length > 0) {
       try {
@@ -241,6 +247,13 @@ export default function ChatClientWithoutId(
     }
   }, [files, convert, handleSubmit, setActive]);
 
+  const [disableLayout, setDisableLayout] = useState(false);
+  useLayoutEffect(() => {
+    if (value.length > 0) {
+      setInput(value);
+    }
+  }, []);
+
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
       {/* Header */}
@@ -262,8 +275,8 @@ export default function ChatClientWithoutId(
       <form
         onSubmit={(e) => e.preventDefault()}
         className={cn(
-          "w-full",
-          active ? "" : " h-full flex flex-col items-center justify-center  "
+          "w-full !transition-none ",
+          active ? "" : " h-full flex flex-col items-center justify-center    "
         )}
       >
         <div
@@ -276,12 +289,17 @@ export default function ChatClientWithoutId(
         </div>
         <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
           <motion.div
-            className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]"
-            layoutId="chat-input"
-            layout="position"
+            className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]  "
+            layoutId={disableLayout ? undefined : "chat-input"}
+            // layout="position"
+            // layout="preserve-aspect"
+
+            layout={disableLayout ? undefined : "position"}
+
+            // layoutDependency={["page"]}
           >
             {/* Input container */}
-            <div className="flex items-center justify-center relative ">
+            <div className="flex items-center justify-center relative !transition-none ">
               <div
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
@@ -316,12 +334,19 @@ export default function ChatClientWithoutId(
                     value={input}
                     autoFocus
                     placeholder="Ask anything"
-                    className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
+                    className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50 !transition-none "
                     onChange={(e) => {
+                      if (e.target.value.length > 50) {
+                        setDisableLayout(true);
+                      }
                       const direction = useDirection(e.target.value);
                       setDirection(direction);
                       setInput(e.target.value);
+                      setValue(e.target.value);
                     }}
+                    // onBlur={() => {
+                    //   setDisableLayout(false);
+                    // }}
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
                   />
