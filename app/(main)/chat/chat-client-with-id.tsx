@@ -212,9 +212,9 @@ export default function ChatClientWithId({
     },
   });
 
-  // useEffect(() => {
-  //   experimental_resume();
-  // }, []);
+  useEffect(() => {
+    experimental_resume();
+  }, []);
 
   console.log({ status });
   // Handle new chat state
@@ -239,7 +239,7 @@ export default function ChatClientWithId({
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-        e.preventDefault();
+        // e.preventDefault();
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
         } else {
@@ -304,7 +304,7 @@ export default function ChatClientWithId({
       <div className="px-4 pt-3 pb-1 shrink-0 h-[52px] ">
         <SidebarToggle />
       </div>
-      <ScrollArea></ScrollArea>
+      {/* <ScrollArea></ScrollArea> */}
       {/* Loading state */}
       {/* {clientGetChatMessages === undefined && messages.length === 0 && (
         <div className=" w-full h-full    ">

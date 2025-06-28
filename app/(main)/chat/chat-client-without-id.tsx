@@ -36,11 +36,12 @@ interface ChatClientWithoutIdProps extends ChatClientPropsPartial {
   idChat?: string;
 }
 
-export default function ChatClientWithoutId({
-  // id,
-  // idChat,
-  preloaded,
-}: ChatClientWithoutIdProps) {
+export default function ChatClientWithoutId(
+  {
+    // id,
+    // idChat,
+  }: ChatClientWithoutIdProps
+) {
   console.log("noooooooooooooooooooooo");
 
   const {
@@ -65,15 +66,6 @@ export default function ChatClientWithoutId({
   const idChat = useMemo(() => crypto.randomUUID(), []);
 
   const { base64, convert, error, loading } = useFileToBase64();
-  // const visionModel = useMemo(() => {
-  //   return models.every((item) => {
-  //     if (item.value === selectedModel) {
-  //       return item.vision === true;
-  //     }
-  //     return false;
-  //   });
-  // }, [models, selectedModel]);
-  // console.log(base64);
 
   const [
     { files, isDragging, errors },
@@ -95,13 +87,12 @@ export default function ChatClientWithoutId({
   });
   useEffect(() => {
     setFileExists(files.length > 0);
-    const visionModel = models.some((item) => {
+    const visionModel = models.every((item) => {
       if (item.value === selectedModel) {
         return item.vision === true;
       }
       return false;
     });
-    console.log({ visionModel });
 
     setVisionModel(() => visionModel);
 
@@ -174,9 +165,9 @@ export default function ChatClientWithoutId({
     },
   });
   console.log(messages);
-  // useEffect(() => {
-  //   experimental_resume();
-  // }, []);
+  useEffect(() => {
+    experimental_resume();
+  }, []);
 
   // Scroll to bottom when new messages arrive
   // useEffect(() => {
@@ -189,16 +180,15 @@ export default function ChatClientWithoutId({
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-        e.preventDefault();
+        // e.preventDefault();
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
         } else {
           // localStorage.setItem("first-message", input);
           // setInput("");
           setActive(true);
-          window.history.pushState({}, "", `/chat/${idChat}`);
-
           // router.push(`/chat/${idChat}`);
+          window.history.pushState({}, "", `/chat/${idChat}`);
           if (files.length > 0) {
             try {
               const result = await convert(files[0].file as File);
@@ -228,6 +218,7 @@ export default function ChatClientWithoutId({
   // Handle click submission - creates a new chat
   const handleClickSubmit = useCallback(async () => {
     setActive(true);
+    window.history.pushState({}, "", `/chat/${idChat}`);
 
     if (files.length > 0) {
       try {
@@ -249,8 +240,6 @@ export default function ChatClientWithoutId({
       handleSubmit();
     }
   }, [files, convert, handleSubmit, setActive]);
-  const stopIcon = searchTools.find((t) => t.name === "StopButton")?.icon;
-  console.log({ status });
 
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
@@ -290,15 +279,7 @@ export default function ChatClientWithoutId({
             className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]"
             layoutId="chat-input"
             layout="position"
-
-            // transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            {/* Title */}
-            {/* {!active && ( */}
-            {/* <div className="px-1 text-pretty whitespace-pre-wrap w-full flex items-center justify-center mb-7 text-[28px] font-normal text-gray-700">
-              What can I help with?
-            </div> */}
-            {/* )} */}
             {/* Input container */}
             <div className="flex items-center justify-center relative ">
               <div
@@ -385,30 +366,36 @@ export default function ChatClientWithoutId({
 
                     {/* Action buttons */}
                     <div className="flex items-center gap-2">
-                      {searchTools.map(({ name, icon, description }) => {
+                      {searchTools.map((tool) => {
                         const isStreaming =
                           status === "streaming" || status === "submitted";
                         const isInputEmpty = input.trim().length === 0;
 
-                        if (name === "StopButton") return null;
+                        // فقط upload و ActionButton را نمایش بده
+                        if (tool.name === "StopButton") return null;
 
+                        // تغییر آیکن دکمه ActionButton در حالت استریم
                         const Icon =
-                          name === "ActionButton" && isStreaming && stopIcon
-                            ? stopIcon
-                            : icon;
+                          tool.name === "ActionButton"
+                            ? isStreaming
+                              ? searchTools.find((t) => t.name === "StopButton")
+                                  ?.icon || tool.icon
+                              : tool.icon
+                            : tool.icon;
 
+                        // اصلاح شده: فقط وقتی ورودی خالی باشه و در حالت idle باشیم دکمه غیرفعاله
                         const isDisabled =
-                          (name === "upload" && isStreaming) ||
-                          (name === "ActionButton" &&
+                          (tool.name === "upload" && isStreaming) ||
+                          (tool.name === "ActionButton" &&
                             isInputEmpty &&
                             !isStreaming);
 
                         const handleClick = () => {
-                          if (name === "upload" && !isStreaming) {
+                          if (tool.name === "upload" && !isStreaming) {
                             openFileDialog();
                           }
 
-                          if (name === "ActionButton") {
+                          if (tool.name === "ActionButton") {
                             if (isStreaming) {
                               stop();
                             } else if (!isInputEmpty) {
@@ -417,22 +404,24 @@ export default function ChatClientWithoutId({
                           }
                         };
 
-                        const tooltip =
-                          isStreaming && name === "ActionButton"
-                            ? "Stopping..."
-                            : description;
-
                         return (
-                          <TooltipContainer key={name} tooltipContent={tooltip}>
+                          <TooltipContainer
+                            key={tool.name}
+                            tooltipContent={
+                              isStreaming && tool.name === "ActionButton"
+                                ? "Stopping..."
+                                : tool.description
+                            }
+                          >
                             <div
                               className={cn(
                                 "flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 fill-[#5d5d5d]",
-                                name === "upload" && "hover:bg-gray-100",
-                                name === "ActionButton" &&
+                                tool.name === "upload" && "hover:bg-gray-100",
+                                tool.name === "ActionButton" &&
                                   "bg-black fill-white",
-                                isDisabled
-                                  ? "opacity-50 pointer-events-none hover:cursor-not-allowed"
-                                  : "hover:cursor-pointer"
+                                isDisabled &&
+                                  "opacity-50 pointer-events-none hover:cursor-not-allowed",
+                                !isDisabled && "hover:cursor-pointer"
                               )}
                               onClick={handleClick}
                             >
