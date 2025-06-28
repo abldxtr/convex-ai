@@ -212,9 +212,9 @@ export default function ChatClientWithId({
     },
   });
 
-  useEffect(() => {
-    experimental_resume();
-  }, []);
+  // useEffect(() => {
+  //   experimental_resume();
+  // }, []);
 
   console.log({ status });
   // Handle new chat state

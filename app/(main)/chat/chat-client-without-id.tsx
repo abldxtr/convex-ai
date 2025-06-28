@@ -165,9 +165,9 @@ export default function ChatClientWithoutId(
     },
   });
   console.log(messages);
-  useEffect(() => {
-    experimental_resume();
-  }, []);
+  // useEffect(() => {
+  //   experimental_resume();
+  // }, []);
 
   // Scroll to bottom when new messages arrive
   // useEffect(() => {
