@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
   useCallback,
+  useTransition,
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ import { models, ModelSwitcher } from "@/components/models";
 import { motion, MotionConfig } from "framer-motion";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 import {
+  QueryClient,
   useQuery as TanstackUseQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
@@ -45,10 +47,17 @@ export default function ChatClientWithId({
   idChat,
   preloaded,
 }: ChatClientWithIdProps) {
-  const { data: clientGetChatMessages } = useSuspenseQuery({
-    queryKey: ["posts", chatIdd], // chatIdd رو به queryKey اضافه کن
+  // await queryClient.prefetchQuery({
+  //   queryKey: ['posts'],
+  //   queryFn: getPosts,
+  // })
+  const queryClient = new QueryClient();
+  const [isPending, startTransition] = useTransition();
+
+  const { data: clientGetChatMessages, refetch } = useSuspenseQuery({
+    queryKey: ["posts", chatIdd],
     queryFn: async ({ queryKey }) => {
-      const [, chatId] = queryKey; // استخراج chatId از queryKey
+      const [, chatId] = queryKey;
       const response = await fetch(`/api/user-data?chatId=${chatId}`, {
         method: "GET",
       });
@@ -83,12 +92,13 @@ export default function ChatClientWithId({
     setValue,
     removeValue,
     removeStoredFiles,
+    disableLayout,
+    setDisableLayout,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const { attachments, setAttachments } = useGlobalstate();
-  // const { base64, convert, error, loading } = useFileToBase64();
 
   const [
     { files, isDragging, errors },
@@ -113,11 +123,11 @@ export default function ChatClientWithId({
   useEffect(() => {
     const hasFile = files.length > 0;
     setFileExists(hasFile);
-    if (hasFile) {
-      setDisableLayout(true);
-    } else {
-      setDisableLayout(false);
-    }
+    // if (hasFile) {
+    //   setDisableLayout(true);
+    // } else {
+    //   setDisableLayout(false);
+    // }
 
     const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
@@ -192,11 +202,16 @@ export default function ChatClientWithId({
       setGetError(true);
     },
     onFinish: () => {
-      console.log("onFinish");
-      if (attachments.length > 0) {
-        setAttachments([]);
-        // clearFiles();
-      }
+      startTransition(async () => {
+        console.log("onFinish");
+        if (attachments.length > 0) {
+          setAttachments([]);
+          // clearFiles();
+        }
+        queryClient.invalidateQueries({
+          queryKey: ["posts", chatIdd],
+        });
+      });
     },
   });
 
@@ -279,8 +294,6 @@ export default function ChatClientWithId({
     }
   }, [input, setInput, setActive, router, idChat, attachments]);
   const stopIcon = searchTools.find((t) => t.name === "StopButton")?.icon;
-
-  const [disableLayout, setDisableLayout] = useState(false);
 
   useLayoutEffect(() => {
     if (value.length > 0) {
@@ -440,7 +453,7 @@ export default function ChatClientWithId({
 
                         const handleClick = () => {
                           if (name === "upload" && !isStreaming) {
-                            setDisableLayout(true);
+                            // setDisableLayout(true);
                             openFileDialog();
                           }
 

@@ -1,9 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
 import { ThreeDots } from "react-loader-spinner";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,9 +24,8 @@ import {
   SidebarGroupLabel,
   SidebarMenuAction,
 } from "@/components/ui/sidebar";
-// import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { PlusIcon, Ellipsis, Trash2, Loader2 } from "lucide-react";
+import { PlusIcon, Ellipsis, Trash2 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
@@ -38,7 +35,6 @@ import { useGlobalstate } from "@/context/global-store";
 import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
-import { Skeleton } from "./ui/skeleton";
 import { Link } from "@/lib/link";
 import { Spinner } from "./spinner";
 
@@ -46,10 +42,16 @@ export function AppSidebar({ user }: { user: UserType }) {
   const chatList = useQuery(api.chat.getChat, {});
   const router = useRouter();
   const pathName = usePathname();
-  const searchParams = useSearchParams();
 
-  const { newChat, setNewChat, setIsNavigating, active, setActive } =
-    useGlobalstate();
+  const {
+    newChat,
+    setNewChat,
+    setIsNavigating,
+    active,
+    setActive,
+    disableLayout,
+    setDisableLayout,
+  } = useGlobalstate();
   const deleteChat = useMutation(api.chat.deleteChat);
 
   const chatIdd = useMemo(
@@ -64,6 +66,7 @@ export function AppSidebar({ user }: { user: UserType }) {
       if (chatIdd === id) {
         router.replace("/chat");
         router.refresh();
+        setDisableLayout(false);
         setActive(false);
       }
     } catch (error) {
@@ -74,7 +77,6 @@ export function AppSidebar({ user }: { user: UserType }) {
 
   const { setOpenMobile, toggleSidebar, state, isMobile } = useSidebar();
 
-  // ✅ کد اصلاح شده برای گروه‌بندی چت‌ها
   const chatGroup = useMemo(() => {
     if (chatList === undefined) return undefined;
 
@@ -110,6 +112,8 @@ export function AppSidebar({ user }: { user: UserType }) {
               href="/chat"
               onClick={() => {
                 setActive(false);
+                setDisableLayout(false);
+
                 setOpenMobile(false);
               }}
               prefetch={true}
@@ -127,6 +131,7 @@ export function AppSidebar({ user }: { user: UserType }) {
                   className="h-fit p-2"
                   onClick={() => {
                     setActive(false);
+                    setDisableLayout(false);
                     router.push("/chat");
                     setNewChat(() => !newChat);
                     if (state === "expanded" && isMobile) {

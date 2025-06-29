@@ -16,7 +16,8 @@ const schema = defineSchema({
     visibility: v.optional(v.union(v.literal("public"), v.literal("private"))),
   })
     .index("by_userId", ["userId"])
-    .index("by_createId", ["id"]),
+    .index("by_createId", ["id"])
+    .index("by_userId_createId", ["id", "userId"]),
 
   vercelAiMessages: defineTable({
     chatId: v.id("chats"),

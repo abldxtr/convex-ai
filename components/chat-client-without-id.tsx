@@ -8,6 +8,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
+  useTransition,
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -41,8 +42,11 @@ export default function ChatClientWithoutId() {
     setValue,
     removeValue,
     removeStoredFiles,
+    disableLayout,
+    setDisableLayout,
   } = useGlobalstate();
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const idChat = useMemo(() => crypto.randomUUID(), []);
@@ -67,11 +71,11 @@ export default function ChatClientWithoutId() {
   useEffect(() => {
     const hasFile = files.length > 0;
     setFileExists(hasFile);
-    if (hasFile) {
-      setDisableLayout(true);
-    } else {
-      setDisableLayout(false);
-    }
+    // if (hasFile) {
+    //   setDisableLayout(true);
+    // } else {
+    //   setDisableLayout(false);
+    // }
 
     const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
@@ -141,13 +145,16 @@ export default function ChatClientWithoutId() {
     },
     onFinish: () => {
       console.log("onFinish");
-      if (attachments.length > 0) {
-        setAttachments([]);
-        clearFiles();
-      }
-      sessionStorage.setItem(`disable-scroll`, idChat);
-      router.push(`/chat/${idChat}`, {
-        scroll: false,
+      startTransition(() => {
+        if (attachments.length > 0) {
+          setAttachments([]);
+          clearFiles();
+        }
+        sessionStorage.setItem(`disable-scroll`, idChat);
+
+        router.push(`/chat/${idChat}`, {
+          scroll: false,
+        });
       });
     },
   });
@@ -211,7 +218,6 @@ export default function ChatClientWithoutId() {
     }
   }, [files, handleSubmit, setActive, idChat, clearFiles]);
 
-  const [disableLayout, setDisableLayout] = useState(false);
   useLayoutEffect(() => {
     if (value.length > 0) {
       setInput(value);
@@ -313,9 +319,9 @@ export default function ChatClientWithoutId() {
                     placeholder="Ask anything"
                     className="field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50 !transition-none "
                     onChange={(e) => {
-                      if (e.target.value.length > 60) {
-                        setDisableLayout(true);
-                      }
+                      // if (e.target.value.length > 60) {
+                      //   setDisableLayout(true);
+                      // }
                       const direction = useDirection(e.target.value);
                       setDirection(direction);
                       setInput(e.target.value);
@@ -375,7 +381,7 @@ export default function ChatClientWithoutId() {
 
                         const handleClick = () => {
                           if (tool.name === "upload" && !isStreaming) {
-                            setDisableLayout(true);
+                            // setDisableLayout(true);
                             openFileDialog();
                           }
 

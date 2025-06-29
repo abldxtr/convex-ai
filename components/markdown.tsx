@@ -38,9 +38,10 @@ const CopyButton: React.FC<{ code: string }> = React.memo(({ code }) => {
     <button
       onClick={handleCopy}
       className={cn(
-        "absolute top-2 right-2 z-10 flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-all",
+        " sticky top-2  z-10 flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-all",
         "bg-white/90 text-zinc-800 hover:bg-white dark:bg-zinc-800/90 dark:text-zinc-200 dark:hover:bg-zinc-800",
         "opacity-0 group-hover:opacity-100",
+        // "absolute top-2  right-2",
         copied && "opacity-100"
       )}
       title={copied ? "Copied!" : "Copy code"}

@@ -39,6 +39,8 @@ type ContextType = {
   storedFiles: FileMetadata[];
   setStoredFiles: Dispatch<SetStateAction<FileMetadata[]>>;
   removeStoredFiles: () => void;
+  disableLayout: boolean;
+  setDisableLayout: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
@@ -55,6 +57,7 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [selectedModel, setSelectedModel] = useState("");
   const [visionModel, setVisionModel] = useState(false);
   const [value, setValue, removeValue] = useLocalStorage("InputText", "");
+  const [disableLayout, setDisableLayout] = useState(false);
 
   const [storedFiles, setStoredFiles, removeStoredFiles] = useLocalStorage<
     FileMetadata[]
@@ -88,6 +91,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       storedFiles,
       setStoredFiles,
       removeStoredFiles,
+      disableLayout,
+      setDisableLayout,
     }),
     [
       firstText,
@@ -106,6 +111,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       storedFiles,
       setStoredFiles,
       removeStoredFiles,
+      disableLayout,
+      setDisableLayout,
     ]
   );
 

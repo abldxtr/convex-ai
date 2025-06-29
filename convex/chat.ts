@@ -187,6 +187,29 @@ export const getChatById = query({
   },
 });
 
+export const getChatByUserId = query({
+  args: { chatId: v.string() },
+  handler: async (ctx, args): Promise<boolean> => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      return false;
+    }
+
+    const chat = await ctx.db
+      .query("chats")
+      .withIndex("by_userId_createId", (q) =>
+        q.eq("id", args.chatId).eq("userId", userId)
+      )
+      .first();
+
+    if (chat) {
+      return true;
+    }
+
+    return false;
+  },
+});
+
 export const deleteChat = mutation({
   args: { id: v.string() },
   handler: async (ctx, args) => {
