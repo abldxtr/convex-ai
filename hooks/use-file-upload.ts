@@ -1,14 +1,16 @@
 "use client";
 
-import type React from "react";
 import {
   useCallback,
+  useEffect,
   useRef,
   useState,
   type ChangeEvent,
   type DragEvent,
   type InputHTMLAttributes,
 } from "react";
+import type React from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 export type FileMetadata = {
   name: string;
@@ -25,13 +27,13 @@ export type FileWithPreview = {
 };
 
 export type FileUploadOptions = {
-  maxFiles?: number; // Only used when multiple is true, defaults to Infinity
-  maxSize?: number; // in bytes
+  maxFiles?: number;
+  maxSize?: number;
   accept?: string;
-  multiple?: boolean; // Defaults to false
+  multiple?: boolean;
   initialFiles?: FileMetadata[];
-  onFilesChange?: (files: FileWithPreview[]) => void; // Callback when files change
-  onFilesAdded?: (addedFiles: FileWithPreview[]) => void; // Callback when new files are added
+  onFilesChange?: (files: FileWithPreview[]) => void;
+  onFilesAdded?: (addedFiles: FileWithPreview[]) => void;
 };
 
 export type FileUploadState = {
@@ -71,17 +73,41 @@ export const useFileUpload = (
     onFilesAdded,
   } = options;
 
+  const [storedFiles, setStoredFiles] = useLocalStorage<FileMetadata[]>(
+    "FileImg",
+    []
+  );
+
   const [state, setState] = useState<FileUploadState>({
-    files: initialFiles.map((file) => ({
-      file,
-      id: file.id,
-      preview: file.url,
-    })),
+    files: (initialFiles.length > 0 ? initialFiles : (storedFiles ?? [])).map(
+      (file) => ({
+        file,
+        id: file.id,
+        preview: file.url,
+      })
+    ),
     isDragging: false,
     errors: [],
   });
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const metadataFiles = state.files.map((f) => {
+      if (f.file instanceof File) {
+        return {
+          name: f.file.name,
+          size: f.file.size,
+          type: f.file.type,
+          url: f.preview ?? "",
+          id: f.id,
+        };
+      } else {
+        return f.file;
+      }
+    });
+    setStoredFiles(metadataFiles);
+  }, [state.files, setStoredFiles]);
 
   const validateFile = useCallback(
     (file: File | FileMetadata): string | null => {
@@ -98,7 +124,7 @@ export const useFileUpload = (
       if (accept !== "*") {
         const acceptedTypes = accept.split(",").map((type) => type.trim());
         const fileType = file instanceof File ? file.type || "" : file.type;
-        const fileExtension = `.${file instanceof File ? file.name.split(".").pop() : file.name.split(".").pop()}`;
+        const fileExtension = `.${file.name.split(".").pop()}`;
 
         const isAccepted = acceptedTypes.some((type) => {
           if (type.startsWith(".")) {
@@ -112,7 +138,7 @@ export const useFileUpload = (
         });
 
         if (!isAccepted) {
-          return `File "${file instanceof File ? file.name : file.name}" is not an accepted file type.`;
+          return `File "${file.name}" is not an accepted file type.`;
         }
       }
 
@@ -140,7 +166,6 @@ export const useFileUpload = (
 
   const clearFiles = useCallback(() => {
     setState((prev) => {
-      // Clean up object URLs
       prev.files.forEach((file) => {
         if (
           file.preview &&
@@ -155,16 +180,16 @@ export const useFileUpload = (
         inputRef.current.value = "";
       }
 
-      const newState = {
+      onFilesChange?.([]);
+
+      return {
         ...prev,
         files: [],
         errors: [],
       };
-
-      onFilesChange?.(newState.files);
-      return newState;
     });
-  }, [onFilesChange]);
+    setStoredFiles([]);
+  }, [onFilesChange, setStoredFiles]);
 
   const addFiles = useCallback(
     (newFiles: FileList | File[]) => {
@@ -173,19 +198,16 @@ export const useFileUpload = (
       const newFilesArray = Array.from(newFiles);
       const errors: string[] = [];
 
-      // Clear existing errors
       setState((prev) => ({ ...prev, errors: [] }));
 
-      // ❗ اگر چند عکس در حالت تک‌فایلی ارسال شد، خطا بده
       if (!multiple && newFilesArray.length > 1) {
         setState((prev) => ({
           ...prev,
-          errors: ["فقط یک عکس مجاز است."],
+          errors: ["Only one file is allowed."],
         }));
         return;
       }
 
-      // ❗ در حالت single، فایل قبلی پاک شود
       if (!multiple && state.files.length > 0) {
         state.files.forEach((file) => {
           if (
@@ -197,14 +219,10 @@ export const useFileUpload = (
           }
         });
 
-        // پاک‌سازی فایل‌های قبلی از state
         setState((prev) => ({
           ...prev,
           files: [],
         }));
-
-        // ✅ Toast اختیاری
-        // toast.info("عکس قبلی با عکس جدید جایگزین شد.");
       }
 
       const validFiles: FileWithPreview[] = [];
@@ -263,16 +281,6 @@ export const useFileUpload = (
   const removeFile = useCallback(
     (id: string) => {
       setState((prev) => {
-        const fileToRemove = prev.files.find((file) => file.id === id);
-        if (
-          fileToRemove &&
-          fileToRemove.preview &&
-          fileToRemove.file instanceof File &&
-          fileToRemove.file.type.startsWith("image/")
-        ) {
-          URL.revokeObjectURL(fileToRemove.preview);
-        }
-
         const newFiles = prev.files.filter((file) => file.id !== id);
         onFilesChange?.(newFiles);
 
@@ -282,8 +290,9 @@ export const useFileUpload = (
           errors: [],
         };
       });
+      setStoredFiles((prev) => prev.filter((file) => file.id !== id));
     },
-    [onFilesChange]
+    [onFilesChange, setStoredFiles]
   );
 
   const clearErrors = useCallback(() => {
@@ -302,11 +311,9 @@ export const useFileUpload = (
   const handleDragLeave = useCallback((e: DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (e.currentTarget.contains(e.relatedTarget as Node)) {
       return;
     }
-
     setState((prev) => ({ ...prev, isDragging: false }));
   }, []);
 
@@ -321,13 +328,11 @@ export const useFileUpload = (
       e.stopPropagation();
       setState((prev) => ({ ...prev, isDragging: false }));
 
-      // Don't process files if the input is disabled
       if (inputRef.current?.disabled) {
         return;
       }
 
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        // In single file mode, only use the first file
         if (!multiple) {
           const file = e.dataTransfer.files[0];
           addFiles([file]);
@@ -386,15 +391,13 @@ export const useFileUpload = (
   ];
 };
 
-// Helper function to format bytes to human-readable format
 export const formatBytes = (bytes: number, decimals = 2): string => {
   if (bytes === 0) return "0 Bytes";
-
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + sizes[i];
+  return (
+    Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
+  );
 };
