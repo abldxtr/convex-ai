@@ -126,10 +126,18 @@ export default function ChatClientWithId({
     maxSize: 1024 * 1024 * 2,
     multiple: false,
     maxFiles: 1,
+    // initialFiles
   });
 
   useEffect(() => {
-    setFileExists(files.length > 0);
+    const hasFile = files.length > 0;
+    setFileExists(hasFile);
+    if (hasFile) {
+      setDisableLayout(true);
+    } else {
+      setDisableLayout(false);
+    }
+
     const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
         return item.vision === true;
@@ -313,8 +321,6 @@ export default function ChatClientWithId({
 
   useEffect(() => {
     const handleBeforeUnload = () => {
-      // ذخیره زمان بسته شدن صفحه
-      // localStorage.setItem('pageClosedTime', Date.now().toString());
       removeValue();
     };
 
@@ -341,6 +347,12 @@ export default function ChatClientWithId({
           reload={reload}
         />
       )}
+
+      <input
+        {...getInputProps()}
+        className="sr-only"
+        aria-label="Upload image file"
+      />
 
       {/* Input form */}
       <form
@@ -397,8 +409,8 @@ export default function ChatClientWithId({
                     autoFocus
                     placeholder="Ask anything"
                     className={cn(
-                      "field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50",
-                      files.length > 0 && "mb-2"
+                      "field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
+                      // files.length > 0 && "mb-2"
                     )}
                     onChange={(e) => {
                       if (e.target.value.length > 50) {
@@ -415,11 +427,7 @@ export default function ChatClientWithId({
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
                   />
-                  <input
-                    {...getInputProps()}
-                    className="sr-only"
-                    aria-label="Upload image file"
-                  />
+
                   {/* Tools and actions */}
                   <div className="flex h-[36px] items-center justify-between gap-2">
                     {/* Model switcher */}
@@ -468,6 +476,7 @@ export default function ChatClientWithId({
 
                         const handleClick = () => {
                           if (name === "upload" && !isStreaming) {
+                            setDisableLayout(true);
                             openFileDialog();
                           }
 

@@ -89,7 +89,13 @@ export default function ChatClientWithoutId(
     maxFiles: 1,
   });
   useEffect(() => {
-    setFileExists(files.length > 0);
+    const hasFile = files.length > 0;
+    setFileExists(hasFile);
+    if (hasFile) {
+      setDisableLayout(true);
+    } else {
+      setDisableLayout(false);
+    }
     const visionModel = models.every((item) => {
       if (item.value === selectedModel) {
         return item.vision === true;
@@ -284,6 +290,11 @@ export default function ChatClientWithoutId(
           reload={reload}
         />
       )}
+      <input
+        {...getInputProps()}
+        className="sr-only"
+        aria-label="Upload image file"
+      />
 
       {/* Input form */}
       <form
@@ -301,6 +312,7 @@ export default function ChatClientWithoutId(
         >
           What can I help with?
         </div>
+
         <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
           <motion.div
             className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]  "
@@ -348,7 +360,7 @@ export default function ChatClientWithoutId(
                     value={input}
                     autoFocus
                     placeholder="Ask anything"
-                    className="field-sizing-content max-h-29.5 min-h-0 resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50 !transition-none "
+                    className="field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50 !transition-none "
                     onChange={(e) => {
                       if (e.target.value.length > 50) {
                         setDisableLayout(true);
@@ -363,11 +375,6 @@ export default function ChatClientWithoutId(
                     // }}
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
-                  />
-                  <input
-                    {...getInputProps()}
-                    className="sr-only"
-                    aria-label="Upload image file"
                   />
 
                   {/* Tools and actions */}
@@ -431,6 +438,7 @@ export default function ChatClientWithoutId(
 
                         const handleClick = () => {
                           if (tool.name === "upload" && !isStreaming) {
+                            setDisableLayout(true);
                             openFileDialog();
                           }
 

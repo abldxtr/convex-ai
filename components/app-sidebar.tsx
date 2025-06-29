@@ -148,7 +148,7 @@ export function AppSidebar({ user }: { user: UserType }) {
 
       <SidebarContent>
         {chatList === undefined && (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center mt-4 ">
             {/* <Loader2 className="size-6 animate-spin" /> */}
             <Spinner />
           </div>
