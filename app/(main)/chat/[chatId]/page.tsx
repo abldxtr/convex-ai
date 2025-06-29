@@ -1,6 +1,6 @@
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { redirect } from "next/navigation";
-import ChatClientWithId from "../chat-client-with-id";
+import ChatClientWithId from "@/components/chat-client-with-id";
 
 export default async function ChatPage({
   params,

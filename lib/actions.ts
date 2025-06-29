@@ -3,10 +3,10 @@
 import { openrouter } from "@openrouter/ai-sdk-provider";
 import { generateText, type UIMessage } from "ai";
 import { cookies } from "next/headers";
-import {
-  createResumableStreamContext,
-  type ResumableStreamContext,
-} from "resumable-stream";
+// import {
+//   createResumableStreamContext,
+//   type ResumableStreamContext,
+// } from "resumable-stream";
 
 export async function saveChatModelAsCookie(model: string) {
   const cookieStore = await cookies();
@@ -30,22 +30,3 @@ export async function generateTitleFromUserMessage({
 
   return title;
 }
-
-// export async function deleteTrailingMessages({ id }: { id: string }) {
-//   const [message] = await getMessageById({ id });
-
-//   await deleteMessagesByChatIdAfterTimestamp({
-//     chatId: message.chatId,
-//     timestamp: message.createdAt,
-//   });
-// }
-
-// export async function updateChatVisibility({
-//   chatId,
-//   visibility,
-// }: {
-//   chatId: string;
-//   visibility: VisibilityType;
-// }) {
-//   await updateChatVisiblityById({ chatId, visibility });
-// }

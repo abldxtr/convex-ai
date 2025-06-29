@@ -1,9 +1,7 @@
 "use client";
 
-import type React from "react";
-
 import { useChat } from "@ai-sdk/react";
-import {
+import React, {
   useEffect,
   useLayoutEffect,
   useRef,
@@ -14,32 +12,19 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion, MotionConfig } from "framer-motion";
-
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import MessageBar from "@/components/message-bar";
 import TooltipContainer from "@/components/tooltip-container";
 import { useGlobalstate } from "@/context/global-store";
-import type { ChatClientPropsPartial } from "@/lib/type";
 import { models, ModelSwitcher } from "@/components/models";
 import { searchTools } from "@/lib/chat-tools";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
-import { useFileToBase64 } from "@/hooks/use-file-base64";
 import { useDirection } from "@/hooks/use-direction";
 
-interface ChatClientWithoutIdProps extends ChatClientPropsPartial {
-  id?: string;
-  idChat?: string;
-}
-
-export default function ChatClientWithoutId(
-  {
-    // id,
-    // idChat,
-  }: ChatClientWithoutIdProps
-) {
+export default function ChatClientWithoutId() {
   const {
     setGetError,
     active,
@@ -61,9 +46,6 @@ export default function ChatClientWithoutId(
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const idChat = useMemo(() => crypto.randomUUID(), []);
-
-  // const { base64, convert, error, loading } = useFileToBase64();
-
   const [
     { files, isDragging, errors },
     {
@@ -169,10 +151,6 @@ export default function ChatClientWithoutId(
       });
     },
   });
-  console.log(messages);
-
-  // حذف هوک useFileToBase64
-  // const { base64, convert, error, loading } = useFileToBase64();
 
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -335,7 +313,7 @@ export default function ChatClientWithoutId(
                     placeholder="Ask anything"
                     className="field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50 !transition-none "
                     onChange={(e) => {
-                      if (e.target.value.length > 50) {
+                      if (e.target.value.length > 60) {
                         setDisableLayout(true);
                       }
                       const direction = useDirection(e.target.value);

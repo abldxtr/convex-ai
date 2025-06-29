@@ -380,7 +380,7 @@ export default function ChatClientWithId({
                       "field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
                     )}
                     onChange={(e) => {
-                      if (e.target.value.length > 50) {
+                      if (e.target.value.length > 60) {
                         setDisableLayout(true);
                       }
                       const direction = useDirection(e.target.value);
