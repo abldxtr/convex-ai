@@ -160,9 +160,9 @@ export default function ChatClientWithId({
     visionModel,
     setVisionModel,
   ]);
-  useEffect(() => {
-    setFileExists(files.length > 0);
-  }, [files, setFileExists]);
+  // useEffect(() => {
+  //   setFileExists(files.length > 0);
+  // }, [files, setFileExists]);
 
   // Load model preference from session storage
   useLayoutEffect(() => {

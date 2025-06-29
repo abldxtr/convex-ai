@@ -96,12 +96,15 @@ export default function ChatClientWithoutId(
     } else {
       setDisableLayout(false);
     }
-    const visionModel = models.every((item) => {
+
+    const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
         return item.vision === true;
+      } else {
+        return false;
       }
-      return false;
     });
+    console.log({ visionModel });
 
     setVisionModel(() => visionModel);
 
@@ -383,14 +386,6 @@ export default function ChatClientWithoutId(
                     <div className="flex items-center gap-2">
                       <div>
                         <ModelSwitcher
-                          // selectedModel={
-                          //   selectedModel.length > 0
-                          //     ? selectedModel
-                          //     : fileExists
-                          //       ? "mmd-google/gemini-2.0-flash-exp:free"
-                          //       : "mmd-meta-llama/llama-3.3-8b-instruct:free"
-                          // }
-
                           selectedModel={
                             files.length > 0 && !visionModel
                               ? "mmd-google/gemini-2.0-flash-exp:free"
