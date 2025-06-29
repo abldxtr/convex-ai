@@ -1,22 +1,10 @@
 "use client";
 
-// import { useQuery } from "convex/react";
-import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { api } from "@/convex/_generated/api";
 
 export default function UserInfo() {
   const [streamedText, setStreamedText] = useState("");
-  // const getMessages = useQuery(api.agent.getMessagesByThreadId, {
-  //   threadId: "ks775p0gkb4rstnpea0wft4e4h7g4yjb",
-  // });
 
-  // const getMessages = useQuery(api.chat.getThreadMessages, {
-  //   threadId: "ks71t87b3vx77hxbytb2fh25rd7g7rjj",
-  // });
-
-  // // console.log(getMessages?.page[0]);
   const convexChat = async () => {
     const response = await fetch("http://localhost:3000/api/convexai", {
       method: "POST",

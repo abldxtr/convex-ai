@@ -80,17 +80,14 @@ export function AppSidebar({ user }: { user: UserType }) {
 
     return chatList?.reduce(
       (acc, item) => {
-        // تبدیل _creationTime به Date
         const timestamp = Number(item._creationTime);
         const date = new Date(timestamp);
 
-        // بررسی معتبر بودن تاریخ
         if (isNaN(date.getTime())) {
           console.warn("Invalid date for _creationTime:", item._creationTime);
           return acc;
         }
 
-        // دریافت label نسبی (مثل "Today", "Yesterday")
         const dateLabel = getRelativeDateLabel(date);
 
         if (!acc[dateLabel]) {

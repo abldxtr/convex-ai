@@ -4,7 +4,6 @@ import type React from "react";
 
 import { useChat } from "@ai-sdk/react";
 import {
-  Fragment,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -14,7 +13,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,7 +27,6 @@ import { searchTools } from "@/lib/chat-tools";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useFileToBase64 } from "@/hooks/use-file-base64";
-import { Attachment } from "ai";
 import { useDirection } from "@/hooks/use-direction";
 
 interface ChatClientWithoutIdProps extends ChatClientPropsPartial {
@@ -42,17 +40,13 @@ export default function ChatClientWithoutId(
     // idChat,
   }: ChatClientWithoutIdProps
 ) {
-  console.log("noooooooooooooooooooooo");
-
   const {
-    setNewChat,
     setGetError,
     active,
     setActive,
     attachments,
     setAttachments,
     setFileExists,
-    fileExists,
     selectedModel,
     setSelectedModel,
     setDirection,
@@ -66,7 +60,6 @@ export default function ChatClientWithoutId(
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
-  // const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const idChat = useMemo(() => crypto.randomUUID(), []);
 
   const { base64, convert, error, loading } = useFileToBase64();
@@ -110,7 +103,7 @@ export default function ChatClientWithoutId(
     setVisionModel(() => visionModel);
 
     if (files.length > 0 && !visionModel) {
-      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free"); // مدل پیش‌فرض با قابلیت پردازش تصویر
+      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
     }
   }, [
     files,
@@ -152,10 +145,7 @@ export default function ChatClientWithoutId(
     experimental_prepareRequestBody: (body) => ({
       id: idChat,
       message: body.messages.at(-1),
-
-      // chatId: idChat ?? undefined,
       chatId: idChat,
-
       model:
         files.length > 0 && !visionModel
           ? "mmd-google/gemini-2.0-flash-exp:free"
@@ -174,20 +164,12 @@ export default function ChatClientWithoutId(
         clearFiles();
       }
       sessionStorage.setItem(`disable-scroll`, idChat);
-      router.push(`/chat/${idChat}`);
+      router.push(`/chat/${idChat}`, {
+        scroll: false,
+      });
     },
   });
   console.log(messages);
-  // useEffect(() => {
-  //   experimental_resume();
-  // }, []);
-
-  // Scroll to bottom when new messages arrive
-  // useEffect(() => {
-  //   if (status === "submitted") {
-  //     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // }, [status]);
 
   // Handle keyboard submission - creates a new chat
   const handleKeyboardSubmit = useCallback(
@@ -197,12 +179,9 @@ export default function ChatClientWithoutId(
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
         } else {
-          // localStorage.setItem("first-message", input);
-          // setInput("");
           setActive(true);
           setValue("");
 
-          // router.push(`/chat/${idChat}`);
           window.history.pushState({}, "", `/chat/${idChat}`);
           if (files.length > 0) {
             try {
@@ -220,7 +199,6 @@ export default function ChatClientWithoutId(
             } catch (err) {
               toast.error("خطا در تبدیل فایل به base64");
             }
-            // setAttachments([]);
           } else {
             handleSubmit();
           }
@@ -266,8 +244,6 @@ export default function ChatClientWithoutId(
 
   useEffect(() => {
     const handleBeforeUnload = () => {
-      // ذخیره زمان بسته شدن صفحه
-      // localStorage.setItem('pageClosedTime', Date.now().toString());
       removeValue();
       removeStoredFiles();
     };
@@ -322,12 +298,7 @@ export default function ChatClientWithoutId(
           <motion.div
             className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]  "
             layoutId={disableLayout ? undefined : "chat-input"}
-            // layout="position"
-            // layout="preserve-aspect"
-
             layout={disableLayout ? undefined : "position"}
-
-            // layoutDependency={["page"]}
           >
             {/* Input container */}
             <div className="flex items-center justify-center relative !transition-none ">
@@ -361,7 +332,6 @@ export default function ChatClientWithoutId(
                 >
                   {/* Text input */}
                   <Textarea
-                    // id={idChat}
                     value={input}
                     autoFocus
                     placeholder="Ask anything"
@@ -375,9 +345,6 @@ export default function ChatClientWithoutId(
                       setInput(e.target.value);
                       setValue(e.target.value);
                     }}
-                    // onBlur={() => {
-                    //   setDisableLayout(false);
-                    // }}
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
                   />
@@ -414,10 +381,8 @@ export default function ChatClientWithoutId(
                           status === "streaming" || status === "submitted";
                         const isInputEmpty = input.trim().length === 0;
 
-                        // فقط upload و ActionButton را نمایش بده
                         if (tool.name === "StopButton") return null;
 
-                        // تغییر آیکن دکمه ActionButton در حالت استریم
                         const Icon =
                           tool.name === "ActionButton"
                             ? isStreaming
@@ -426,7 +391,6 @@ export default function ChatClientWithoutId(
                               : tool.icon
                             : tool.icon;
 
-                        // اصلاح شده: فقط وقتی ورودی خالی باشه و در حالت idle باشیم دکمه غیرفعاله
                         const isDisabled =
                           (tool.name === "upload" && isStreaming) ||
                           (tool.name === "ActionButton" &&

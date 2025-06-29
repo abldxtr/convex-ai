@@ -3,18 +3,14 @@
 import type React from "react";
 import { useChat } from "@ai-sdk/react";
 import {
-  Fragment,
-  type MouseEvent,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
   useCallback,
-  useMemo,
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
@@ -24,9 +20,7 @@ import { useGlobalstate } from "@/context/global-store";
 import type { ChatClientPropsPartial } from "@/lib/type";
 import { models, ModelSwitcher } from "@/components/models";
 import { motion, MotionConfig } from "framer-motion";
-import { api } from "@/convex/_generated/api";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
-import { useQuery } from "convex-helpers/react/cache/hooks";
 import {
   useQuery as TanstackUseQuery,
   useSuspenseQuery,
@@ -36,9 +30,6 @@ import { useDirection } from "@/hooks/use-direction";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useFileToBase64 } from "@/hooks/use-file-base64";
-import { usePreloadedQuery } from "convex/react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { AllUserData } from "@/lib/server-get-all-data";
 
 interface ChatClientWithIdProps extends ChatClientPropsPartial {
   chatIdd: string;
@@ -54,8 +45,6 @@ export default function ChatClientWithId({
   idChat,
   preloaded,
 }: ChatClientWithIdProps) {
-  console.log("yesssssssssssssssssss");
-  // const clientGetChatMessages = usePreloadedQuery(preloaded!);
   const { data: clientGetChatMessages } = useSuspenseQuery({
     queryKey: ["posts", chatIdd], // chatIdd رو به queryKey اضافه کن
     queryFn: async ({ queryKey }) => {
@@ -78,23 +67,14 @@ export default function ChatClientWithId({
     refetchOnWindowFocus: false,
   });
 
-  // const clientGetChatMessages = useQuery(api.chat.getChatById, { id: chatIdd });
-  // const clientGetChatMessages = TanstackUseQuery(convexQuery(api.chat.getChatById, { id: 123 }), { id: chatIdd });
-
-  // useQuery(
-  //   convexQuery(api.functions.myQuery, { id: 123 }),
-  // );
-
   const {
     newChat,
     setNewChat,
     setGetError,
     active,
     setActive,
-    direction,
     setDirection,
     setFileExists,
-    fileExists,
     selectedModel,
     setSelectedModel,
     visionModel,
@@ -151,7 +131,7 @@ export default function ChatClientWithId({
     setVisionModel(() => visionModel);
 
     if (files.length > 0 && !visionModel) {
-      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free"); // مدل پیش‌فرض با قابلیت پردازش تصویر
+      setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
     }
   }, [
     files,
@@ -161,9 +141,6 @@ export default function ChatClientWithId({
     visionModel,
     setVisionModel,
   ]);
-  // useEffect(() => {
-  //   setFileExists(files.length > 0);
-  // }, [files, setFileExists]);
 
   // Load model preference from session storage
   useLayoutEffect(() => {
@@ -215,7 +192,6 @@ export default function ChatClientWithId({
       setGetError(true);
     },
     onFinish: () => {
-      // "mmd-google/gemini-2.0-flash-exp:free"
       console.log("onFinish");
       if (attachments.length > 0) {
         setAttachments([]);
@@ -223,10 +199,6 @@ export default function ChatClientWithId({
       }
     },
   });
-
-  // useEffect(() => {
-  //   experimental_resume();
-  // }, []);
 
   console.log({ status });
   // Handle new chat state
@@ -368,8 +340,6 @@ export default function ChatClientWithId({
           <motion.div
             className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px] bg-transparent  "
             layoutId={disableLayout ? undefined : "chat-input"}
-            // layout="position"
-            // layout="preserve-aspect"
             layout={disableLayout ? false : "position"}
           >
             {/* Input container */}
@@ -412,7 +382,6 @@ export default function ChatClientWithId({
                     placeholder="Ask anything"
                     className={cn(
                       "field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"
-                      // files.length > 0 && "mb-2"
                     )}
                     onChange={(e) => {
                       if (e.target.value.length > 50) {
@@ -423,9 +392,6 @@ export default function ChatClientWithId({
                       setInput(e.target.value);
                       setValue(e.target.value);
                     }}
-                    // onBlur={() => {
-                    //   setDisableLayout(false);
-                    // }}
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
                   />

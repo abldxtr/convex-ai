@@ -24,7 +24,6 @@ export default function PreviewImg({
       {files.length > 0 && (
         <div className="space-y-2 absolute -top-12 isolate z-10 bg-white left-14 ">
           {files.map((file) => {
-            // console.log(file.preview);
             return (
               <div
                 key={file.id}
@@ -50,14 +49,6 @@ export default function PreviewImg({
                       className="size-14 rounded-[inherit] object-cover"
                     />
                   </div>
-                  {/* <div className="flex min-w-0 flex-col gap-0.5">
-                    <p className="truncate text-[13px] font-medium">
-                      {file.file.name}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {formatBytes(file.file.size)}
-                    </p>
-                  </div> */}
                 </div>
               </div>
             );

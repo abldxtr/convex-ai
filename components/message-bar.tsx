@@ -1,5 +1,5 @@
 import type { ChatRequestOptions, UIMessage } from "ai";
-import { ArrowDown, Loader2, SparklesIcon } from "lucide-react";
+import { ArrowDown, SparklesIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useScroll } from "@/hooks/use-scroll";
 import { useDirection } from "@/hooks/use-direction";
@@ -7,7 +7,7 @@ import { MessageTools } from "./message-tools";
 import MarkdownRenderer from "./markdown";
 import { cx } from "class-variance-authority";
 import { motion } from "framer-motion";
-import AiLoading, { AiLoading2 } from "./ai-loading";
+import { AiLoading2 } from "./ai-loading";
 import { useGlobalstate } from "@/context/global-store";
 import { clientGetChatMessages } from "@/lib/type";
 import { PreviewAttachment } from "./preview-attachment";
@@ -33,21 +33,14 @@ export default function MessageBar({
   reload,
   clientChatMessage,
 }: MessageBarProps) {
-  const {
-    scrollRef,
-    showArrow,
-    clientHeight,
-    scrollHeight,
-    offsetHeight,
-    setSpacerHeight,
-    spacerHeight,
-    spacerRef,
-  } = useScroll({ status, endOfMessagesRef, messages });
+  const { scrollRef, showArrow, clientHeight } = useScroll({
+    status,
+    endOfMessagesRef,
+    messages,
+  });
   if (messages.length > 0) {
-    // console.log("stattttt", status);
-    // console.log(messages[messages.length - 1].role);
   }
-  const { getError, setGetError, direction, setDirection } = useGlobalstate();
+  const { getError } = useGlobalstate();
   // useEffect(() => {
   //   if (getError) {
   //     reload();
@@ -61,7 +54,6 @@ export default function MessageBar({
         <div
           className={cn(
             "absolute bottom-1 z-[10] flex w-full items-center justify-center"
-            // showArrow ? "opacity-100" : "pointer-events-none opacity-0",
           )}
         >
           <div
@@ -85,25 +77,9 @@ export default function MessageBar({
         className="isolate h-full w-full flex-1 overflow-x-clip px-4"
         ref={scrollRef}
       >
-        {/* <div
-          className="isolate h-full w-full flex-1 overflow-x-clip overflow-y-scroll px-4"
-          ref={scrollRef}
-        > */}
         <div className="relative z-[9] h-full w-full">
           {messages.map((message, index) => {
             const isLastMessage = messages.length - 1 === index;
-
-            // const isEmptyMessage = message.parts.every((part, i) => {
-            //   if (part.type === "text") {
-            //     return part.text.length > 0;
-            //   }
-            //   return true;
-            // });
-            const isEmptyMessage = false;
-            // if (message.role === "assistant" && !isEmptyMessage) {
-            //   return null;
-            // }
-            // status === 'streaming' && messages.length - 1 === index
             return (
               <div key={message.id} className="whitespace-pre-wrap relative ">
                 {message.role === "user" &&
@@ -185,8 +161,6 @@ export function UserMessage({
     chatRequestOptions?: ChatRequestOptions
   ) => Promise<string | null | undefined>;
 }) {
-  const { getError, setGetError } = useGlobalstate();
-
   const textPart = message.parts.find((part) => part.type === "text");
   const direction = useDirection(textPart?.text ?? "");
 
@@ -215,7 +189,6 @@ export function UserMessage({
                 className="w-full  h-auto "
               >
                 {message.experimental_attachments.map((attachment) => {
-                  // console.log("attachment", attachment);
                   return (
                     <PreviewAttachment
                       key={attachment.url}
@@ -232,7 +205,6 @@ export function UserMessage({
                   <div
                     key={`${message.id}-${i}`}
                     dir="auto"
-                    // className="flex w-fit max-w-full break-words rounded-3xl bg-[#e9e9e980] px-5 py-2.5 "
                     className="flex w-fit max-w-full break-words  px-5 py-2.5 "
                   >
                     {part.text}
@@ -261,19 +233,12 @@ export function AIMessage({
   status: "error" | "submitted" | "streaming" | "ready";
   isLastMessage: boolean;
 }) {
-  // const textPart = message.parts.find((part) => part.type === "text");
-  // console.log("message", JSON.stringify(message, null, 2));
-  // console.log("status", status);
-  // console.log("isLastMessage", isLastMessage);
-
   return (
     <div
       className={cn(
         "group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] "
-        // (status === "streaming" || isLastMessage) && "min-h-[220px]"
       )}
     >
-      {/* <div className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:48rem] @[48rem]:[--thread-content-max-width:48rem] @[64rem]:[--thread-content-max-width:48rem]"></div> */}
       <div
         className="gap-4 rounded-3xl px-5  text-base focus-visible:outline-hidden md:gap-5 lg:gap-6"
         dir="auto"
@@ -285,23 +250,8 @@ export function AIMessage({
                 <div
                   key={`${message.id}-${i}`}
                   dir="auto"
-                  className={cn("relative", {
-                    // "mb-10": true && true,
-                  })}
+                  className={cn("relative", {})}
                 >
-                  {/* {(status === "submitted" || status === "streaming") &&
-                    isLastMessage && (
-                      <AiLoading />
-
-                      // <ThinkingMessage />
-                    )} */}
-                  {/* {part.text} */}
-                  {/* <AnimatedMarkdown
-                    content={part.text}
-                    animation="None"
-                    // animationDuration="0.5s"
-                    // animationTimingFunction="ease-in-out"
-                  /> */}
                   <MarkdownRenderer content={part.text} />
                 </div>
               );
@@ -309,7 +259,6 @@ export function AIMessage({
         })}
       </div>
       <MessageTools message={message} role="assistant" />
-      {/* <div className="h-[34px]" /> */}
     </div>
   );
 }
