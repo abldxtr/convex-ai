@@ -93,7 +93,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
             <code
               className={cn(
                 className,
-                "rounded-md bg-zinc-100 px-1 pb-0.5 pt-10 text-sm dark:bg-zinc-800"
+                "rounded-md bg-zinc-100 px-1 pb-0.5 pt-1.5 text-sm dark:bg-zinc-800"
               )}
               {...props}
               dir="ltr"
