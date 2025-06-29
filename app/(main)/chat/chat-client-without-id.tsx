@@ -62,7 +62,7 @@ export default function ChatClientWithoutId(
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const idChat = useMemo(() => crypto.randomUUID(), []);
 
-  const { base64, convert, error, loading } = useFileToBase64();
+  // const { base64, convert, error, loading } = useFileToBase64();
 
   const [
     { files, isDragging, errors },
@@ -171,69 +171,67 @@ export default function ChatClientWithoutId(
   });
   console.log(messages);
 
-  // Handle keyboard submission - creates a new chat
+  // حذف هوک useFileToBase64
+  // const { base64, convert, error, loading } = useFileToBase64();
+
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-        // e.preventDefault();
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
         } else {
           setActive(true);
           setValue("");
-
           window.history.pushState({}, "", `/chat/${idChat}`);
+
           if (files.length > 0) {
-            try {
-              const result = await convert(files[0].file as File);
-              handleSubmit(undefined, {
-                experimental_attachments: [
-                  {
-                    url: result,
-                    name: files[0].file.name,
-                    contentType: files[0].file.type,
-                  },
-                ],
-              });
-              clearFiles();
-            } catch (err) {
-              toast.error("خطا در تبدیل فایل به base64");
-            }
+            const fileData = files[0].file as any;
+            const base64Url = fileData.base64
+              ? fileData.base64
+              : files[0].preview;
+
+            handleSubmit(undefined, {
+              experimental_attachments: [
+                {
+                  url: base64Url,
+                  name: files[0].file.name,
+                  contentType: files[0].file.type,
+                },
+              ],
+            });
+            clearFiles();
           } else {
             handleSubmit();
           }
         }
       }
     },
-    [status, input, setInput, setActive, router, idChat, attachments]
+    [status, files, handleSubmit, setActive, idChat, clearFiles]
   );
 
-  // Handle click submission - creates a new chat
-  const handleClickSubmit = useCallback(async () => {
+  const handleClickSubmit = useCallback(() => {
     setActive(true);
     window.history.pushState({}, "", `/chat/${idChat}`);
     setValue("");
 
     if (files.length > 0) {
-      try {
-        const result = await convert(files[0].file as File);
-        handleSubmit(undefined, {
-          experimental_attachments: [
-            {
-              url: result,
-              name: files[0].file.name,
-              contentType: files[0].file.type,
-            },
-          ],
-        });
-        clearFiles();
-      } catch (err) {
-        toast.error("خطا در تبدیل فایل به base64");
-      }
+      const fileData = files[0].file as any;
+      const base64Url = fileData.base64 ? fileData.base64 : files[0].preview;
+
+      handleSubmit(undefined, {
+        experimental_attachments: [
+          {
+            url: base64Url,
+            name: files[0].file.name,
+            contentType: files[0].file.type,
+          },
+        ],
+      });
+      clearFiles();
     } else {
       handleSubmit();
     }
-  }, [files, convert, handleSubmit, setActive]);
+  }, [files, handleSubmit, setActive, idChat, clearFiles]);
 
   const [disableLayout, setDisableLayout] = useState(false);
   useLayoutEffect(() => {

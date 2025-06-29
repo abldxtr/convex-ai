@@ -88,7 +88,7 @@ export default function ChatClientWithId({
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const { attachments, setAttachments } = useGlobalstate();
-  const { base64, convert, error, loading } = useFileToBase64();
+  // const { base64, convert, error, loading } = useFileToBase64();
 
   const [
     { files, isDragging, errors },
@@ -231,22 +231,21 @@ export default function ChatClientWithId({
           setValue("");
           setActive(true);
           if (files.length > 0) {
-            try {
-              const result = await convert(files[0].file as File);
-              handleSubmit(undefined, {
-                experimental_attachments: [
-                  {
-                    url: result,
-                    name: files[0].file.name,
-                    contentType: files[0].file.type,
-                  },
-                ],
-              });
-              clearFiles();
-            } catch (err) {
-              toast.error("خطا در تبدیل فایل به base64");
-            }
-            // setAttachments([]);
+            const fileData = files[0].file as any;
+            const base64Url = fileData.base64
+              ? fileData.base64
+              : files[0].preview;
+
+            handleSubmit(undefined, {
+              experimental_attachments: [
+                {
+                  url: base64Url,
+                  name: files[0].file.name,
+                  contentType: files[0].file.type,
+                },
+              ],
+            });
+            clearFiles();
           } else {
             handleSubmit();
           }
@@ -262,22 +261,19 @@ export default function ChatClientWithId({
     setValue("");
 
     if (files.length > 0) {
-      try {
-        const result = await convert(files[0].file as File);
-        handleSubmit(undefined, {
-          experimental_attachments: [
-            {
-              url: result,
-              name: files[0].file.name,
-              contentType: files[0].file.type,
-            },
-          ],
-        });
-        clearFiles();
-      } catch (err) {
-        toast.error("خطا در تبدیل فایل به base64");
-      }
-      // setAttachments([]);
+      const fileData = files[0].file as any;
+      const base64Url = fileData.base64 ? fileData.base64 : files[0].preview;
+
+      handleSubmit(undefined, {
+        experimental_attachments: [
+          {
+            url: base64Url,
+            name: files[0].file.name,
+            contentType: files[0].file.type,
+          },
+        ],
+      });
+      clearFiles();
     } else {
       handleSubmit();
     }

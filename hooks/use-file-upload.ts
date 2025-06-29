@@ -1,5 +1,6 @@
 "use client";
 
+import { useGlobalstate } from "@/context/global-store";
 import {
   useCallback,
   useEffect,
@@ -10,15 +11,13 @@ import {
   type InputHTMLAttributes,
 } from "react";
 import type React from "react";
-import { useLocalStorage } from "usehooks-ts";
-import { useGlobalstate } from "@/context/global-store";
 
 export type FileMetadata = {
   name: string;
   size: number;
   type: string;
-  url: string;
   id: string;
+  base64: string;
 };
 
 export type FileWithPreview = {
@@ -61,9 +60,20 @@ export type FileUploadActions = {
   };
 };
 
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 export const useFileUpload = (
   options: FileUploadOptions = {}
 ): [FileUploadState, FileUploadActions] => {
+  const { storedFiles, setStoredFiles } = useGlobalstate();
+
   const {
     maxFiles = Infinity,
     maxSize = Infinity,
@@ -73,18 +83,13 @@ export const useFileUpload = (
     onFilesChange,
     onFilesAdded,
   } = options;
-  const { storedFiles, setStoredFiles, removeStoredFiles } = useGlobalstate();
-  // const [storedFiles, setStoredFiles] = useLocalStorage<FileMetadata[]>(
-  //   "FileImg",
-  //   []
-  // );
 
   const [state, setState] = useState<FileUploadState>({
     files: (initialFiles.length > 0 ? initialFiles : (storedFiles ?? [])).map(
       (file) => ({
         file,
         id: file.id,
-        preview: file.url,
+        preview: file.base64,
       })
     ),
     isDragging: false,
@@ -94,20 +99,27 @@ export const useFileUpload = (
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const metadataFiles = state.files.map((f) => {
-      if (f.file instanceof File) {
-        return {
-          name: f.file.name,
-          size: f.file.size,
-          type: f.file.type,
-          url: f.preview ?? "",
-          id: f.id,
-        };
-      } else {
-        return f.file;
-      }
-    });
-    setStoredFiles(metadataFiles);
+    const saveFiles = async () => {
+      const metadataFiles: FileMetadata[] = await Promise.all(
+        state.files.map(async (f) => {
+          if (f.file instanceof File) {
+            const base64 = await fileToBase64(f.file);
+            return {
+              name: f.file.name,
+              size: f.file.size,
+              type: f.file.type,
+              id: f.id,
+              base64,
+            };
+          } else {
+            return f.file as FileMetadata;
+          }
+        })
+      );
+      setStoredFiles(metadataFiles);
+    };
+
+    saveFiles();
   }, [state.files, setStoredFiles]);
 
   const validateFile = useCallback(
@@ -148,16 +160,6 @@ export const useFileUpload = (
     [accept, maxSize]
   );
 
-  const createPreview = useCallback(
-    (file: File | FileMetadata): string | undefined => {
-      if (file instanceof File) {
-        return URL.createObjectURL(file);
-      }
-      return file.url;
-    },
-    []
-  );
-
   const generateUniqueId = useCallback((file: File | FileMetadata): string => {
     if (file instanceof File) {
       return `${file.name}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
@@ -167,22 +169,10 @@ export const useFileUpload = (
 
   const clearFiles = useCallback(() => {
     setState((prev) => {
-      prev.files.forEach((file) => {
-        if (
-          file.preview &&
-          file.file instanceof File &&
-          file.file.type.startsWith("image/")
-        ) {
-          URL.revokeObjectURL(file.preview);
-        }
-      });
-
       if (inputRef.current) {
         inputRef.current.value = "";
       }
-
       onFilesChange?.([]);
-
       return {
         ...prev,
         files: [],
@@ -193,13 +183,11 @@ export const useFileUpload = (
   }, [onFilesChange, setStoredFiles]);
 
   const addFiles = useCallback(
-    (newFiles: FileList | File[]) => {
+    async (newFiles: FileList | File[]) => {
       if (!newFiles || newFiles.length === 0) return;
 
       const newFilesArray = Array.from(newFiles);
       const errors: string[] = [];
-
-      setState((prev) => ({ ...prev, errors: [] }));
 
       if (!multiple && newFilesArray.length > 1) {
         setState((prev) => ({
@@ -209,49 +197,32 @@ export const useFileUpload = (
         return;
       }
 
-      if (!multiple && state.files.length > 0) {
-        state.files.forEach((file) => {
-          if (
-            file.preview &&
-            file.file instanceof File &&
-            file.file.type.startsWith("image/")
-          ) {
-            URL.revokeObjectURL(file.preview);
+      const validFiles: FileWithPreview[] = await Promise.all(
+        newFilesArray.map(async (file) => {
+          const error = validateFile(file);
+          if (error) {
+            errors.push(error);
+            return null;
           }
-        });
-
-        setState((prev) => ({
-          ...prev,
-          files: [],
-        }));
-      }
-
-      const validFiles: FileWithPreview[] = [];
-
-      newFilesArray.forEach((file) => {
-        const error = validateFile(file);
-        if (error) {
-          errors.push(error);
-        } else {
-          validFiles.push({
+          const base64 = await fileToBase64(file);
+          return {
             file,
             id: generateUniqueId(file),
-            preview: createPreview(file),
-          });
-        }
-      });
+            preview: base64,
+          };
+        })
+      ).then((results) => results.filter(Boolean) as FileWithPreview[]);
 
       if (validFiles.length > 0) {
         onFilesAdded?.(validFiles);
-
         setState((prev) => {
-          const newFiles = !multiple
+          const newStateFiles = !multiple
             ? validFiles
             : [...prev.files, ...validFiles];
-          onFilesChange?.(newFiles);
+          onFilesChange?.(newStateFiles);
           return {
             ...prev,
-            files: newFiles,
+            files: newStateFiles,
             errors,
           };
         });
@@ -266,17 +237,7 @@ export const useFileUpload = (
         inputRef.current.value = "";
       }
     },
-    [
-      state.files.length,
-      maxFiles,
-      multiple,
-      maxSize,
-      validateFile,
-      createPreview,
-      generateUniqueId,
-      onFilesChange,
-      onFilesAdded,
-    ]
+    [multiple, validateFile, generateUniqueId, onFilesAdded, onFilesChange]
   );
 
   const removeFile = useCallback(
@@ -284,7 +245,6 @@ export const useFileUpload = (
       setState((prev) => {
         const newFiles = prev.files.filter((file) => file.id !== id);
         onFilesChange?.(newFiles);
-
         return {
           ...prev,
           files: newFiles,
@@ -334,15 +294,10 @@ export const useFileUpload = (
       }
 
       if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        if (!multiple) {
-          const file = e.dataTransfer.files[0];
-          addFiles([file]);
-        } else {
-          addFiles(e.dataTransfer.files);
-        }
+        addFiles(e.dataTransfer.files);
       }
     },
-    [addFiles, multiple]
+    [addFiles]
   );
 
   const handleFileChange = useCallback(

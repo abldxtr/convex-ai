@@ -33,14 +33,11 @@ type ContextType = {
   setSelectedModel: Dispatch<SetStateAction<string>>;
   visionModel: boolean;
   setVisionModel: Dispatch<SetStateAction<boolean>>;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
   value: string;
+  setValue: Dispatch<SetStateAction<string>>;
   removeValue: () => void;
-  setFileState: React.Dispatch<React.SetStateAction<FileWithPreview | null>>;
-  FileState: FileWithPreview | null;
-  removeFileState: () => void;
   storedFiles: FileMetadata[];
-  setStoredFiles: React.Dispatch<React.SetStateAction<FileMetadata[]>>;
+  setStoredFiles: Dispatch<SetStateAction<FileMetadata[]>>;
   removeStoredFiles: () => void;
 };
 
@@ -58,13 +55,10 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [selectedModel, setSelectedModel] = useState("");
   const [visionModel, setVisionModel] = useState(false);
   const [value, setValue, removeValue] = useLocalStorage("InputText", "");
-  const [ff, setF] = useState<string[]>([]);
-  const [fileState, setFileState, removeFileState] =
-    useLocalStorage<FileWithPreview | null>("FileImg", null);
 
   const [storedFiles, setStoredFiles, removeStoredFiles] = useLocalStorage<
     FileMetadata[]
-  >("FileImg", []);
+  >("FileImgFiles", []);
 
   const contextValue = useMemo(
     () => ({
@@ -91,9 +85,6 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       value,
       setValue,
       removeValue,
-      FileState: fileState,
-      setFileState,
-      removeFileState,
       storedFiles,
       setStoredFiles,
       removeStoredFiles,
@@ -112,9 +103,9 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       value,
       setValue,
       removeValue,
-      fileState,
-      setFileState,
-      removeFileState,
+      storedFiles,
+      setStoredFiles,
+      removeStoredFiles,
     ]
   );
 
@@ -126,7 +117,7 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
 }
 
 export function useGlobalstate() {
-  const state = React.useContext(GlobalContext);
+  const state = useContext(GlobalContext);
   if (state === null) {
     throw new Error("useGlobalstate must be used within a GlobalStoreProvider");
   }
