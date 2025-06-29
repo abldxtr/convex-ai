@@ -61,6 +61,7 @@ export default function ChatClientWithoutId(
     value,
     setValue,
     removeValue,
+    removeStoredFiles,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -268,6 +269,7 @@ export default function ChatClientWithoutId(
       // ذخیره زمان بسته شدن صفحه
       // localStorage.setItem('pageClosedTime', Date.now().toString());
       removeValue();
+      removeStoredFiles();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);

@@ -11,6 +11,7 @@ import {
 } from "react";
 import type React from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { useGlobalstate } from "@/context/global-store";
 
 export type FileMetadata = {
   name: string;
@@ -72,11 +73,11 @@ export const useFileUpload = (
     onFilesChange,
     onFilesAdded,
   } = options;
-
-  const [storedFiles, setStoredFiles] = useLocalStorage<FileMetadata[]>(
-    "FileImg",
-    []
-  );
+  const { storedFiles, setStoredFiles, removeStoredFiles } = useGlobalstate();
+  // const [storedFiles, setStoredFiles] = useLocalStorage<FileMetadata[]>(
+  //   "FileImg",
+  //   []
+  // );
 
   const [state, setState] = useState<FileUploadState>({
     files: (initialFiles.length > 0 ? initialFiles : (storedFiles ?? [])).map(

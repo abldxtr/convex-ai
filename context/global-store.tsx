@@ -1,6 +1,6 @@
 "use client";
 
-import { FileWithPreview } from "@/hooks/use-file-upload";
+import { FileMetadata, FileWithPreview } from "@/hooks/use-file-upload";
 import { Attachment } from "ai";
 import React, {
   useState,
@@ -39,6 +39,9 @@ type ContextType = {
   setFileState: React.Dispatch<React.SetStateAction<FileWithPreview | null>>;
   FileState: FileWithPreview | null;
   removeFileState: () => void;
+  storedFiles: FileMetadata[];
+  setStoredFiles: React.Dispatch<React.SetStateAction<FileMetadata[]>>;
+  removeStoredFiles: () => void;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
@@ -58,6 +61,10 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [ff, setF] = useState<string[]>([]);
   const [fileState, setFileState, removeFileState] =
     useLocalStorage<FileWithPreview | null>("FileImg", null);
+
+  const [storedFiles, setStoredFiles, removeStoredFiles] = useLocalStorage<
+    FileMetadata[]
+  >("FileImg", []);
 
   const contextValue = useMemo(
     () => ({
@@ -87,6 +94,9 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       FileState: fileState,
       setFileState,
       removeFileState,
+      storedFiles,
+      setStoredFiles,
+      removeStoredFiles,
     }),
     [
       firstText,

@@ -102,6 +102,7 @@ export default function ChatClientWithId({
     value,
     setValue,
     removeValue,
+    removeStoredFiles,
   } = useGlobalstate();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -322,6 +323,7 @@ export default function ChatClientWithId({
   useEffect(() => {
     const handleBeforeUnload = () => {
       removeValue();
+      removeStoredFiles();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
