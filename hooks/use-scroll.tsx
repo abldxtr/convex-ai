@@ -1,3 +1,4 @@
+import { useGlobalstate } from "@/context/global-store";
 import { UIMessage } from "ai";
 import { usePathname } from "next/navigation";
 import {
@@ -20,6 +21,7 @@ export function useScroll({
   messages: UIMessage[];
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { scrollToBotton, setScrollToBotton } = useGlobalstate();
   const spacerRef = useRef<HTMLDivElement>(null);
   const [spacerHeight, setSpacerHeight] = useState(0);
   const [showArrow, setShowArrow] = useState(false);
@@ -130,33 +132,44 @@ export function useScroll({
     };
   }, []);
 
+  // useEffect(() => {
+  //   const scrollPercent = handleScroll();
+
+  //   const el = scrollRef.current;
+  //   // if ((status === "submitted" || status === "streaming") && el) {
+  //   //   el.scrollTop = el.scrollHeight; // اسکرول به پایین‌ترین بخش برای رزرو جا
+  //   // }
+
+  //   // if (
+  //   //   status === "submitted" &&
+  //   //   endOfMessagesRef?.current &&
+  //   //   scrollPercent &&
+  //   //   scrollPercent > 30
+  //   // ) {
+  //   //   endOfMessagesRef.current.scrollIntoView({
+  //   //     behavior: "smooth",
+  //   //     block: "center",
+  //   //   });
+  //   // }
+
+  //   // if (scrollPercent && scrollPercent > 30 && endOfMessagesRef?.current) {
+  //   // if (endOfMessagesRef?.current) {
+  //   //   endOfMessagesRef.current.scrollIntoView({
+  //   //     behavior: "smooth",
+  //   //     block: "center",
+  //   //   });
+  //   // }
+  // }, [messages.at(-1)]);
+
   useEffect(() => {
-    const scrollPercent = handleScroll();
-
-    const el = scrollRef.current;
-    // if ((status === "submitted" || status === "streaming") && el) {
-    //   el.scrollTop = el.scrollHeight; // اسکرول به پایین‌ترین بخش برای رزرو جا
-    // }
-
-    if (
-      status === "submitted" &&
-      endOfMessagesRef?.current &&
-      scrollPercent &&
-      scrollPercent > 30
-    ) {
+    if (endOfMessagesRef?.current && scrollToBotton) {
       endOfMessagesRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
+      setScrollToBotton(false);
     }
-
-    // if (scrollPercent && scrollPercent > 30 && endOfMessagesRef?.current) {
-    //   endOfMessagesRef.current.scrollIntoView({
-    //     behavior: "smooth",
-    //     block: "center",
-    //   });
-    // }
-  }, [messages.at(-1)]);
+  }, [scrollToBotton, setScrollToBotton]);
 
   return {
     scrollRef,

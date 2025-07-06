@@ -132,6 +132,8 @@ export function AppSidebar({ user }: { user: UserType }) {
                   onClick={() => {
                     setActive(false);
                     setDisableLayout(false);
+                    // window.history.pushState({}, "", `/chat`);
+
                     router.push("/chat");
                     setNewChat(() => !newChat);
                     if (state === "expanded" && isMobile) {

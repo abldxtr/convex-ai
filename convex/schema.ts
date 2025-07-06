@@ -1,9 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-// import { StreamIdValidator } from "@convex-dev/persistent-text-streaming";
-// "user" | "data" | "system" | "assistant"
-// visibility: varchar('visibility', { enum: ['public', 'private'] })
 
 const schema = defineSchema({
   ...authTables,
@@ -62,10 +59,16 @@ const schema = defineSchema({
     chatId: v.id("chats"),
     userId: v.id("users"),
   }).index("by_chatId", ["chatId"]),
+  documents: defineTable({
+    embedding: v.array(v.float64()),
+    text: v.string(),
+    metadata: v.object({
+      id: v.string(),
+    }),
+  }).vectorIndex("byEmbedding", {
+    vectorField: "embedding",
+    dimensions: 1536,
+  }),
 });
 
 export default schema;
-
-// name: string;
-// url: string;
-// contentType: "image/png" | "image/jpg" | "image/jpeg";

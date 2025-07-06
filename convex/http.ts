@@ -1,13 +1,6 @@
 import { httpRouter } from "convex/server";
 import { auth } from "./auth";
-import {
-  corsRouter,
-  DEFAULT_EXPOSED_HEADERS,
-} from "convex-helpers/server/cors";
-import { sendMessageHttpStream } from "./agent";
-import { postMessage } from "./example";
-// import { streamChat } from "./chat";
-import { httpAction } from "./_generated/server";
+
 const http = httpRouter();
 
 auth.addHttpRoutes(http);

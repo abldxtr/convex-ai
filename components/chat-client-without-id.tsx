@@ -44,6 +44,8 @@ export default function ChatClientWithoutId() {
     removeStoredFiles,
     disableLayout,
     setDisableLayout,
+    scrollToBotton,
+    setScrollToBotton,
   } = useGlobalstate();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -161,6 +163,8 @@ export default function ChatClientWithoutId() {
 
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      setScrollToBotton(true);
+
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
@@ -198,6 +202,7 @@ export default function ChatClientWithoutId() {
     setActive(true);
     window.history.pushState({}, "", `/chat/${idChat}`);
     setValue("");
+    setScrollToBotton(true);
 
     if (files.length > 0) {
       const fileData = files[0].file as any;
@@ -309,7 +314,7 @@ export default function ChatClientWithoutId() {
                 />
                 <div
                   className={cn(
-                    "relative w-full p-[10px] flex flex-col justify-between min-h-[120px]"
+                    "relative w-full p-[10px] flex flex-col justify-between min-h-26 "
                   )}
                 >
                   {/* Text input */}

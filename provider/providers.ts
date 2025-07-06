@@ -4,8 +4,8 @@ import {
   extractReasoningMiddleware,
 } from "ai";
 
-import { openai } from "@ai-sdk/openai";
-import { openrouter } from "@openrouter/ai-sdk-provider";
+import { createOpenAI } from "@ai-sdk/openai";
+import { openrouter, createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { google } from "@ai-sdk/google";
 import { vertex } from "@ai-sdk/google-vertex";
 
@@ -13,6 +13,14 @@ import { vertex } from "@ai-sdk/google-vertex";
 // import { groq } from "@ai-sdk/groq";
 // import { google } from "@ai-sdk/google";
 // import { anthropic } from "@ai-sdk/anthropic"
+
+export const openai = createOpenAI({
+  compatibility: "strict",
+  apiKey: process.env.OPENAI_API_KEY,
+  // baseURL: "https://api.chatanywhere.tech/v1",
+  // baseURL: "https://api.chatanywhere.org/v1",
+  baseURL: "https://api.sambanova.ai/v1",
+});
 
 const middleware = extractReasoningMiddleware({
   tagName: "think",
@@ -24,7 +32,18 @@ export const mmd = customProvider({
     "mmd-google-own": google("gemini-1.5-flash"),
     "mmd-qwen-2.5": openrouter.chat("qwen/qwen-2.5-7b-instruct:free"),
     "mmd-google": openrouter.chat("google/gemini-2.0-flash-exp:free"),
-    "mmd-deepseek": openrouter.chat("deepseek/deepseek-r1-0528:free"),
+    "mmd-DeepSeek-V3-0324": openai("DeepSeek-V3-0324"),
+    "mmd-gpt-4o": openai("gpt-4o"),
+    "mmd-Meta-Llama-3.1-8B-Instruct": openai("Meta-Llama-3.1-8B-Instruct"),
+
+    "mmd-Llama-4-Maverick-17B-128E-Instruct": openai(
+      "Llama-4-Maverick-17B-128E-Instruct"
+    ),
+    "mmd-Meta-Llama-3.3-70B-Instruct": openai("Meta-Llama-3.3-70B-Instruct"),
+    // "mmd-E5-Mistral-7B-Instruct": openai.embedding(
+    //   "E5-Mistral-7B-Instruct"
+    // ),
+
     "mmd-mistral": openrouter.chat("mistralai/mistral-7b-instruct:free"),
     "mmd-meta-llama/llama-3.3-8b-instruct:free": openrouter.chat(
       "meta-llama/llama-3.3-8b-instruct:free"

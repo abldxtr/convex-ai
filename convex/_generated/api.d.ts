@@ -11,10 +11,9 @@
 import type * as agent from "../agent.js";
 import type * as auth from "../auth.js";
 import type * as chat from "../chat.js";
-import type * as example from "../example.js";
 import type * as http from "../http.js";
+import type * as langchain_db from "../langchain/db.js";
 import type * as stream from "../stream.js";
-import type * as streaming from "../streaming.js";
 import type * as user from "../user.js";
 import type * as vercel from "../vercel.js";
 
@@ -36,10 +35,9 @@ declare const fullApi: ApiFromModules<{
   agent: typeof agent;
   auth: typeof auth;
   chat: typeof chat;
-  example: typeof example;
   http: typeof http;
+  "langchain/db": typeof langchain_db;
   stream: typeof stream;
-  streaming: typeof streaming;
   user: typeof user;
   vercel: typeof vercel;
 }>;
@@ -2356,41 +2354,6 @@ export declare const components: {
             workflowHandle: string;
           };
         }
-      >;
-    };
-  };
-  persistentTextStreaming: {
-    lib: {
-      addChunk: FunctionReference<
-        "mutation",
-        "internal",
-        { final: boolean; streamId: string; text: string },
-        any
-      >;
-      createStream: FunctionReference<"mutation", "internal", {}, any>;
-      getStreamStatus: FunctionReference<
-        "query",
-        "internal",
-        { streamId: string },
-        "pending" | "streaming" | "done" | "error" | "timeout"
-      >;
-      getStreamText: FunctionReference<
-        "query",
-        "internal",
-        { streamId: string },
-        {
-          status: "pending" | "streaming" | "done" | "error" | "timeout";
-          text: string;
-        }
-      >;
-      setStreamStatus: FunctionReference<
-        "mutation",
-        "internal",
-        {
-          status: "pending" | "streaming" | "done" | "error" | "timeout";
-          streamId: string;
-        },
-        any
       >;
     };
   };

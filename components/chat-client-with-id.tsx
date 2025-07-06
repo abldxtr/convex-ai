@@ -98,7 +98,8 @@ export default function ChatClientWithId({
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
-  const { attachments, setAttachments } = useGlobalstate();
+  const { attachments, setAttachments, scrollToBotton, setScrollToBotton } =
+    useGlobalstate();
 
   const [
     { files, isDragging, errors },
@@ -237,6 +238,7 @@ export default function ChatClientWithId({
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      setScrollToBotton(true);
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         // e.preventDefault();
         if (status !== "ready") {
@@ -274,6 +276,7 @@ export default function ChatClientWithId({
   const handleClickSubmit = useCallback(async () => {
     setActive(true);
     setValue("");
+    setScrollToBotton(true);
 
     if (files.length > 0) {
       const fileData = files[0].file as any;
@@ -380,7 +383,7 @@ export default function ChatClientWithId({
                 />
                 <div
                   className={cn(
-                    "relative w-full p-[10px] flex flex-col justify-between "
+                    "relative w-full p-[10px] flex flex-col justify-between min-h-26"
                   )}
                 >
                   {/* Text input */}

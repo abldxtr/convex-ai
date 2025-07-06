@@ -41,6 +41,8 @@ type ContextType = {
   removeStoredFiles: () => void;
   disableLayout: boolean;
   setDisableLayout: React.Dispatch<React.SetStateAction<boolean>>;
+  scrollToBotton: boolean;
+  setScrollToBotton: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const GlobalContext = React.createContext<ContextType | null>(null);
@@ -58,6 +60,7 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
   const [visionModel, setVisionModel] = useState(false);
   const [value, setValue, removeValue] = useLocalStorage("InputText", "");
   const [disableLayout, setDisableLayout] = useState(false);
+  const [scrollToBotton, setScrollToBotton] = useState(false);
 
   const [storedFiles, setStoredFiles, removeStoredFiles] = useLocalStorage<
     FileMetadata[]
@@ -93,6 +96,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       removeStoredFiles,
       disableLayout,
       setDisableLayout,
+      scrollToBotton,
+      setScrollToBotton,
     }),
     [
       firstText,
@@ -113,6 +118,8 @@ export function GlobalStoreProvider({ children }: { children: ReactNode }) {
       removeStoredFiles,
       disableLayout,
       setDisableLayout,
+      scrollToBotton,
+      setScrollToBotton,
     ]
   );
 

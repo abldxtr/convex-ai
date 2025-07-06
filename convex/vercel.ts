@@ -1,6 +1,5 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { api } from "./_generated/api";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const createVercelAiMessage = mutation({
@@ -31,10 +30,6 @@ export const createVercelAiMessage = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    // const userId = await getAuthUserId(ctx);
-    // if (userId === null) {
-    //   return null;
-    // }
     const isHasMessage = await ctx.db
       .query("vercelAiMessages")
       .withIndex("by_ID", (q) => q.eq("id", args.id))
@@ -88,14 +83,3 @@ export const getStorageUrl = query({
     return await ctx.storage.getUrl(args.storageId);
   },
 });
-
-// export const sendImage = mutation({
-//   args: { storageId: v.id("_storage"), author: v.string() },
-//   handler: async (ctx, args) => {
-//     await ctx.db.insert("messages", {
-//       body: args.storageId,
-//       author: args.author,
-//       format: "image",
-//     });
-//   },
-// });

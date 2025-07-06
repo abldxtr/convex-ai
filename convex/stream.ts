@@ -1,7 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { Doc } from "./_generated/dataModel";
 
 export const getStream = query({
   args: {
@@ -31,7 +30,6 @@ export const getStream = query({
 
 export const createStream = mutation({
   args: {
-    // chatId:v.string(),
     chatId: v.id("chats"),
     userId: v.id("users"),
     id: v.string(),

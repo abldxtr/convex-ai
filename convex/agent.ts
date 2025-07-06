@@ -1,7 +1,5 @@
-import { tool } from "ai";
-import { openai } from "@ai-sdk/openai";
-import { z } from "zod";
-import { Agent, createTool } from "@convex-dev/agent";
+import { createOpenAI } from "@ai-sdk/openai";
+import { Agent } from "@convex-dev/agent";
 import { components, internal } from "./_generated/api";
 import { v } from "convex/values";
 import {
@@ -10,25 +8,21 @@ import {
   internalAction,
   internalMutation,
   internalQuery,
-  mutation,
-  query,
 } from "./_generated/server";
-import { createOpenRouter, openrouter } from "@openrouter/ai-sdk-provider";
-import { getAuthUserId } from "@convex-dev/auth/server";
-import {
-  PersistentTextStreaming,
-  StreamIdValidator,
-  type StreamId,
-} from "@convex-dev/persistent-text-streaming";
-import { Id } from "./_generated/dataModel";
 
-const persistentTextStreaming = new PersistentTextStreaming(
-  components.persistentTextStreaming
-);
-
+export const openai = createOpenAI({
+  compatibility: "strict",
+  apiKey: process.env.OPENAI_API_KEY,
+  // baseURL: "https://api.chatanywhere.tech/v1",
+  // baseURL: "https://api.chatanywhere.tech/v1",
+  baseURL: "https://api.sambanova.ai/v1",
+});
 // Define an agent similarly to the AI SDK
 export const supportAgent = new Agent(components.agent, {
-  chat: openrouter.chat("gemini-1.5-flash"),
+  // chat: openrouter.chat("gemini-1.5-flash"),
+  chat: openai.chat("DeepSeek-V3-0324"),
+  // chat: openai.chat("gpt-4o"),
+
   // textEmbedding: openai.textEmbedding("text-embedding-3-small"),
   instructions: `\n
   - what the language of the user is, you must respond in the same language
@@ -45,20 +39,10 @@ export const supportAgent = new Agent(components.agent, {
 export const createThread = action({
   args: {
     prompt: v.string(),
-    // userId: v.id("users"),
-    // id: v.string(),
     chatId: v.id("chats"),
-    // isDeleted: v.boolean(),
   },
   handler: async (ctx, args) => {
-    // Start a new thread for the user.
-    // const userId = await getAuthUserId(ctx);
-    // if (userId === null) {
-    //   return null;
-    // }
-    // console.log("createThread");
     const { threadId, thread } = await supportAgent.createThread(ctx);
-    // Creates a user message with the prompt, and an assistant reply message.
     try {
       const result = await thread.generateText({ prompt: args.prompt });
       if (result.text) {
@@ -77,23 +61,6 @@ export const createThread = action({
   },
 });
 
-// const createChatMutation = mutation({
-//   args: {
-//     title: v.string(),
-//     userId: v.string(),
-//     id: v.string(),
-//     isDeleted: v.boolean(),
-//   },
-//   handler: async (ctx, args) => {
-//     const result = await
-//     await ctx.runMutation(internal.chat.createChat, {
-//       title: args.title,
-//       userId: args.userId,
-//       id: args.id,
-//       isDeleted: args.isDeleted,
-//     });
-//   },
-// });
 // Pick up where you left off, with the same or a different agent:
 export const continueThread = internalAction({
   args: { prompt: v.string(), threadId: v.string() },
@@ -127,9 +94,6 @@ export const getThreadMessages = internalQuery({
 });
 export const sendMessageHttpStream = httpAction(async (ctx, request) => {
   const { prompt, threadId } = await request.json();
-
-  // console.log("convex Httpppppppppppppp");
-  // console.log({ threadId });
 
   if (!threadId) {
     const { thread } = await supportAgent.createThread(ctx);
@@ -199,23 +163,3 @@ export const saveMessageToDb = internalMutation({
     });
   },
 });
-
-// export const getMessagesByThreadId = query({
-//   args: { threadId: v.string() },
-//   handler: async (ctx, { threadId }) => {
-//     const messages = await ctx.db
-//       .query("conversation")
-//       .filter((q) => q.eq(q.field("threadId"), threadId))
-//       .collect();
-
-//     // const threadDoc = await ctx.runMutation(
-//     //   components.agent.messages.createThread,
-//     //   {
-//     //     userId: "123",
-//     //     title: "test",
-//     //     summary: "test",
-//     //   },
-//     // );
-//     return messages;
-//   },
-// });

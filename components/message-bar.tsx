@@ -6,7 +6,7 @@ import { useDirection } from "@/hooks/use-direction";
 import { MessageTools } from "./message-tools";
 import MarkdownRenderer from "./markdown";
 import { cx } from "class-variance-authority";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AiLoading2 } from "./ai-loading";
 import { useGlobalstate } from "@/context/global-store";
 import { clientGetChatMessages } from "@/lib/type";
@@ -16,6 +16,7 @@ import EditMessage from "./edit-message";
 import { ScrollArea } from "./ui/scroll-area";
 import { AnimatedMarkdown } from "flowtoken";
 import "flowtoken/dist/styles.css";
+import { useEffect } from "react";
 type MessageBarProps = {
   messages: UIMessage[];
   clientChatMessage?: clientGetChatMessages;
@@ -38,50 +39,63 @@ export default function MessageBar({
     endOfMessagesRef,
     messages,
   });
-  if (messages.length > 0) {
-  }
-  const { getError } = useGlobalstate();
-  // useEffect(() => {
-  //   if (getError) {
-  //     reload();
-  //     setGetError(false);
-  //   }
-  // }, [getError]);
+  // if (messages.length > 0) {
+  // }
+  const { getError, setGetError } = useGlobalstate();
+  useEffect(() => {
+    if (getError) {
+      setGetError(false);
+      reload();
+    }
+  }, [getError]);
 
   return (
-    <div className="relative h-full w-full flex-1 overflow-hidden">
-      {showArrow && (
-        <div
-          className={cn(
-            "absolute bottom-1 z-[10] flex w-full items-center justify-center"
-          )}
-        >
-          <div
-            className="flex size-[32px] cursor-pointer items-center justify-center rounded-full border bg-gray-100 transition-all duration-300 hover:cursor-pointer hover:bg-gray-200"
-            onClick={() => {
-              if (status === "streaming") {
-                // toast.error("Please wait for the previous message to be sent");
-              } else {
-                scrollRef.current?.scrollTo({
-                  top: clientHeight,
-                  behavior: "smooth",
-                });
-              }
-            }}
-          >
-            <ArrowDown className="size-6 grow-0" />
-          </div>
-        </div>
-      )}
-      <ScrollArea
-        className="isolate h-full w-full flex-1 overflow-x-clip px-4"
-        ref={scrollRef}
+    <AnimatePresence>
+      <motion.div
+        className="relative h-full w-full flex-1 overflow-hidden"
+        initial={{
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+        }}
+        exit={{
+          opacity: 0,
+        }}
       >
-        <div className="relative z-[9] h-full w-full">
+        {showArrow && (
+          <div
+            className={cn(
+              "absolute bottom-1 z-[10] flex w-full items-center justify-center"
+            )}
+          >
+            <div
+              className="flex size-[32px] cursor-pointer items-center justify-center rounded-full border bg-gray-100 transition-all duration-300 hover:cursor-pointer hover:bg-gray-200"
+              onClick={() => {
+                if (status === "streaming") {
+                  // toast.error("Please wait for the previous message to be sent");
+                } else {
+                  scrollRef.current?.scrollTo({
+                    top: clientHeight,
+                    behavior: "smooth",
+                  });
+                }
+              }}
+            >
+              <ArrowDown className="size-6 grow-0" />
+            </div>
+          </div>
+        )}
+        <div
+          className="isolate h-full w-full flex-1 overflow-x-clip px-4 overflow-y-scroll "
+          ref={scrollRef}
+        >
+          {/* <ScrollArea className="relative z-[9] h-full w-full"> */}
           {messages.map((message, index) => {
             const isLastMessage = messages.length - 1 === index;
             return (
-              <div key={message.id} className="whitespace-pre-wrap relative ">
+              <div key={message.id} className=" relative ">
+                {/* whitespace-pre-wrap */}
                 {message.role === "user" &&
                 (status === "submitted" || status === "streaming") ? (
                   <>
@@ -144,9 +158,10 @@ export default function MessageBar({
             )} */}
           <div ref={endOfMessagesRef} />
           {/* </div> */}
+          {/* </ScrollArea> */}
         </div>
-      </ScrollArea>
-    </div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

@@ -35,30 +35,32 @@ const CopyButton: React.FC<{ code: string }> = React.memo(({ code }) => {
   }, [code]);
 
   return (
-    <button
-      onClick={handleCopy}
-      className={cn(
-        " sticky top-2  z-10 flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-all",
-        "bg-white/90 text-zinc-800 hover:bg-white dark:bg-zinc-800/90 dark:text-zinc-200 dark:hover:bg-zinc-800",
-        "mt-[-35px] ml-[10px] "
-        // "opacity-0 group-hover:opacity-100",
-        // "absolute top-2  right-2",
-        // copied && "opacity-100",
-      )}
-      title={copied ? "Copied!" : "Copy code"}
-    >
-      {copied ? (
-        <>
-          <Check className="h-3 w-3" />
-          <span>Copied</span>
-        </>
-      ) : (
-        <>
-          <Copy className="h-3 w-3" />
-          <span>Copy</span>
-        </>
-      )}
-    </button>
+    <div className=" absolute top-10  inset-0  pointer-events-none ">
+      <button
+        onClick={handleCopy}
+        className={cn(
+          " sticky top-2  z-10 flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-all",
+          "bg-white/90 text-zinc-800 hover:bg-white dark:bg-zinc-800/90 dark:text-zinc-200 dark:hover:bg-zinc-800",
+          "mt-[-35px] ml-[10px] pointer-events-auto "
+          // "opacity-0 group-hover:opacity-100",
+          // "absolute top-2  right-2",
+          // copied && "opacity-100",
+        )}
+        title={copied ? "Copied!" : "Copy code"}
+      >
+        {copied ? (
+          <>
+            <Check className="h-3 w-3" />
+            <span>Copied</span>
+          </>
+        ) : (
+          <>
+            <Copy className="h-3 w-3" />
+            <span>Copy</span>
+          </>
+        )}
+      </button>
+    </div>
   );
 });
 
@@ -93,8 +95,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
             <code
               className={cn(
                 className,
-                "rounded-md bg-zinc-100 px-1 pb-0.5 pt-1.5 text-sm dark:bg-zinc-800"
+                "rounded-md bg-zinc-100 px-1 pb-0.5 pt-1.5 text-sm  dark:bg-zinc-800 relative "
               )}
+              style={{
+                paddingTop: "44px",
+              }}
               {...props}
               dir="ltr"
             >
@@ -111,12 +116,17 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
               <CopyButton code={codeText} />
               <pre
                 className={cn(
-                  "overflow-x-auto rounded-lg bg-zinc-100 p-1 text-sm",
+                  "overflow-x-auto rounded-lg bg-zinc-100 p-1 mt-4 text-sm z-10 ",
                   "dark:bg-zinc-800/50",
                   "border border-zinc-200 dark:border-zinc-700"
                 )}
+                // style={{
+                //   paddingTop: "10px",
+                // }}
                 {...props}
               >
+                {/* <CopyButton code={codeText} /> */}
+
                 {children}
               </pre>
             </div>
@@ -125,7 +135,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
 
         ol({ children, ...props }) {
           return (
-            <ol className="ml-6 list-decimal space-y-1" {...props}>
+            <ol className="ml-6 list-decimal " {...props}>
               {children}
             </ol>
           );
@@ -133,7 +143,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
 
         ul({ children, ...props }) {
           return (
-            <ul className="ml-6 list-disc space-y-1" {...props}>
+            <ul className="ml-6 list-disc " {...props}>
               {children}
             </ul>
           );
