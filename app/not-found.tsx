@@ -34,7 +34,7 @@ export default function NotFound() {
         </p>
 
         <div className="flex justify-center">
-          <Link href="/chat">
+          <Link href="/chat" prefetch={true}>
             <Button
               variant="default"
               className="flex items-center gap-2 px-4 py-2 rounded-full"

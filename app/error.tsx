@@ -56,7 +56,7 @@ export default function Error({
             <span>Try again</span>
           </Button>
 
-          <Link href="/chat">
+          <Link href="/chat" prefetch={true}>
             <Button
               variant="outline"
               className="flex items-center gap-2 px-4 py-2 rounded-full"

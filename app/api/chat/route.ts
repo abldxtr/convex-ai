@@ -25,13 +25,13 @@ const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY,
 });
 
-export const openai = createOpenAI({
-  compatibility: "strict",
-  apiKey: process.env.OPENAI_API_KEY,
-  // baseURL: "https://api.chatanywhere.tech/v1",
-  // baseURL: "https://api.chatanywhere.org/v1",
-  baseURL: "https://api.sambanova.ai/v1",
-});
+// const openai = createOpenAI({
+//   compatibility: "strict",
+//   apiKey: process.env.OPENAI_API_KEY,
+//   // baseURL: "https://api.chatanywhere.tech/v1",
+//   // baseURL: "https://api.chatanywhere.org/v1",
+//   baseURL: "https://api.sambanova.ai/v1",
+// });
 
 const DEFAULT_MODEL = "meta-llama/llama-3.2-3b-instruct:free";
 const DEFAULT_IMAGE_MODEL = "mmd-google/gemini-2.0-flash-exp:free";
@@ -226,7 +226,6 @@ export async function POST(req: Request) {
 
       const result = streamText({
         model: mmd.languageModel(body.model ?? DEFAULT_IMAGE_MODEL),
-        // model: openai("DeepSeek-V3-0324"),
 
         messages: [
           {
@@ -293,8 +292,6 @@ export async function POST(req: Request) {
 
     const result = streamText({
       model: mmd.languageModel(body.model ?? DEFAULT_MODEL),
-      //
-      // model: openai("DeepSeek-V3-0324"),
       messages: allMessages,
       system: SYSTEM_PROMPT,
       experimental_transform: smoothStream({ delayInMs: 20, chunking: "word" }),
@@ -342,7 +339,6 @@ export async function POST(req: Request) {
 
       const result = streamText({
         model: mmd.languageModel(body.model ?? DEFAULT_IMAGE_MODEL),
-        // model: openai("DeepSeek-V3-0324"),
 
         messages: [
           {
@@ -410,11 +406,6 @@ export async function POST(req: Request) {
 
     const result = streamText({
       model: mmd.languageModel(body.model ?? DEFAULT_MODEL),
-      // model: openai.embedding("E5-Mistral-7B-Instruct"),
-      // model: openai.embedding("E5-Mistral-7B-Instruct", {
-      //   dimensions: 512, // optional, number of dimensions for the embedding
-      // }),
-      // model: openai("DeepSeek-V3-0324"),
 
       messages: allMessages,
       system: SYSTEM_PROMPT,
