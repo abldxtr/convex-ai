@@ -239,7 +239,7 @@ export default function ChatClientWithId({
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-        if (scrollToBotton) {
+        if (!scrollToBotton) {
           setScrollToBotton(true);
         }
         // e.preventDefault();
@@ -278,7 +278,7 @@ export default function ChatClientWithId({
   const handleClickSubmit = useCallback(async () => {
     setActive(true);
     setValue("");
-    if (scrollToBotton) {
+    if (!scrollToBotton) {
       setScrollToBotton(true);
     }
 
