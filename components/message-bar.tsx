@@ -50,118 +50,118 @@ export default function MessageBar({
   }, [getError]);
 
   return (
-    <AnimatePresence>
-      <motion.div
-        className="relative h-full w-full flex-1 overflow-hidden"
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-        }}
-        exit={{
-          opacity: 0,
-        }}
-      >
-        {showArrow && (
-          <div
-            className={cn(
-              "absolute bottom-1 z-[10] flex w-full items-center justify-center"
-            )}
-          >
-            <div
-              className="flex size-[32px] cursor-pointer items-center justify-center rounded-full border bg-gray-100 transition-all duration-300 hover:cursor-pointer hover:bg-gray-200"
-              onClick={() => {
-                if (status === "streaming") {
-                  // toast.error("Please wait for the previous message to be sent");
-                } else {
-                  scrollRef.current?.scrollTo({
-                    top: clientHeight,
-                    behavior: "smooth",
-                  });
-                }
-              }}
-            >
-              <ArrowDown className="size-6 grow-0" />
-            </div>
-          </div>
-        )}
+    // <AnimatePresence>
+    <div
+      className="relative h-full w-full flex-1 overflow-hidden"
+      // initial={{
+      //   opacity: 0,
+      // }}
+      // animate={{
+      //   opacity: 1,
+      // }}
+      // exit={{
+      //   opacity: 0,
+      // }}
+    >
+      {showArrow && (
         <div
-          className="isolate h-full w-full flex-1 overflow-x-clip px-4 overflow-y-scroll "
-          ref={scrollRef}
+          className={cn(
+            "absolute bottom-1 z-[10] flex w-full items-center justify-center"
+          )}
         >
-          {/* <ScrollArea className="relative z-[9] h-full w-full"> */}
-          {messages.map((message, index) => {
-            const isLastMessage = messages.length - 1 === index;
-            return (
-              <div key={message.id} className=" relative ">
-                {/* whitespace-pre-wrap */}
-                {message.role === "user" &&
+          <div
+            className="flex size-[32px] cursor-pointer items-center justify-center rounded-full border bg-gray-100 transition-all duration-300 hover:cursor-pointer hover:bg-gray-200"
+            onClick={() => {
+              if (status === "streaming") {
+                // toast.error("Please wait for the previous message to be sent");
+              } else {
+                scrollRef.current?.scrollTo({
+                  top: clientHeight,
+                  behavior: "smooth",
+                });
+              }
+            }}
+          >
+            <ArrowDown className="size-6 grow-0" />
+          </div>
+        </div>
+      )}
+      <div
+        className="isolate h-full w-full flex-1 overflow-x-clip px-4 overflow-y-scroll "
+        ref={scrollRef}
+      >
+        {/* <ScrollArea className="relative z-[9] h-full w-full"> */}
+        {messages.map((message, index) => {
+          const isLastMessage = messages.length - 1 === index;
+          return (
+            <div key={message.id} className=" relative ">
+              {/* whitespace-pre-wrap */}
+              {message.role === "user" &&
+              (status === "submitted" || status === "streaming") ? (
+                <>
+                  <UserMessage
+                    message={message}
+                    isLastMessage={isLastMessage}
+                    reload={reload}
+                  />
+                  {/* <EditMessage message={message} /> */}
+                </>
+              ) : message.role === "user" ? (
+                <>
+                  <UserMessage
+                    message={message}
+                    isLastMessage={isLastMessage}
+                    reload={reload}
+                  />
+                  {/* <EditMessage message={message} /> */}
+                </>
+              ) : message.role === "assistant" &&
                 (status === "submitted" || status === "streaming") ? (
-                  <>
-                    <UserMessage
-                      message={message}
-                      isLastMessage={isLastMessage}
-                      reload={reload}
-                    />
-                    {/* <EditMessage message={message} /> */}
-                  </>
-                ) : message.role === "user" ? (
-                  <>
-                    <UserMessage
-                      message={message}
-                      isLastMessage={isLastMessage}
-                      reload={reload}
-                    />
-                    {/* <EditMessage message={message} /> */}
-                  </>
-                ) : message.role === "assistant" &&
-                  (status === "submitted" || status === "streaming") ? (
-                  <>
-                    <AIMessage
-                      message={message}
-                      status={status}
-                      isLastMessage={isLastMessage}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <AIMessage
-                      message={message}
-                      status={status}
-                      isLastMessage={isLastMessage}
-                    />
-                  </>
-                )}
+                <>
+                  <AIMessage
+                    message={message}
+                    status={status}
+                    isLastMessage={isLastMessage}
+                  />
+                </>
+              ) : (
+                <>
+                  <AIMessage
+                    message={message}
+                    status={status}
+                    isLastMessage={isLastMessage}
+                  />
+                </>
+              )}
 
-                {/* delete mmmmmmmmmmmm */}
-                {getError && isLastMessage && status === "error" && (
-                  <AIMessageError reload={reload} />
-                )}
-              </div>
-            );
-          })}
-          {(status === "submitted" || status === "streaming") &&
-            messages.length > 0 &&
-            messages[messages.length - 1].role === "user" && <AiLoading2 />}
-          {(status === "submitted" ||
-            status === "streaming" ||
-            status === "ready" ||
-            status === "error") &&
-            messages.length > 0 && (
-              // messages[messages.length - 1].role === "user" && (
-              <div className="h-[220px] w-[20px] flex items-center justify-center " />
-            )}
-          {/* {isLastMessage && (
+              {/* delete mmmmmmmmmmmm */}
+              {getError && isLastMessage && status === "error" && (
+                <AIMessageError reload={reload} />
+              )}
+            </div>
+          );
+        })}
+        {(status === "submitted" || status === "streaming") &&
+          messages.length > 0 &&
+          messages[messages.length - 1].role === "user" && <AiLoading2 />}
+        {(status === "submitted" ||
+          status === "streaming" ||
+          status === "ready" ||
+          status === "error") &&
+          messages.length > 0 && (
+            // messages[messages.length - 1].role === "user" && (
+            <div className="h-[220px] w-[20px] flex items-center justify-center " />
+          )}
+        {/* {isLastMessage && (
               // messages[messages.length - 1].role === "user" && (
               <div className="h-[220px] w-[20px] flex items-center justify-center " />
             )} */}
-          <div ref={endOfMessagesRef} />
-          {/* </div> */}
-          {/* </ScrollArea> */}
-        </div>
-      </motion.div>
-    </AnimatePresence>
+        <div ref={endOfMessagesRef} />
+        {/* </div> */}
+        {/* </ScrollArea> */}
+      </div>
+    </div>
+    // </AnimatePresence>
   );
 }
 
