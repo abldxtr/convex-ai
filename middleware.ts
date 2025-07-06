@@ -14,18 +14,18 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
   // if (isHomePage(request) && isAuth) {
   //   return nextjsMiddlewareRedirect(request, "/chat");
   // }
-  if (isHomePage(request) && isAuth) {
-    return nextjsMiddlewareRedirect(request, "/chat");
-  }
-  if (isSignInPage(request) && isAuth) {
-    return nextjsMiddlewareRedirect(request, "/chat");
-  }
-  if (isProtectedRoute(request) && !isAuth) {
-    return nextjsMiddlewareRedirect(request, "/auth");
-  }
-  if (isHomePage(request) && !isAuth) {
-    return nextjsMiddlewareRedirect(request, "/auth");
-  }
+  // if (isHomePage(request) && isAuth) {
+  //   return nextjsMiddlewareRedirect(request, "/chat");
+  // }
+  // if (isSignInPage(request) && isAuth) {
+  //   return nextjsMiddlewareRedirect(request, "/chat");
+  // }
+  // if (isProtectedRoute(request) && !isAuth) {
+  //   return nextjsMiddlewareRedirect(request, "/auth");
+  // }
+  // if (isHomePage(request) && !isAuth) {
+  //   return nextjsMiddlewareRedirect(request, "/auth");
+  // }
 });
 
 export const config = {
