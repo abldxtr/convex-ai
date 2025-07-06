@@ -162,10 +162,14 @@ export function useScroll({
   // }, [messages.at(-1)]);
 
   useEffect(() => {
-    if (endOfMessagesRef?.current && scrollToBotton) {
-      endOfMessagesRef.current.scrollIntoView({
+    if (scrollToBotton) {
+      // endOfMessagesRef.current.scrollIntoView({
+      //   behavior: "smooth",
+      //   block: "end",
+      // });
+      scrollRef.current?.scrollTo({
+        top: clientHeight,
         behavior: "smooth",
-        block: "end",
       });
       setScrollToBotton(false);
     }
