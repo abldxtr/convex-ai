@@ -238,8 +238,10 @@ export default function ChatClientWithId({
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      setScrollToBotton(true);
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+        if (scrollToBotton) {
+          setScrollToBotton(true);
+        }
         // e.preventDefault();
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
@@ -269,14 +271,16 @@ export default function ChatClientWithId({
         }
       }
     },
-    [status, handleSubmit]
+    [status, handleSubmit, scrollToBotton, setScrollToBotton]
   );
 
   // Handle click submission
   const handleClickSubmit = useCallback(async () => {
     setActive(true);
     setValue("");
-    setScrollToBotton(true);
+    if (scrollToBotton) {
+      setScrollToBotton(true);
+    }
 
     if (files.length > 0) {
       const fileData = files[0].file as any;
@@ -295,7 +299,16 @@ export default function ChatClientWithId({
     } else {
       handleSubmit();
     }
-  }, [input, setInput, setActive, router, idChat, attachments]);
+  }, [
+    input,
+    setInput,
+    setActive,
+    router,
+    idChat,
+    attachments,
+    scrollToBotton,
+    setScrollToBotton,
+  ]);
   const stopIcon = searchTools.find((t) => t.name === "StopButton")?.icon;
 
   useLayoutEffect(() => {

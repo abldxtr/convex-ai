@@ -163,9 +163,10 @@ export default function ChatClientWithoutId() {
 
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      setScrollToBotton(true);
-
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+        if (!scrollToBotton) {
+          setScrollToBotton(true);
+        }
         if (status !== "ready") {
           toast.error("Please wait for the previous message to be sent");
         } else {
@@ -195,14 +196,25 @@ export default function ChatClientWithoutId() {
         }
       }
     },
-    [status, files, handleSubmit, setActive, idChat, clearFiles]
+    [
+      status,
+      files,
+      handleSubmit,
+      setActive,
+      idChat,
+      clearFiles,
+      scrollToBotton,
+      setScrollToBotton,
+    ]
   );
 
   const handleClickSubmit = useCallback(() => {
     setActive(true);
     window.history.pushState({}, "", `/chat/${idChat}`);
     setValue("");
-    setScrollToBotton(true);
+    if (!scrollToBotton) {
+      setScrollToBotton(true);
+    }
 
     if (files.length > 0) {
       const fileData = files[0].file as any;
@@ -221,7 +233,15 @@ export default function ChatClientWithoutId() {
     } else {
       handleSubmit();
     }
-  }, [files, handleSubmit, setActive, idChat, clearFiles]);
+  }, [
+    files,
+    handleSubmit,
+    setActive,
+    idChat,
+    clearFiles,
+    scrollToBotton,
+    setScrollToBotton,
+  ]);
 
   useLayoutEffect(() => {
     if (value.length > 0) {
