@@ -157,7 +157,7 @@ export default function EditMessage({
                         ? "mmd-google/gemini-2.0-flash-exp:free"
                         : selectedModel.length > 0
                           ? selectedModel
-                          : "mmd-meta-llama/llama-3.3-8b-instruct:free"
+                          :"mmd-gpt-4o"
                     }
                     setSelectedModel={setSelectedModel}
                     showExperimentalModels={showExperimentalModels}

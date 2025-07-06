@@ -25,10 +25,7 @@ export function useChatModel() {
   };
 
   return {
-    selectedModel:
-      selectedModel.length > 0
-        ? selectedModel
-        : "mmd-meta-llama/llama-3.3-8b-instruct:free",
+    selectedModel: selectedModel.length > 0 ? selectedModel : "mmd-gpt-4o",
     setSelectedModel: updateSelectedModel,
     showExperimentalModels,
     setShowExperimentalModels,

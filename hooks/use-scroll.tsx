@@ -165,7 +165,7 @@ export function useScroll({
     if (endOfMessagesRef?.current && scrollToBotton) {
       endOfMessagesRef.current.scrollIntoView({
         behavior: "smooth",
-        block: "center",
+        block: "end",
       });
       setScrollToBotton(false);
     }

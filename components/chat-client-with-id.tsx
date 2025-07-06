@@ -196,7 +196,7 @@ export default function ChatClientWithId({
           ? "mmd-google/gemini-2.0-flash-exp:free"
           : selectedModel.length > 0
             ? selectedModel
-            : "mmd-meta-llama/llama-3.3-8b-instruct:free",
+            : "mmd-gpt-4o",
     }),
     onError: (error) => {
       console.log("error", error);
@@ -432,7 +432,7 @@ export default function ChatClientWithId({
                               ? "mmd-google/gemini-2.0-flash-exp:free"
                               : selectedModel.length > 0
                                 ? selectedModel
-                                : "mmd-meta-llama/llama-3.3-8b-instruct:free"
+                                : "mmd-gpt-4o"
                           }
                           setSelectedModel={setSelectedModel}
                           showExperimentalModels={showExperimentalModels}
