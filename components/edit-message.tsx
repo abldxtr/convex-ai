@@ -89,7 +89,7 @@ export default function EditMessage({
 
   return (
     <div
-      className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] justify-end flex  "
+      className="group/turn-messages mx-auto containerW justify-end flex  "
       dir="auto"
     >
       <div

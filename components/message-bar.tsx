@@ -52,7 +52,7 @@ export default function MessageBar({
   return (
     // <AnimatePresence>
     <div
-      className="relative h-full w-full flex-1 overflow-hidden"
+      className="relative h-full w-full flex-1 overflow-hidden fade-in "
       // initial={{
       //   opacity: 0,
       // }}
@@ -180,10 +180,7 @@ export function UserMessage({
   const direction = useDirection(textPart?.text ?? "");
 
   return (
-    <div
-      className="group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] "
-      dir="auto"
-    >
+    <div className="group/turn-messages mx-auto containerW " dir="auto">
       <div
         className={cn(
           "w-full gap-4 text-base focus-visible:outline-hidden md:gap-5 lg:gap-6 break-words break-all ",
@@ -249,11 +246,7 @@ export function AIMessage({
   isLastMessage: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "group/turn-messages mx-auto max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem] lg:[--thread-content-max-width:52rem] "
-      )}
-    >
+    <div className={cn("group/turn-messages mx-auto containerW ")}>
       <div
         className="gap-4 rounded-3xl px-5  text-base focus-visible:outline-hidden md:gap-5 lg:gap-6"
         dir="auto"

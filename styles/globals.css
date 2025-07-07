@@ -176,6 +176,25 @@
   }
 }
 
+.containerW {
+  @apply max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:40rem] lg:[--thread-content-max-width:40rem];
+}
+
+@layer utilities {
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .fade-in {
+    @apply opacity-0;
+    animation: fade-in 0.4s ease-out forwards;
+  }
+}
 /* @layer base {
   * {
     @apply border-border;

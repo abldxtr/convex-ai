@@ -379,10 +379,10 @@ export default function ChatClientWithId({
             >
               <div
                 className={cn(
-                  "border-token-border-default bg-token-bg-primary flex grow",
-                  "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
-                  "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
-                  "lg:[--thread-content-max-width:50rem]",
+                  "border-token-border-default bg-token-bg-primary flex grow containerW ",
+                  // "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
+                  // "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
+                  // "lg:[--thread-content-max-width:50rem]",
                   "cursor-text flex-col items-center justify-center rounded-[28px]",
                   "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
                   "dark:bg-[#303030] dark:shadow-none! relative ",
@@ -396,7 +396,7 @@ export default function ChatClientWithId({
                 />
                 <div
                   className={cn(
-                    "relative w-full p-[10px] flex flex-col justify-between min-h-26"
+                    "relative w-full p-[10px] flex flex-col justify-between min-h-28"
                   )}
                 >
                   {/* Text input */}
