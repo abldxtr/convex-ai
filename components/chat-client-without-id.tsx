@@ -154,9 +154,9 @@ export default function ChatClientWithoutId() {
         }
         sessionStorage.setItem(`disable-scroll`, idChat);
 
-        router.push(`/chat/${idChat}`, {
-          scroll: false,
-        });
+        // router.push(`/chat/${idChat}`, {
+        //   scroll: false,
+        // });
       });
     },
   });
