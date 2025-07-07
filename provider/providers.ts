@@ -25,8 +25,12 @@ export const openai = createOpenAI({
 
 export const openAiChina = createOpenAI({
   compatibility: "strict",
-  // apiKey: process.env.OPENAI_API_KEY_CHINA,
-  // baseURL: "https://api.chatanywhere.org/v1",
+  apiKey: process.env.OPENAI_API_KEY_CHINA,
+  baseURL: "https://api.chatanywhere.org/v1",
+});
+
+export const openAiAval = createOpenAI({
+  compatibility: "strict",
 
   apiKey: process.env.OPENAI_API_AVAL,
   baseURL: " https://api.avalai.ir/v1",
@@ -49,6 +53,8 @@ export const mmd = customProvider({
     "mmd-google": openRouter.chat("google/gemini-2.0-flash-exp:free"),
     "mmd-DeepSeek-V3-0324": openai("DeepSeek-V3-0324"),
     "mmd-gpt-4o": openAiChina("gpt-4o"),
+    "mmd-gpt-4o-aval": openAiAval("gpt-4o"),
+
     "mmd-Meta-Llama-3.1-8B-Instruct": openai("Meta-Llama-3.1-8B-Instruct"),
 
     "mmd-Llama-4-Maverick-17B-128E-Instruct": openai(

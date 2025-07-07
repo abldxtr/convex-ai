@@ -197,6 +197,19 @@ export const models = [
     category: "Stable",
     pdf: false,
   },
+  {
+    value: "mmd-gpt-4o-aval",
+    label: "gpt-4o-aval",
+    icon: "./../OpenAI.svg",
+    iconClass: "text-current",
+    description: "Meta-Llamagpt-4o most intelligent model",
+    color: "indigo",
+    vision: false,
+    reasoning: false,
+    experimental: false,
+    category: "Stable",
+    pdf: false,
+  },
 ];
 
 // "mmd-gpt-4o": openai("gpt-4o"),
