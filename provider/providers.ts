@@ -31,9 +31,6 @@ export const openAiChina = createOpenAI({
 export const openRouter = createOpenRouter({
   compatibility: "strict",
   apiKey: process.env.OPENROUTER_API_KEY,
-  // baseURL: "https://api.chatanywhere.tech/v1",
-  // baseURL: "https://api.chatanywhere.org/v1",
-  // baseURL: "https://api.sambanova.ai/v1",
 });
 
 const middleware = extractReasoningMiddleware({
