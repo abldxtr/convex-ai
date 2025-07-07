@@ -17,6 +17,7 @@ import { vertex } from "@ai-sdk/google-vertex";
 export const openai = createOpenAI({
   compatibility: "strict",
   apiKey: process.env.OPENAI_API_KEY,
+
   // baseURL: "https://api.chatanywhere.tech/v1",
   // baseURL: "https://api.chatanywhere.org/v1",
   baseURL: "https://api.sambanova.ai/v1",
@@ -24,8 +25,11 @@ export const openai = createOpenAI({
 
 export const openAiChina = createOpenAI({
   compatibility: "strict",
-  apiKey: process.env.OPENAI_API_KEY_CHINA,
-  baseURL: "https://api.chatanywhere.org/v1",
+  // apiKey: process.env.OPENAI_API_KEY_CHINA,
+  // baseURL: "https://api.chatanywhere.org/v1",
+
+  apiKey: process.env.OPENAI_API_AVAL,
+  baseURL: " https://api.avalai.ir/v1",
 });
 
 export const openRouter = createOpenRouter({

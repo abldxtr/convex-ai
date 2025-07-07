@@ -46,12 +46,22 @@ export default function ChatClientWithoutId() {
     setDisableLayout,
     scrollToBotton,
     setScrollToBotton,
+    changeRandomId,
+    setChangeRandomId,
   } = useGlobalstate();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
-  const idChat = useMemo(() => crypto.randomUUID(), []);
+  const idChat = useMemo(
+    () => crypto.randomUUID(),
+    [changeRandomId, setChangeRandomId]
+  );
+  console.log({ idChat });
+  console.log({ changeRandomId });
+
+  // const idChat = crypto.randomUUID();
+
   const [
     { files, isDragging, errors },
     {
@@ -144,6 +154,7 @@ export default function ChatClientWithoutId() {
     onError: (error) => {
       console.log("error", error);
       setGetError(true);
+      // setChangeRandomId(false);
     },
     onFinish: () => {
       console.log("onFinish");
@@ -153,6 +164,7 @@ export default function ChatClientWithoutId() {
           clearFiles();
         }
         sessionStorage.setItem(`disable-scroll`, idChat);
+        // setChangeRandomId(false);
 
         // router.push(`/chat/${idChat}`, {
         //   scroll: false,
@@ -253,6 +265,7 @@ export default function ChatClientWithoutId() {
     const handleBeforeUnload = () => {
       removeValue();
       removeStoredFiles();
+      setChangeRandomId(false);
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);

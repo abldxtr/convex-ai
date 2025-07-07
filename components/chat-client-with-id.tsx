@@ -137,7 +137,6 @@ export default function ChatClientWithId({
         return false;
       }
     });
-    console.log({ visionModel });
 
     setVisionModel(() => visionModel);
 

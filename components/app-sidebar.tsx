@@ -51,6 +51,8 @@ export function AppSidebar({ user }: { user: UserType }) {
     setActive,
     disableLayout,
     setDisableLayout,
+    changeRandomId,
+    setChangeRandomId,
   } = useGlobalstate();
   const deleteChat = useMutation(api.chat.deleteChat);
 
@@ -68,6 +70,7 @@ export function AppSidebar({ user }: { user: UserType }) {
         router.refresh();
         setDisableLayout(false);
         setActive(false);
+        setChangeRandomId((prev) => !prev);
       }
     } catch (error) {
       console.log({ error });
@@ -111,6 +114,8 @@ export function AppSidebar({ user }: { user: UserType }) {
             <Link
               href="/chat"
               onClick={() => {
+                setChangeRandomId((prev) => !prev);
+
                 setActive(false);
                 setDisableLayout(false);
 
@@ -130,6 +135,8 @@ export function AppSidebar({ user }: { user: UserType }) {
                   type="button"
                   className="h-fit p-2"
                   onClick={() => {
+                    setChangeRandomId((prev) => !prev);
+
                     setActive(false);
                     setDisableLayout(false);
                     // window.history.pushState({}, "", `/chat`);
