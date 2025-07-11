@@ -20,8 +20,12 @@ export const openai = createOpenAI({
 
 const openAiChina = createOpenAI({
   compatibility: "strict",
-  // apiKey: process.env.OPENAI_API_KEY_CHINA,
-  // baseURL: "https://api.chatanywhere.org/v1",
+  apiKey: process.env.OPENAI_API_KEY_CHINA,
+  baseURL: "https://api.chatanywhere.org/v1",
+});
+
+const openAiAval = createOpenAI({
+  compatibility: "strict",
 
   apiKey: process.env.OPENAI_API_AVAL,
   baseURL: " https://api.avalai.ir/v1",
@@ -30,7 +34,8 @@ const openAiChina = createOpenAI({
 export const supportAgent = new Agent(components.agent, {
   // chat: openrouter.chat("gemini-1.5-flash"),
   // chat: openai.chat("DeepSeek-V3-0324"),
-  chat: openAiChina.chat("gpt-4o"),
+  // chat: openAiChina.chat("gpt-4o"),
+  chat: openAiAval.chat("gpt-4o"),
 
   // textEmbedding: openai.textEmbedding("text-embedding-3-small"),
   instructions: `\n

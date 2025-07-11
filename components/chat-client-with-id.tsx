@@ -362,7 +362,7 @@ export default function ChatClientWithId({
       >
         <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
           <motion.div
-            className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px] bg-transparent  "
+            className="md:mb-4  w-full sm:px-[16px] md:px-[0px] bg-transparent  "
             layoutId={disableLayout ? undefined : "chat-input"}
             layout={disableLayout ? false : "position"}
           >
@@ -382,7 +382,7 @@ export default function ChatClientWithId({
                   // "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
                   // "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
                   // "lg:[--thread-content-max-width:50rem]",
-                  "cursor-text flex-col items-center justify-center rounded-[28px]",
+                  "cursor-text flex-col items-center justify-center md:rounded-[28px] rounded-t-[28px] sm:rounded-[28px]  ",
                   "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
                   "dark:bg-[#303030] dark:shadow-none! relative ",
                   isDragging && "bg-blue-400"
@@ -402,7 +402,7 @@ export default function ChatClientWithId({
                   <Textarea
                     id={id}
                     value={input}
-                    autoFocus
+                    // autoFocus
                     placeholder="Ask anything"
                     className={cn(
                       "field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50"

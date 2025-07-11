@@ -353,7 +353,7 @@ export default function ChatClientWithoutId() {
                   {/* Text input */}
                   <Textarea
                     value={input}
-                    autoFocus
+                    // autoFocus
                     placeholder="Ask anything"
                     className="field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50 !transition-none "
                     onChange={(e) => {

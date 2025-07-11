@@ -28,7 +28,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { PlusIcon, Ellipsis, Trash2 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
-import { useMutation } from "convex/react";
+import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMemo } from "react";
 import { useGlobalstate } from "@/context/global-store";
@@ -38,8 +38,16 @@ import { getRelativeDateLabel } from "@/lib/date";
 import { Link } from "@/lib/link";
 import { Spinner } from "./spinner";
 
-export function AppSidebar({ user }: { user: UserType }) {
-  const chatList = useQuery(api.chat.getChat, {});
+export function AppSidebar({
+  user,
+  preloadedChatList,
+}: {
+  user: UserType;
+  preloadedChatList: Preloaded<typeof api.chat.getChat>;
+}) {
+  // const chatList = useQuery(api.chat.getChat, {});
+  const chatList = usePreloadedQuery(preloadedChatList);
+
   const router = useRouter();
   const pathName = usePathname();
 

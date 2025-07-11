@@ -7,10 +7,12 @@ const withPWA = withPWAInit({
   aggressiveFrontEndNavCaching: true,
   cacheStartUrl: true,
   dynamicStartUrl: true,
+  reloadOnOnline: true,
+  extendDefaultRuntimeCaching: true,
 });
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["my8mw4-3000.csb.app"],
+  allowedDevOrigins: ["convext-vercel-ai-udon.vercel.app"],
   images: {
     minimumCacheTTL: 31536000,
     remotePatterns: [],
