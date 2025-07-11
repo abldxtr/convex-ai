@@ -4,13 +4,13 @@ import "@/styles/globals.css";
 // import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { Viewport, type Metadata } from "next";
-import { Geist } from "next/font/google";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/provider/ConvexClientProvider";
 import { Toaster } from "sonner";
 import { GlobalStoreProvider } from "@/context/global-store";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import Providers from "@/provider/react-query-provider";
+import { geist, vazirmatn } from "@/lib/font";
 const APP_NAME = "T3 Chatgpt";
 const APP_DEFAULT_TITLE = "Chat-gpt";
 const APP_TITLE_TEMPLATE = "%s - Chatgpt";
@@ -64,17 +64,12 @@ export const viewport: Viewport = {
   ],
 };
 
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ConvexAuthNextjsServerProvider>
-      <html lang="en" className={`${geist.variable}`}>
+      <html lang="en" className={`${geist.variable} ${vazirmatn.variable} `}>
         <GlobalStoreProvider>
           <body>
             <Toaster position="top-center" richColors />

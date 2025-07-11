@@ -37,6 +37,8 @@ import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
 import { Link } from "@/lib/link";
 import { Spinner } from "./spinner";
+import { cn } from "@/lib/utils";
+import { useDirection } from "@/hooks/use-direction";
 
 export function AppSidebar({
   user,
@@ -179,7 +181,6 @@ export function AppSidebar({
             .reverse()
             .map(([dateLabel, chats]) => (
               <SidebarGroup key={dateLabel}>
-                {/* ✅ اصلاح: مستقیماً از dateLabel استفاده کنید */}
                 <SidebarGroupLabel className="  ">
                   {dateLabel}
                 </SidebarGroupLabel>
@@ -188,73 +189,85 @@ export function AppSidebar({
                     {chats
                       .slice()
                       .reverse()
-                      .map((chat) => (
-                        <SidebarMenuItem key={chat._id}>
-                          {!chat.title ? (
-                            <SidebarMenuButton
-                              asChild
-                              isActive={chatIdd === chat.id}
-                              onClick={() => {
-                                if (state === "expanded" && isMobile) {
-                                  toggleSidebar();
-                                }
-                              }}
-                            >
-                              <Link href={`/chat/${chat.id}`} prefetch={true}>
-                                {/* <Skeleton className="h-full w-full rounded-full" /> */}
-                                <ThreeDots
-                                  visible={true}
-                                  height="20"
-                                  width="50"
-                                  color="black"
-                                  radius="9"
-                                  ariaLabel="three-dots-loading"
-                                  wrapperStyle={{}}
-                                  wrapperClass=""
-                                />
-                              </Link>
-                            </SidebarMenuButton>
-                          ) : (
-                            <SidebarMenuButton
-                              asChild
-                              isActive={chatIdd === chat.id}
-                              onClick={() => {
-                                if (state === "expanded" && isMobile) {
-                                  toggleSidebar();
-                                }
-                              }}
-                            >
-                              <Link href={`/chat/${chat.id}`} prefetch={true}>
-                                {chat.title || "Untitled Chat"}
-                              </Link>
-                            </SidebarMenuButton>
-                          )}
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <SidebarMenuAction
-                                showOnHover
-                                className="data-[state=open]:bg-accent rounded-sm"
+                      .map((chat) => {
+                        const direction = useDirection(chat.title);
+                        return (
+                          <SidebarMenuItem key={chat._id}>
+                            {!chat.title ? (
+                              <SidebarMenuButton
+                                asChild
+                                isActive={chatIdd === chat.id}
+                                onClick={() => {
+                                  if (state === "expanded" && isMobile) {
+                                    toggleSidebar();
+                                  }
+                                }}
                               >
-                                <Ellipsis />
-                                <span className="sr-only">More</span>
-                              </SidebarMenuAction>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                              className="w-24 rounded-lg"
-                              side={isMobile ? "bottom" : "right"}
-                              align={isMobile ? "end" : "start"}
-                            >
-                              <DropdownMenuItem
-                                variant="destructive"
-                                onClick={() => handleDeleteChat(chat.id)}
+                                <Link href={`/chat/${chat.id}`} prefetch={true}>
+                                  {/* <Skeleton className="h-full w-full rounded-full" /> */}
+                                  <ThreeDots
+                                    visible={true}
+                                    height="20"
+                                    width="50"
+                                    color="black"
+                                    radius="9"
+                                    ariaLabel="three-dots-loading"
+                                    wrapperStyle={{}}
+                                    wrapperClass=""
+                                  />
+                                </Link>
+                              </SidebarMenuButton>
+                            ) : (
+                              <SidebarMenuButton
+                                asChild
+                                isActive={chatIdd === chat.id}
+                                onClick={() => {
+                                  if (state === "expanded" && isMobile) {
+                                    toggleSidebar();
+                                  }
+                                }}
                               >
-                                <Trash2 />
-                                <span>Delete</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </SidebarMenuItem>
-                      ))}
+                                <Link
+                                  href={`/chat/${chat.id}`}
+                                  prefetch={true}
+                                  className={cn(
+                                    "",
+                                    direction === "rtl"
+                                      ? " font-vazirmatn "
+                                      : " font-sans "
+                                  )}
+                                >
+                                  {chat.title || "Untitled Chat"}
+                                </Link>
+                              </SidebarMenuButton>
+                            )}
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <SidebarMenuAction
+                                  showOnHover
+                                  className="data-[state=open]:bg-accent rounded-sm"
+                                >
+                                  <Ellipsis />
+                                  <span className="sr-only">More</span>
+                                </SidebarMenuAction>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                className="w-24 rounded-lg"
+                                side={isMobile ? "bottom" : "right"}
+                                align={isMobile ? "end" : "start"}
+                              >
+                                <DropdownMenuItem
+                                  variant="destructive"
+                                  onClick={() => handleDeleteChat(chat.id)}
+                                >
+                                  <Trash2 />
+                                  <span>Delete</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </SidebarMenuItem>
+                        );
+                      })}
                   </SidebarMenu>
                 </SidebarGroupContent>
               </SidebarGroup>

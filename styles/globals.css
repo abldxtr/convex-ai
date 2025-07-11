@@ -3,7 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* var(--font-geist-sans) */
+
 @theme {
+  --font-vazirmatn:
+    var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-sans:
     var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -195,11 +200,3 @@
     animation: fade-in 0.4s ease-out forwards;
   }
 }
-/* @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-} */

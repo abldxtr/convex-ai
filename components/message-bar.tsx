@@ -185,8 +185,8 @@ export function UserMessage({
         className={cn(
           "w-full gap-4 text-base focus-visible:outline-hidden md:gap-5 lg:gap-6 break-words break-all ",
           direction !== "rtl"
-            ? "flex items-center justify-start"
-            : "flex items-center justify-end"
+            ? "flex items-center justify-start font-sans  "
+            : "flex items-center justify-end font-vazirmatn "
         )}
         dir="auto"
       >
@@ -245,6 +245,8 @@ export function AIMessage({
   status: "error" | "submitted" | "streaming" | "ready";
   isLastMessage: boolean;
 }) {
+  const textPart = message.parts.find((part) => part.type === "text");
+  const direction = useDirection(textPart?.text ?? "");
   return (
     <div className={cn("group/turn-messages mx-auto containerW ")}>
       <div
@@ -258,7 +260,10 @@ export function AIMessage({
                 <div
                   key={`${message.id}-${i}`}
                   dir="auto"
-                  className={cn("relative", {})}
+                  className={cn(
+                    "relative",
+                    direction !== "rtl" ? " font-sans  " : "font-vazirmatn "
+                  )}
                 >
                   <MarkdownRenderer content={part.text} />
                 </div>
