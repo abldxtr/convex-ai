@@ -249,14 +249,14 @@ export function AppSidebar({
                               >
                                 <Link
                                   href={`/chat/${chat.id}`}
-                                  // prefetch={true}
+                                  prefetch={true}
                                   className={cn(
                                     "",
                                     direction === "rtl"
                                       ? " font-vazirmatn "
                                       : " font-sans "
                                   )}
-                                  onMouseEnter={() => prefetchChatData(chat.id)}
+                                  // onMouseEnter={() => prefetchChatData(chat.id)}
                                 >
                                   {chat.title || "Untitled Chat"}
                                 </Link>
