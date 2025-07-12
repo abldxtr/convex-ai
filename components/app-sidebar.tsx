@@ -39,6 +39,7 @@ import { Link } from "@/lib/link";
 import { Spinner } from "./spinner";
 import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AppSidebar({
   user,
@@ -115,6 +116,25 @@ export function AppSidebar({
       {} as Record<string, typeof chatList>
     );
   }, [chatList]);
+
+  const queryClient = useQueryClient();
+
+  const prefetchChatData = async (chatId: string) => {
+    await queryClient.prefetchQuery({
+      queryKey: ["posts", chatId],
+      queryFn: async ({ queryKey }) => {
+        const [, chatId] = queryKey;
+        const response = await fetch(`/api/user-data?chatId=${chatId}`, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch chat messages");
+        }
+        const json = await response.json();
+        return json.chat;
+      },
+    });
+  };
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
@@ -229,13 +249,14 @@ export function AppSidebar({
                               >
                                 <Link
                                   href={`/chat/${chat.id}`}
-                                  prefetch={true}
+                                  // prefetch={true}
                                   className={cn(
                                     "",
                                     direction === "rtl"
                                       ? " font-vazirmatn "
                                       : " font-sans "
                                   )}
+                                  onMouseEnter={() => prefetchChatData(chat.id)}
                                 >
                                   {chat.title || "Untitled Chat"}
                                 </Link>

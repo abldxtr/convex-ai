@@ -25,6 +25,7 @@ import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 import {
   QueryClient,
   useQuery as TanstackUseQuery,
+  useQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { searchTools } from "@/lib/chat-tools";
@@ -208,6 +209,7 @@ export default function ChatClientWithId({
           setAttachments([]);
           // clearFiles();
         }
+        // refetch()
         queryClient.invalidateQueries({
           queryKey: ["posts", chatIdd],
         });
