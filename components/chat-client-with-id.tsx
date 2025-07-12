@@ -59,7 +59,7 @@ export default function ChatClientWithId({
     queryKey: ["posts", chatIdd],
     queryFn: async ({ queryKey }) => {
       const [, chatId] = queryKey;
-      const response = await fetch(`/api/user-data?chatId=${chatId}`, {
+      const response = await fetch(`/api/user-data?chatId=${chatIdd}`, {
         method: "GET",
       });
 
