@@ -1,15 +1,27 @@
 import type { NextConfig } from "next";
-import withPWAInit from "@ducanh2912/next-pwa";
+// import withPWAInit from "@ducanh2912/next-pwa";
 
-const withPWA = withPWAInit({
-  dest: "public",
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  cacheStartUrl: true,
-  dynamicStartUrl: true,
+import withSerwistInit from "@serwist/next";
+
+const revision = crypto.randomUUID();
+
+const withSerwist = withSerwistInit({
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+  cacheOnNavigation: true,
   reloadOnOnline: true,
-  extendDefaultRuntimeCaching: true,
+  additionalPrecacheEntries: [{ url: "/~offline", revision }],
 });
+
+// const withPWA = withPWAInit({
+//   dest: "public",
+//   cacheOnFrontEndNav: true,
+//   aggressiveFrontEndNavCaching: true,
+//   cacheStartUrl: true,
+//   dynamicStartUrl: true,
+//   reloadOnOnline: true,
+//   extendDefaultRuntimeCaching: true,
+// });
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["convext-vercel-ai-udon.vercel.app"],
@@ -37,4 +49,4 @@ const nextConfig: NextConfig = {
 
 // export default nextConfig;
 
-export default withPWA(nextConfig);
+export default withSerwist(nextConfig);
