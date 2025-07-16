@@ -35,11 +35,12 @@ import { useGlobalstate } from "@/context/global-store";
 import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
-import { Link } from "@/lib/link";
+// import { Link } from "@/lib/link";
 import { Spinner } from "./spinner";
 import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 
 export function AppSidebar({
   user,
