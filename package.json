@@ -64,6 +64,7 @@
     "react-latex-next": "^3.0.0",
     "react-loader-spinner": "^6.1.6",
     "react-markdown": "^10.1.0",
+    "react-scan": "^0.4.3",
     "react-syntax-highlighter": "^15.6.1",
     "redis": "^5.1.0",
     "rehype-highlight": "^7.0.2",

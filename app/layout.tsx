@@ -11,6 +11,7 @@ import { GlobalStoreProvider } from "@/context/global-store";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import Providers from "@/provider/react-query-provider";
 import { geist, vazirmatn } from "@/lib/font";
+import { ReactScan } from "@/provider/react-scan-provider";
 const APP_NAME = "T3 Chatgpt";
 const APP_DEFAULT_TITLE = "Chat-gpt";
 const APP_TITLE_TEMPLATE = "%s - Chatgpt";
@@ -70,6 +71,7 @@ export default function RootLayout({
   return (
     <ConvexAuthNextjsServerProvider>
       <html lang="en" className={`${geist.variable} ${vazirmatn.variable} `}>
+        <ReactScan />
         <GlobalStoreProvider>
           <body>
             <Toaster position="top-center" richColors />
