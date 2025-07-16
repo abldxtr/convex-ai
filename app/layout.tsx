@@ -11,7 +11,7 @@ import { GlobalStoreProvider } from "@/context/global-store";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import Providers from "@/provider/react-query-provider";
 import { geist, vazirmatn } from "@/lib/font";
-import { ReactScan } from "@/provider/react-scan-provider";
+// import { ReactScan } from "@/provider/react-scan-provider";
 const APP_NAME = "T3 Chatgpt";
 const APP_DEFAULT_TITLE = "Chat-gpt";
 const APP_TITLE_TEMPLATE = "%s - Chatgpt";
@@ -69,9 +69,16 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ConvexAuthNextjsServerProvider>
-      <html lang="en" className={`${geist.variable} ${vazirmatn.variable} `}>
-        <ReactScan />
+    <html lang="en" className={`${geist.variable} ${vazirmatn.variable} `}>
+      <head>
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+        />
+        {/* rest of your scripts go under */}
+      </head>
+      <ConvexAuthNextjsServerProvider>
+        {/* <ReactScan /> */}
         <GlobalStoreProvider>
           <body>
             <Toaster position="top-center" richColors />
@@ -84,7 +91,7 @@ export default function RootLayout({
             <SpeedInsights /> */}
           </body>
         </GlobalStoreProvider>
-      </html>
-    </ConvexAuthNextjsServerProvider>
+      </ConvexAuthNextjsServerProvider>
+    </html>
   );
 }
