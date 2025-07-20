@@ -39,6 +39,8 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     reactCompiler: true,
+    dynamicIO: true,
+    useCache: true,
     ppr: "incremental",
   },
   logging: {
