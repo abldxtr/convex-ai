@@ -9,7 +9,7 @@ import { ConvexClientProvider } from "@/provider/ConvexClientProvider";
 import { Toaster } from "sonner";
 import { GlobalStoreProvider } from "@/context/global-store";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
-import Providers from "@/provider/react-query-provider";
+// import Providers from "@/provider/react-query-provider";
 import { geist, vazirmatn } from "@/lib/font";
 // import { ReactScan } from "@/provider/react-scan-provider";
 const APP_NAME = "T3 Chatgpt";
@@ -83,7 +83,9 @@ export default function RootLayout({
             <Toaster position="top-center" richColors />
             <ConvexClientProvider>
               <ConvexQueryCacheProvider>
-                <Providers>{children}</Providers>
+                {/* <Providers> */}
+                {children}
+                {/* </Providers> */}
               </ConvexQueryCacheProvider>
             </ConvexClientProvider>
             {/* <Analytics />

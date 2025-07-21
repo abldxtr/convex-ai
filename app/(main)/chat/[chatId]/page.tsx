@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import ChatClientWithId from "@/components/chat-client-with-id";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
-import { Suspense } from "react";
 
 export const experimental_ppr = true;
 
@@ -31,12 +30,20 @@ export default async function ChatPage({
   }
 
   return (
-    <Suspense fallback={<></>}>
-      <ChatClientWithId
-        chatIdd={chatId}
-        id={crypto.randomUUID()}
-        idChat={chatId ?? crypto.randomUUID()}
-      />
-    </Suspense>
+    <ChatClientWithId
+      chatIdd={chatId}
+      id={crypto.randomUUID()}
+      idChat={chatId ?? crypto.randomUUID()}
+    />
   );
 }
+
+// const queryClient = getQueryClient();
+
+// void queryClient.prefetchQuery({
+//   queryKey: ["posts", chatId],
+//   queryFn: async ({ queryKey }) => {
+//     const [, chatId] = queryKey;
+//     return fetchChatData(chatId);
+//   },
+// });

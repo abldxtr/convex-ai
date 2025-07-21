@@ -21,12 +21,12 @@ import type { ChatClientPropsPartial } from "@/lib/type";
 import { models, ModelSwitcher } from "@/components/models";
 import { motion, MotionConfig } from "framer-motion";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
-import {
-  QueryClient,
-  useQuery as TanstackUseQuery,
-  useQuery,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+// import {
+//   QueryClient,
+//   // useQuery as TanstackUseQuery,
+//   useQuery,
+//   // useSuspenseQuery,
+// } from "@tanstack/react-query";
 import { searchTools } from "@/lib/chat-tools";
 import { useDirection } from "@/hooks/use-direction";
 import { useFileUpload } from "@/hooks/use-file-upload";
@@ -48,38 +48,13 @@ export default function ChatClientWithId({
   //   queryKey: ['posts'],
   //   queryFn: getPosts,
   // })
-  const queryClient = new QueryClient();
+  // const queryClient = new QueryClient();
   const [isPending, startTransition] = useTransition();
   type Chat = {
     chatItem: Doc<"chats">;
     chatMessages: Doc<"vercelAiMessages">[];
   } | null;
-  async function fetchChatData(chatId: string): Promise<Chat> {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${chatId}`,
-      {
-        method: "GET",
-      }
-    );
-    if (!response.ok) {
-      throw new Error("Failed to fetch chat messages");
-    }
-    const json = await response.json();
-    // تبدیل داده به نوع Chat
-    const chatData: Chat = {
-      chatItem: json.chat.chatItem,
-      chatMessages: json.chat.chatMessages,
-    };
-    return chatData;
-  }
-  const { data: clientGetChatMessages, refetch } = useSuspenseQuery({
-    queryKey: ["posts", chatIdd],
-    queryFn: async ({ queryKey }) => {
-      const [, chatId] = queryKey;
-      return fetchChatData(chatId);
-    },
-    refetchOnWindowFocus: false,
-  });
+
   const {
     newChat,
     setNewChat,
@@ -163,6 +138,7 @@ export default function ChatClientWithId({
     }
   }, [chatIdd]);
   // Set up chat with AI SDK
+
   const {
     messages,
     input,
@@ -205,13 +181,75 @@ export default function ChatClientWithId({
           // clearFiles();
         }
         // refetch()
-        queryClient.invalidateQueries({
-          queryKey: ["posts", chatIdd],
-        });
+        // queryClient.invalidateQueries({
+        //   queryKey: ["posts", chatIdd],
+        // });
       });
     },
   });
   console.log({ status });
+  console.log({ messages });
+
+  // const {
+  //   data: clientGetChatMessages,
+  //   refetch,
+  //   isPending: ispending,
+  // } = useQuery({
+  //   queryKey: ["posts", chatIdd],
+  //   queryFn: async ({ queryKey }) => {
+  //     const [, chatId] = queryKey;
+  //     const res = await fetchChatData(chatId);
+  //     return res;
+  //     // if (res === null) {
+  //     //   return router.push("/chat");
+  //     // }
+  //     // if (res && res?.chatMessages && res.chatMessages.length > 0) {
+  //     //   setMessages(convertToUIMessages(res.chatMessages));
+  //     // }
+  //     // return "dddd";
+  //   },
+  //   refetchOnWindowFocus: false,
+  // });
+
+  useEffect(() => {
+    async function fetchChatData(chatId: string): Promise<Chat> {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${chatId}`,
+        {
+          method: "GET",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch chat messages");
+      }
+      const json = await response.json();
+      if (json === null) {
+        return null;
+      }
+      const chatData: Chat = {
+        chatItem: json.chat.chatItem,
+        chatMessages: json.chat.chatMessages,
+      };
+      return chatData;
+    }
+
+    const fetchData = async () => {
+      try {
+        const clientGetChatMessages = await fetchChatData(chatIdd);
+        if (
+          clientGetChatMessages?.chatMessages &&
+          clientGetChatMessages.chatMessages.length > 0
+        ) {
+          setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
+        }
+      } catch (error) {
+        console.error("Error fetching chat messages:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // Handle new chat state
   useEffect(() => {
     if (newChat) {
@@ -219,15 +257,14 @@ export default function ChatClientWithId({
       setNewChat(false);
     }
   }, [newChat, setMessages, setNewChat]);
-  useEffect(() => {
-    if (
-      messages.length === 0 &&
-      clientGetChatMessages?.chatMessages &&
-      clientGetChatMessages.chatMessages.length > 0
-    ) {
-      setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
-    }
-  }, [messages, clientGetChatMessages, setMessages]);
+  // useEffect(() => {
+  //   if (
+  //     clientGetChatMessages?.chatMessages &&
+  //     clientGetChatMessages.chatMessages.length > 0
+  //   ) {
+  //     setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
+  //   }
+  // }, [clientGetChatMessages, setMessages]);
   useLayoutEffect(() => {
     // if (
     //   messages.length === 0 &&
@@ -328,13 +365,17 @@ export default function ChatClientWithId({
       <div className="px-4 pt-3 pb-1 shrink-0 h-[52px] ">
         <SidebarToggle />
       </div>
-      {/* {messages.length > 0 && ( */}
-      <MessageBar
-        messages={messages || []}
-        endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
-        status={status}
-        reload={reload}
-      />
+      {messages.length > 0 && (
+        <MessageBar
+          messages={messages}
+          endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
+          status={status}
+          reload={reload}
+        />
+      )}
+      {messages.length === 0 && (
+        <div className="relative h-full w-full flex-1 overflow-hidden fade-in bg-red-300 " />
+      )}
 
       <input
         {...getInputProps()}
