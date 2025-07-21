@@ -353,7 +353,7 @@ export default function ChatClientWithId({
         />
       )}
       {messages.length === 0 && (
-        <div className="relative h-full w-full flex-1 overflow-hidden bg-red-300 " />
+        <div className="relative h-full w-full flex-1 overflow-hidden " />
       )}
 
       <input
