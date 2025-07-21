@@ -1,4 +1,6 @@
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
+
 import { UIMessage } from "ai";
 import { usePathname } from "next/navigation";
 import {
@@ -21,7 +23,7 @@ export function useScroll({
   messages: UIMessage[];
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { scrollToBotton, setScrollToBotton } = useGlobalstate();
+  const { scrollToBotton, setScrollToBotton } = useGlobalState();
   const spacerRef = useRef<HTMLDivElement>(null);
   const [spacerHeight, setSpacerHeight] = useState(0);
   const [showArrow, setShowArrow] = useState(false);

@@ -1,7 +1,8 @@
 import { XIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import type { FileWithPreview } from "@/hooks/use-file-upload";
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
 
 export default function PreviewImg({
   files,
@@ -12,7 +13,7 @@ export default function PreviewImg({
   removeFile: (id: string) => void;
   clearFiles: () => void;
 }) {
-  const { storedFiles, setStoredFiles, setFileExists } = useGlobalstate();
+  const { storedFiles, setStoredFiles, setFileExists } = useGlobalState();
 
   return (
     <>

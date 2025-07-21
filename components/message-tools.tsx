@@ -4,7 +4,9 @@ import { cn } from "@/lib/utils";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import type { ChatRequestOptions, UIMessage } from "ai";
 import { useDirection } from "@/hooks/use-direction";
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
+
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"; // Removed TooltipProvider as it should be higher up
 
 export function MessageTools({
@@ -23,7 +25,7 @@ export function MessageTools({
   const { isCopied, copyToClipboard } = useCopyToClipboard({
     timeout: 2000,
   });
-  const { getError } = useGlobalstate();
+  const { getError } = useGlobalState();
 
   const textPart = message.parts.find((part) => part.type === "text");
   const messageText = textPart?.text ?? "";

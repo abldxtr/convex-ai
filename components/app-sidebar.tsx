@@ -31,7 +31,7 @@ import { api } from "@/convex/_generated/api";
 import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMemo } from "react";
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalstate } from "@/context/global-store";
 import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
@@ -41,6 +41,8 @@ import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+// import { useAppSidebarStore } from "@/context/app-sidebar-store";
+import { useGlobalState } from "@/context/global-state-zus";
 
 export function AppSidebar({
   user,
@@ -55,6 +57,18 @@ export function AppSidebar({
   const router = useRouter();
   const pathName = usePathname();
 
+  // const {
+  //   newChat,
+  //   setNewChat,
+  //   setIsNavigating,
+  //   active,
+  //   setActive,
+  //   disableLayout,
+  //   setDisableLayout,
+  //   changeRandomId,
+  //   setChangeRandomId,
+  // } = useGlobalstate();
+
   const {
     newChat,
     setNewChat,
@@ -65,7 +79,8 @@ export function AppSidebar({
     setDisableLayout,
     changeRandomId,
     setChangeRandomId,
-  } = useGlobalstate();
+  } = useGlobalState();
+
   const deleteChat = useMutation(api.chat.deleteChat);
 
   const chatIdd = useMemo(
@@ -82,7 +97,7 @@ export function AppSidebar({
         router.refresh();
         setDisableLayout(false);
         setActive(false);
-        setChangeRandomId((prev) => !prev);
+        setChangeRandomId(!changeRandomId);
       }
     } catch (error) {
       console.log({ error });
@@ -148,7 +163,7 @@ export function AppSidebar({
             <Link
               href="/chat"
               onClick={() => {
-                setChangeRandomId((prev) => !prev);
+                setChangeRandomId(!changeRandomId);
 
                 setActive(false);
                 setDisableLayout(false);
@@ -169,14 +184,14 @@ export function AppSidebar({
                   type="button"
                   className="h-fit p-2"
                   onClick={() => {
-                    setChangeRandomId((prev) => !prev);
+                    setChangeRandomId(!changeRandomId);
 
                     setActive(false);
                     setDisableLayout(false);
                     // window.history.pushState({}, "", `/chat`);
 
                     router.push("/chat");
-                    setNewChat(() => !newChat);
+                    setNewChat(!newChat);
                     if (state === "expanded" && isMobile) {
                       toggleSidebar();
                     }

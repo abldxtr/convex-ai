@@ -1,6 +1,8 @@
 "use client";
 
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
+
 import {
   useCallback,
   useEffect,
@@ -72,7 +74,7 @@ const fileToBase64 = (file: File): Promise<string> => {
 export const useFileUpload = (
   options: FileUploadOptions = {}
 ): [FileUploadState, FileUploadActions] => {
-  const { storedFiles, setStoredFiles } = useGlobalstate();
+  const { storedFiles, setStoredFiles } = useGlobalState();
 
   const {
     maxFiles = Infinity,
@@ -251,7 +253,7 @@ export const useFileUpload = (
           errors: [],
         };
       });
-      setStoredFiles((prev) => prev.filter((file) => file.id !== id));
+      setStoredFiles(storedFiles.filter((file) => file.id !== id));
     },
     [onFilesChange, setStoredFiles]
   );

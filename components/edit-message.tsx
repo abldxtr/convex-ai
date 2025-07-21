@@ -5,7 +5,9 @@ import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
 import { Textarea } from "./ui/textarea";
 import { useDirection } from "@/hooks/use-direction";
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalState } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
+
 import TooltipContainer from "./tooltip-container";
 import { toast } from "sonner";
 import { ModelSwitcher } from "./models";
@@ -24,7 +26,7 @@ export default function EditMessage({
 }) {
   const textPart = message.parts.find((part) => part.type === "text");
   const [input, setInput] = useState(textPart ? textPart.text : "");
-  const { direction, setDirection } = useGlobalstate();
+  const { direction, setDirection } = useGlobalState();
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

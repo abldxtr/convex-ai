@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
+
 import { cn } from "@/lib/utils";
 export default function AiLoading() {
   return (
@@ -18,7 +20,7 @@ export default function AiLoading() {
 }
 
 export function AiLoading2() {
-  const { direction } = useGlobalstate();
+  const { direction } = useGlobalState();
   return (
     <div
       className={cn("group/turn-messages mx-auto containerW h-2.5 w-full  ")}

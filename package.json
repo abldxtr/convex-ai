@@ -55,7 +55,7 @@
     "lucide-react": "^0.511.0",
     "marked-react": "^3.0.0",
     "monacopilot": "^0.12.10",
-    "next": "^15.3.2",
+    "next": "^15.4.2-canary.10",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "react": "^18",
@@ -75,7 +75,7 @@
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.1.1",
     "zod": "^3.25.23",
-    "zustand": "^5.0.5"
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",

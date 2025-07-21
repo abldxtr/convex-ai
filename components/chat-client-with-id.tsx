@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import MessageBar from "@/components/message-bar";
 import TooltipContainer from "@/components/tooltip-container";
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalstate } from "@/context/global-store";
 import type { ChatClientPropsPartial } from "@/lib/type";
 import { models, ModelSwitcher } from "@/components/models";
 import { motion, MotionConfig } from "framer-motion";
@@ -33,6 +33,7 @@ import { useDirection } from "@/hooks/use-direction";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useFileToBase64 } from "@/hooks/use-file-base64";
+import { useGlobalState } from "@/context/global-state-zus";
 
 interface ChatClientWithIdProps extends ChatClientPropsPartial {
   chatIdd: string;
@@ -98,12 +99,14 @@ export default function ChatClientWithId({
     removeStoredFiles,
     disableLayout,
     setDisableLayout,
-  } = useGlobalstate();
+    attachments,
+    setAttachments,
+    scrollToBotton,
+    setScrollToBotton,
+  } = useGlobalState();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
-  const { attachments, setAttachments, scrollToBotton, setScrollToBotton } =
-    useGlobalstate();
 
   const [
     { files, isDragging, errors },
@@ -142,7 +145,7 @@ export default function ChatClientWithId({
       }
     });
 
-    setVisionModel(() => visionModel);
+    setVisionModel(visionModel);
 
     if (files.length > 0 && !visionModel) {
       setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
@@ -187,9 +190,9 @@ export default function ChatClientWithId({
     experimental_throttle: 100,
     maxSteps: 2,
     api: "/api/chat",
-    initialMessages: clientGetChatMessages?.chatMessages
-      ? convertToUIMessages(clientGetChatMessages.chatMessages)
-      : undefined,
+    // initialMessages: clientGetChatMessages?.chatMessages
+    //   ? convertToUIMessages(clientGetChatMessages.chatMessages)
+    //   : undefined,
     experimental_prepareRequestBody: (body) => ({
       id,
       message: body.messages.at(-1),
@@ -229,7 +232,7 @@ export default function ChatClientWithId({
     }
   }, [newChat, setMessages, setNewChat]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (
       messages.length === 0 &&
       clientGetChatMessages?.chatMessages &&
@@ -336,7 +339,6 @@ export default function ChatClientWithId({
 
   return (
     <div className={cn(" flex h-full w-full flex-col")}>
-      {/* Header */}
       <div className="px-4 pt-3 pb-1 shrink-0 h-[52px] ">
         <SidebarToggle />
       </div>
@@ -349,6 +351,9 @@ export default function ChatClientWithId({
           status={status}
           reload={reload}
         />
+      )}
+      {messages.length === 0 && (
+        <div className="relative h-full w-full flex-1 overflow-hidden bg-red-300 " />
       )}
 
       <input
@@ -384,10 +389,7 @@ export default function ChatClientWithId({
               <div
                 className={cn(
                   "border-token-border-default bg-token-bg-primary flex grow containerW ",
-                  // "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
-                  // "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
-                  // "lg:[--thread-content-max-width:50rem]",
-                  "cursor-text flex-col items-center justify-center md:rounded-[28px] rounded-t-[28px] sm:rounded-[28px]  ",
+                  "cursor-text flex-col items-center justify-center md:rounded-[28px] rounded-t-[28px] sm:rounded-[28px]",
                   "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
                   "dark:bg-[#303030] dark:shadow-none! relative ",
                   isDragging && "bg-blue-400"

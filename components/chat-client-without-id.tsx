@@ -18,12 +18,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import MessageBar from "@/components/message-bar";
 import TooltipContainer from "@/components/tooltip-container";
-import { useGlobalstate } from "@/context/global-store";
+// import { useGlobalstate } from "@/context/global-store";
 import { models, ModelSwitcher } from "@/components/models";
 import { searchTools } from "@/lib/chat-tools";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useDirection } from "@/hooks/use-direction";
+import { useGlobalState } from "@/context/global-state-zus";
 
 export default function ChatClientWithoutId() {
   const {
@@ -48,7 +49,7 @@ export default function ChatClientWithoutId() {
     setScrollToBotton,
     changeRandomId,
     setChangeRandomId,
-  } = useGlobalstate();
+  } = useGlobalState();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -98,7 +99,7 @@ export default function ChatClientWithoutId() {
     });
     console.log({ visionModel });
 
-    setVisionModel(() => visionModel);
+    setVisionModel(visionModel);
 
     if (files.length > 0 && !visionModel) {
       setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
