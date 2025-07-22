@@ -182,7 +182,7 @@
 }
 
 .containerW {
-  @apply max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:40rem] lg:[--thread-content-max-width:40rem];
+  @apply max-w-(--thread-content-max-width) [--thread-content-max-width:32rem] @[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:40rem] lg:[--thread-content-max-width:42rem];
 }
 
 @layer utilities {
