@@ -4,7 +4,7 @@ import ChatClientWithId from "@/components/chat-client-with-id";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 
-export const experimental_ppr = true;
+// export const dynamic = "force-static";
 
 export default async function ChatPage({
   params,

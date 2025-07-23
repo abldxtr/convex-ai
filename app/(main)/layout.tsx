@@ -6,8 +6,6 @@ import { api } from "@/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import { Suspense } from "react";
 
-export const experimental_ppr = true;
-
 export default async function ChatLayout({
   children,
 }: Readonly<{
@@ -30,11 +28,9 @@ export default async function ChatLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar user={user} preloadedChatList={preloadedTasks} />
-      <Suspense fallback={null}>
-        <SidebarInset className="h-dvh overflow-hidden ">
-          {children}
-        </SidebarInset>
-      </Suspense>
+      {/* <Suspense fallback={null}> */}
+      <SidebarInset className="h-dvh overflow-hidden ">{children}</SidebarInset>
+      {/* </Suspense> */}
     </SidebarProvider>
   );
 }
