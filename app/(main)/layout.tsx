@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
+export const dynamic = "force-dynamic";
 
 export default async function ChatLayout({
   children,
@@ -12,10 +13,6 @@ export default async function ChatLayout({
 }>) {
   const cookieStore = await cookies();
   const token = await convexAuthNextjsToken();
-  // const chatList = fetchQuery(api.chat.getChat, {}, { token });
-
-  // const user = await fetchQuery(api.user.getUser, {}, { token });
-  // const preloadedTasks = await preloadQuery(api.chat.getChat, {}, { token });
 
   const [user, preloadedTasks] = await Promise.all([
     fetchQuery(api.user.getUser, {}, { token }),
