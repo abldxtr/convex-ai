@@ -39,7 +39,7 @@ import { getRelativeDateLabel } from "@/lib/date";
 import { Spinner } from "./spinner";
 import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
-// import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 
 export function AppSidebar({
@@ -118,27 +118,24 @@ export function AppSidebar({
     );
   }, [chatList]);
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-  // const prefetchChatData = async (chatId: string) => {
-  //   await queryClient.prefetchQuery({
-  //     queryKey: ["posts", chatId],
-  //     queryFn: async ({ queryKey }) => {
-  //       const [, chatId] = queryKey;
-  //       const response = await fetch(
-  //         `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${chatId}`,
-  //         {
-  //           method: "GET",
-  //         }
-  //       );
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch chat messages");
-  //       }
-  //       const json = await response.json();
-  //       return json.chat;
-  //     },
-  //   });
-  // };
+  const prefetchChatData = async (chatId: string) => {
+    await queryClient.prefetchQuery({
+      queryKey: ["posts", chatId],
+      queryFn: async ({ queryKey }) => {
+        const [, chatId] = queryKey;
+        const response = await fetch(`/api/user-data?chatId=${chatId}`, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch chat messages");
+        }
+        const json = await response.json();
+        return json.chat;
+      },
+    });
+  };
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">

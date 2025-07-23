@@ -1,4 +1,5 @@
 "use client";
+
 import type React from "react";
 import { useChat } from "@ai-sdk/react";
 import {
@@ -21,24 +22,27 @@ import type { ChatClientPropsPartial } from "@/lib/type";
 import { models, ModelSwitcher } from "@/components/models";
 import { motion, MotionConfig } from "framer-motion";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
-// import {
-//   QueryClient,
-//   // useQuery as TanstackUseQuery,
-//   useQuery,
-//   // useSuspenseQuery,
-// } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useQuery as TanstackUseQuery,
+  useQuery,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { searchTools } from "@/lib/chat-tools";
 import { useDirection } from "@/hooks/use-direction";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useFileToBase64 } from "@/hooks/use-file-base64";
-import { Doc } from "@/convex/_generated/dataModel";
+
 interface ChatClientWithIdProps extends ChatClientPropsPartial {
   chatIdd: string;
   id: string;
   idChat: string;
 }
+
 export default function ChatClientWithId({
+  chatItem,
+  chatMessages,
   chatIdd,
   id,
   idChat,
@@ -48,12 +52,30 @@ export default function ChatClientWithId({
   //   queryKey: ['posts'],
   //   queryFn: getPosts,
   // })
-  // const queryClient = new QueryClient();
+  const queryClient = new QueryClient();
   const [isPending, startTransition] = useTransition();
-  type Chat = {
-    chatItem: Doc<"chats">;
-    chatMessages: Doc<"vercelAiMessages">[];
-  } | null;
+
+  const { data: clientGetChatMessages, refetch } = useSuspenseQuery({
+    queryKey: ["posts", chatIdd],
+    queryFn: async ({ queryKey }) => {
+      const [, chatId] = queryKey;
+      const response = await fetch(`/api/user-data?chatId=${chatIdd}`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch chat messages");
+      }
+
+      const json = await response.json();
+      console.log("ddddddddddddddddddddddddddddddd");
+
+      console.log(json);
+
+      return json.chat;
+    },
+    refetchOnWindowFocus: false,
+  });
 
   const {
     newChat,
@@ -79,6 +101,7 @@ export default function ChatClientWithId({
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const { attachments, setAttachments, scrollToBotton, setScrollToBotton } =
     useGlobalstate();
+
   const [
     { files, isDragging, errors },
     {
@@ -98,6 +121,7 @@ export default function ChatClientWithId({
     maxFiles: 1,
     // initialFiles
   });
+
   useEffect(() => {
     const hasFile = files.length > 0;
     setFileExists(hasFile);
@@ -106,6 +130,7 @@ export default function ChatClientWithId({
     // } else {
     //   setDisableLayout(false);
     // }
+
     const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
         return item.vision === true;
@@ -113,7 +138,9 @@ export default function ChatClientWithId({
         return false;
       }
     });
+
     setVisionModel(() => visionModel);
+
     if (files.length > 0 && !visionModel) {
       setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");
     }
@@ -125,9 +152,11 @@ export default function ChatClientWithId({
     visionModel,
     setVisionModel,
   ]);
+
   // Load model preference from session storage
   useLayoutEffect(() => {
     const storedModel = sessionStorage.getItem("model");
+
     if (storedModel) {
       setSelectedModel(storedModel);
     }
@@ -137,8 +166,8 @@ export default function ChatClientWithId({
       setActive(false);
     }
   }, [chatIdd]);
-  // Set up chat with AI SDK
 
+  // Set up chat with AI SDK
   const {
     messages,
     input,
@@ -155,9 +184,9 @@ export default function ChatClientWithId({
     experimental_throttle: 100,
     maxSteps: 2,
     api: "/api/chat",
-    // initialMessages: clientGetChatMessages?.chatMessages
-    //   ? convertToUIMessages(clientGetChatMessages.chatMessages)
-    //   : undefined,
+    initialMessages: clientGetChatMessages?.chatMessages
+      ? convertToUIMessages(clientGetChatMessages.chatMessages)
+      : undefined,
     experimental_prepareRequestBody: (body) => ({
       id,
       message: body.messages.at(-1),
@@ -181,75 +210,14 @@ export default function ChatClientWithId({
           // clearFiles();
         }
         // refetch()
-        // queryClient.invalidateQueries({
-        //   queryKey: ["posts", chatIdd],
-        // });
+        queryClient.invalidateQueries({
+          queryKey: ["posts", chatIdd],
+        });
       });
     },
   });
+
   console.log({ status });
-  console.log({ messages });
-
-  // const {
-  //   data: clientGetChatMessages,
-  //   refetch,
-  //   isPending: ispending,
-  // } = useQuery({
-  //   queryKey: ["posts", chatIdd],
-  //   queryFn: async ({ queryKey }) => {
-  //     const [, chatId] = queryKey;
-  //     const res = await fetchChatData(chatId);
-  //     return res;
-  //     // if (res === null) {
-  //     //   return router.push("/chat");
-  //     // }
-  //     // if (res && res?.chatMessages && res.chatMessages.length > 0) {
-  //     //   setMessages(convertToUIMessages(res.chatMessages));
-  //     // }
-  //     // return "dddd";
-  //   },
-  //   refetchOnWindowFocus: false,
-  // });
-
-  useEffect(() => {
-    async function fetchChatData(chatId: string): Promise<Chat> {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${chatId}`,
-        {
-          method: "GET",
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch chat messages");
-      }
-      const json = await response.json();
-      if (json === null) {
-        return null;
-      }
-      const chatData: Chat = {
-        chatItem: json.chat.chatItem,
-        chatMessages: json.chat.chatMessages,
-      };
-      return chatData;
-    }
-
-    const fetchData = async () => {
-      try {
-        const clientGetChatMessages = await fetchChatData(chatIdd);
-        if (
-          clientGetChatMessages?.chatMessages &&
-          clientGetChatMessages.chatMessages.length > 0
-        ) {
-          setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
-        }
-      } catch (error) {
-        console.error("Error fetching chat messages:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   // Handle new chat state
   useEffect(() => {
     if (newChat) {
@@ -257,27 +225,17 @@ export default function ChatClientWithId({
       setNewChat(false);
     }
   }, [newChat, setMessages, setNewChat]);
-  // useEffect(() => {
-  //   if (
-  //     clientGetChatMessages?.chatMessages &&
-  //     clientGetChatMessages.chatMessages.length > 0
-  //   ) {
-  //     setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
-  //   }
-  // }, [clientGetChatMessages, setMessages]);
-  useLayoutEffect(() => {
-    // if (
-    //   messages.length === 0 &&
-    //   clientGetChatMessages !== null &&
-    //   clientGetChatMessages?.chatMessages &&
-    //   clientGetChatMessages.chatMessages.length > 0
-    // ) {
-    //   setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
-    // }
-    if (value.length > 0) {
-      setInput(value);
+
+  useEffect(() => {
+    if (
+      messages.length === 0 &&
+      clientGetChatMessages?.chatMessages &&
+      clientGetChatMessages.chatMessages.length > 0
+    ) {
+      setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
     }
-  }, []);
+  }, [messages, clientGetChatMessages, setMessages]);
+
   // Handle keyboard submission
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -297,6 +255,7 @@ export default function ChatClientWithId({
             const base64Url = fileData.base64
               ? fileData.base64
               : files[0].preview;
+
             handleSubmit(undefined, {
               experimental_attachments: [
                 {
@@ -315,6 +274,7 @@ export default function ChatClientWithId({
     },
     [status, handleSubmit, scrollToBotton, setScrollToBotton]
   );
+
   // Handle click submission
   const handleClickSubmit = useCallback(async () => {
     setActive(true);
@@ -322,9 +282,11 @@ export default function ChatClientWithId({
     if (!scrollToBotton) {
       setScrollToBotton(true);
     }
+
     if (files.length > 0) {
       const fileData = files[0].file as any;
       const base64Url = fileData.base64 ? fileData.base64 : files[0].preview;
+
       handleSubmit(undefined, {
         experimental_attachments: [
           {
@@ -349,32 +311,41 @@ export default function ChatClientWithId({
     setScrollToBotton,
   ]);
   const stopIcon = searchTools.find((t) => t.name === "StopButton")?.icon;
+
+  useLayoutEffect(() => {
+    if (value.length > 0) {
+      setInput(value);
+    }
+  }, []);
+
   useEffect(() => {
     const handleBeforeUnload = () => {
       removeValue();
       removeStoredFiles();
     };
+
     window.addEventListener("beforeunload", handleBeforeUnload);
+
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
+
   return (
     <div className={cn(" flex h-full w-full flex-col")}>
       {/* Header */}
       <div className="px-4 pt-3 pb-1 shrink-0 h-[52px] ">
         <SidebarToggle />
       </div>
+
       {messages.length > 0 && (
         <MessageBar
           messages={messages}
+          clientChatMessage={clientGetChatMessages}
           endOfMessagesRef={endOfMessagesRef as React.RefObject<HTMLDivElement>}
           status={status}
           reload={reload}
         />
-      )}
-      {messages.length === 0 && (
-        <div className="relative h-full w-full flex-1 overflow-hidden fade-in bg-red-300 " />
       )}
 
       <input
@@ -382,6 +353,7 @@ export default function ChatClientWithId({
         className="sr-only"
         aria-label="Upload image file"
       />
+
       {/* Input form */}
       <form
         onSubmit={(e) => e.preventDefault()}
@@ -449,6 +421,7 @@ export default function ChatClientWithId({
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
                   />
+
                   {/* Tools and actions */}
                   <div className="flex h-[36px] items-center justify-between gap-2">
                     {/* Model switcher */}
@@ -474,27 +447,33 @@ export default function ChatClientWithId({
                         />
                       </div>
                     </div>
+
                     {/* Action buttons */}
                     <div className="flex items-center gap-2">
                       {searchTools.map(({ name, icon, description }) => {
                         const isStreaming =
                           status === "streaming" || status === "submitted";
                         const isInputEmpty = input.trim().length === 0;
+
                         if (name === "StopButton") return null;
+
                         const Icon =
                           name === "ActionButton" && isStreaming && stopIcon
                             ? stopIcon
                             : icon;
+
                         const isDisabled =
                           (name === "upload" && isStreaming) ||
                           (name === "ActionButton" &&
                             isInputEmpty &&
                             !isStreaming);
+
                         const handleClick = () => {
                           if (name === "upload" && !isStreaming) {
                             // setDisableLayout(true);
                             openFileDialog();
                           }
+
                           if (name === "ActionButton") {
                             if (isStreaming) {
                               stop();
@@ -503,10 +482,12 @@ export default function ChatClientWithId({
                             }
                           }
                         };
+
                         const tooltip =
                           isStreaming && name === "ActionButton"
                             ? "Stopping..."
                             : description;
+
                         return (
                           <TooltipContainer key={name} tooltipContent={tooltip}>
                             <div

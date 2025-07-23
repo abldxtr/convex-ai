@@ -4,8 +4,6 @@ import ChatClientWithId from "@/components/chat-client-with-id";
 import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 
-// export const dynamic = "force-static";
-
 export default async function ChatPage({
   params,
 }: {
@@ -37,13 +35,3 @@ export default async function ChatPage({
     />
   );
 }
-
-// const queryClient = getQueryClient();
-
-// void queryClient.prefetchQuery({
-//   queryKey: ["posts", chatId],
-//   queryFn: async ({ queryKey }) => {
-//     const [, chatId] = queryKey;
-//     return fetchChatData(chatId);
-//   },
-// });

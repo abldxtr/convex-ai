@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseHTML } from "linkedom";
 
+export const dynamic = "force-static";
+
 function getHostname() {
   if (process.env.NODE_ENV === "development") {
     return "localhost:3000";

@@ -19,6 +19,7 @@ import "flowtoken/dist/styles.css";
 import { useEffect } from "react";
 type MessageBarProps = {
   messages: UIMessage[];
+  clientChatMessage?: clientGetChatMessages;
   endOfMessagesRef: React.RefObject<HTMLDivElement> | null;
   status: "error" | "submitted" | "streaming" | "ready";
   reload: (
@@ -31,6 +32,7 @@ export default function MessageBar({
   endOfMessagesRef,
   status,
   reload,
+  clientChatMessage,
 }: MessageBarProps) {
   const { scrollRef, showArrow, clientHeight } = useScroll({
     status,

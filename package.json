@@ -55,7 +55,7 @@
     "lucide-react": "^0.511.0",
     "marked-react": "^3.0.0",
     "monacopilot": "^0.12.10",
-    "next": "^15.2.0-canary.57",
+    "next": "^15.3.2",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "react": "^18",

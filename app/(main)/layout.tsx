@@ -4,7 +4,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { Suspense } from "react";
 
 export default async function ChatLayout({
   children,
@@ -28,9 +27,7 @@ export default async function ChatLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar user={user} preloadedChatList={preloadedTasks} />
-      {/* <Suspense fallback={null}> */}
       <SidebarInset className="h-dvh overflow-hidden ">{children}</SidebarInset>
-      {/* </Suspense> */}
     </SidebarProvider>
   );
 }
