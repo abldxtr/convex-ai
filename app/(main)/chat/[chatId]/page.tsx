@@ -37,23 +37,17 @@ export default async function ChatPage({
     queryKey: ["posts", chatId],
     queryFn: async ({ queryKey }) => {
       const [, chatId] = queryKey;
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${chatId}`,
-        {
-          method: "GET",
-        }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch chat messages");
+      const chat = await fetchQuery(
+        api.chat.getChatById,
+        { id: chatId },
+        { token }
+      );
+      if (!chat) {
+        return null;
       }
 
-      const json = await response.json();
-      console.log("ddddddddddddddddddddddddddddddd");
-
-      console.log(json);
-
-      return json.chat;
+      return chat;
     },
   });
 
