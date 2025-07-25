@@ -38,6 +38,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@serwist/next": "^9.0.15",
     "@tanstack/react-query": "^5.80.7",
+    "@tanstack/react-query-devtools": "^5.83.0",
     "@vercel/speed-insights": "^1.2.0",
     "ai": "^4.3.15",
     "axios": "^1.10.0",
