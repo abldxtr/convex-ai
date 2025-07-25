@@ -217,7 +217,7 @@ export function UserMessage({
                   <div
                     key={`${message.id}-${i}`}
                     dir="auto"
-                    className="flex w-fit max-w-full break-words  px-5 py-2.5 "
+                    className="flex !text-[14px] md:text-[15px] w-fit max-w-full break-words  px-5 py-2.5 "
                   >
                     {part.text}
                   </div>

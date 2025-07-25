@@ -127,7 +127,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
 
         ol({ children, ...props }) {
           return (
-            <ol className="ml-6 list-decimal " {...props}>
+            <ol
+              className="ml-6 list-decimal !text-[14px] md:text-[15px] "
+              {...props}
+            >
               {children}
             </ol>
           );
@@ -135,7 +138,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
 
         ul({ children, ...props }) {
           return (
-            <ul className="ml-6 list-disc " {...props}>
+            <ul
+              className="ml-6 list-disc !text-[14px] md:text-[15px] "
+              {...props}
+            >
               {children}
             </ul>
           );
@@ -143,7 +149,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
 
         li({ children, ...props }) {
           return (
-            <li className="leading-relaxed" {...props}>
+            <li
+              className="leading-relaxed !text-[14px] md:text-[15px] "
+              {...props}
+            >
               {children}
             </li>
           );
@@ -151,7 +160,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
 
         p({ children, ...props }) {
           return (
-            <p className=" py-1 leading-relaxed" {...props}>
+            <p
+              className=" py-1 leading-relaxed !text-[14px] md:text-[15px] "
+              {...props}
+            >
               {children}
             </p>
           );
@@ -243,7 +255,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
         h4({ children, ...props }) {
           return (
             <h4
-              className=" py-1 text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+              className=" py-1 !text-[14px] md:text-[15px] font-semibold text-zinc-900 dark:text-zinc-100"
               {...props}
             >
               {children}
@@ -254,7 +266,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
         h5({ children, ...props }) {
           return (
             <h5
-              className=" py-1  text-base font-semibold text-zinc-900 dark:text-zinc-100"
+              className=" py-1 !text-[14px] md:text-[15px]  text-base font-semibold text-zinc-900 dark:text-zinc-100"
               {...props}
             >
               {children}
@@ -265,7 +277,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
         h6({ children, ...props }) {
           return (
             <h6
-              className=" py-1 text-sm font-semibold text-zinc-900 dark:text-zinc-100"
+              className=" py-1  !text-[14px] md:text-[15px] font-semibold text-zinc-900 dark:text-zinc-100"
               {...props}
             >
               {children}
