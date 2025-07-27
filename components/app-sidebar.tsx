@@ -85,7 +85,7 @@ export function AppSidebar({
     }
   };
 
-  const { setOpenMobile, toggleSidebar, state, isMobile } = useSidebar();
+  const { setOpenMobile, isMobile } = useSidebar();
 
   const chatGroup = useMemo(() => {
     if (chatList === undefined) return undefined;
@@ -166,9 +166,9 @@ export function AppSidebar({
                       setDisableLayout(false);
                       // setOpenMobile(false);
                       setNewChat(!newChat);
-                      if (state === "expanded" && isMobile) {
-                        toggleSidebar();
-                      }
+                      // if (state === "expanded" && isMobile) {
+                      //   toggleSidebar();
+                      // }
                     });
                   }}
                   prefetch={true}
@@ -214,14 +214,13 @@ export function AppSidebar({
                               <SidebarMenuButton
                                 asChild
                                 isActive={chatIdd === chat.id}
-                                onClick={() => {
-                                  if (state === "expanded" && isMobile) {
-                                    toggleSidebar();
-                                  }
-                                }}
+                                // onClick={() => {
+                                //   if (state === "expanded" && isMobile) {
+                                //     toggleSidebar();
+                                //   }
+                                // }}
                               >
                                 <Link href={`/chat/${chat.id}`} prefetch={true}>
-                                  {/* <Skeleton className="h-full w-full rounded-full" /> */}
                                   <ThreeDots
                                     visible={true}
                                     height="20"
@@ -238,11 +237,11 @@ export function AppSidebar({
                               <SidebarMenuButton
                                 asChild
                                 isActive={chatIdd === chat.id}
-                                onClick={() => {
-                                  if (state === "expanded" && isMobile) {
-                                    toggleSidebar();
-                                  }
-                                }}
+                                // onClick={() => {
+                                //   if (state === "expanded" && isMobile) {
+                                //     toggleSidebar();
+                                //   }
+                                // }}
                               >
                                 <Link
                                   href={`/chat/${chat.id}`}
