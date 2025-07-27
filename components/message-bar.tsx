@@ -6,15 +6,12 @@ import { useDirection } from "@/hooks/use-direction";
 import { MessageTools } from "./message-tools";
 import MarkdownRenderer from "./markdown";
 import { cx } from "class-variance-authority";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { AiLoading2 } from "./ai-loading";
 import { useGlobalState } from "@/context/global-state-zus";
 import { clientGetChatMessages } from "@/lib/type";
 import { PreviewAttachment } from "./preview-attachment";
 import { AIMessageError } from "./error-message-ai";
-import EditMessage from "./edit-message";
-import { ScrollArea } from "./ui/scroll-area";
-import { AnimatedMarkdown } from "flowtoken";
 import "flowtoken/dist/styles.css";
 import { useEffect } from "react";
 type MessageBarProps = {

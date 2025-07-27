@@ -25,14 +25,12 @@ import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 import {
   QueryClient,
   useQuery as TanstackUseQuery,
-  useQuery,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { searchTools } from "@/lib/chat-tools";
 import { useDirection } from "@/hooks/use-direction";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
-import { useFileToBase64 } from "@/hooks/use-file-base64";
 
 interface ChatClientWithIdProps extends ChatClientPropsPartial {
   chatIdd: string;

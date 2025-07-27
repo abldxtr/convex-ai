@@ -1,14 +1,11 @@
 import { ChatRequestOptions, UIMessage } from "ai";
-import { MessageTools } from "./message-tools";
 import { PreviewAttachment } from "./preview-attachment";
 import { cn } from "@/lib/utils";
 import { useCallback, useState } from "react";
 import { Textarea } from "./ui/textarea";
 import { useDirection } from "@/hooks/use-direction";
 import { useGlobalState } from "@/context/global-state-zus";
-import TooltipContainer from "./tooltip-container";
 import { toast } from "sonner";
-import { ModelSwitcher } from "./models";
 
 export default function EditMessage({
   message,

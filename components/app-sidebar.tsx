@@ -29,7 +29,7 @@ import { PlusIcon, Ellipsis, Trash2 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
 import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
-import { useMemo } from "react";
+import { useMemo, useTransition } from "react";
 import { useGlobalState } from "@/context/global-state-zus";
 import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
@@ -51,6 +51,7 @@ export function AppSidebar({
 
   const router = useRouter();
   const pathName = usePathname();
+  const [isPending, startTransition] = useTransition();
 
   const {
     newChat,
@@ -156,25 +157,10 @@ export function AppSidebar({
             </Link>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  type="button"
-                  className="h-fit p-2"
-                  // onClick={() => {
-                  //   setChangeRandomId(!changeRandomId);
-                  //   setActive(false);
-                  //   setDisableLayout(false);
-                  //   // window.history.pushState({}, "", `/chat`);
-                  //   // router.push("/chat");
-                  //   setNewChat(!newChat);
-                  //   if (state === "expanded" && isMobile) {
-                  //     toggleSidebar();
-                  //   }
-                  // }}
-                >
-                  <Link
-                    href="/chat"
-                    onClick={() => {
+                <Link
+                  href="/chat"
+                  onClick={() => {
+                    startTransition(() => {
                       setChangeRandomId(!changeRandomId);
                       setActive(false);
                       setDisableLayout(false);
@@ -183,12 +169,14 @@ export function AppSidebar({
                       if (state === "expanded" && isMobile) {
                         toggleSidebar();
                       }
-                    }}
-                    prefetch={true}
-                  >
+                    });
+                  }}
+                  prefetch={true}
+                >
+                  <Button variant="ghost" type="button" className="h-fit p-2">
                     <PlusIcon />
-                  </Link>
-                </Button>
+                  </Button>
+                </Link>
               </TooltipTrigger>
               <TooltipContent align="end">New Chat</TooltipContent>
             </Tooltip>

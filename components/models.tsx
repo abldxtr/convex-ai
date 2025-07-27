@@ -11,21 +11,7 @@ import { motion } from "framer-motion";
 import { Message } from "@ai-sdk/react";
 import { Attachment } from "ai";
 import { useGlobalState } from "@/context/global-state-zus";
-// languageModels: {
-//     "mmd-meta-llama": openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
-//     "mmd-qwen-2.5": openrouter.chat("qwen/qwen-2.5-7b-instruct:free"),
-//     "mmd-mistral": openrouter.chat("mistralai/mistral-7b-instruct:free"),
-//     "mmd-google": openrouter.chat("google/gemini-2.0-flash-exp:free"),
-//     "mmd-deepseek": openrouter.chat("deepseek/deepseek-r1-0528:free"),
-//     "mmd-meta-llama/llama-4-scout": openrouter.chat(
-//       "meta-llama/llama-4-scout:free"
-//     ),
-//     "mmd-4o": openai("gpt-4o", {
-//       structuredOutputs: true,
-//     }),
-//     "mmd-o4-mini": openai.responses("o4-mini-2025-04-16"),
-//   }
-// mmd-meta-llama
+
 export const models = [
   {
     value: "mmd-gpt-4o",
