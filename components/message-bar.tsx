@@ -29,15 +29,13 @@ export default function MessageBar({
   endOfMessagesRef,
   status,
   reload,
-  clientChatMessage,
 }: MessageBarProps) {
   const { scrollRef, showArrow, clientHeight } = useScroll({
     status,
     endOfMessagesRef,
     messages,
   });
-  // if (messages.length > 0) {
-  // }
+
   const { getError, setGetError } = useGlobalState();
   useEffect(() => {
     if (getError) {
@@ -47,19 +45,7 @@ export default function MessageBar({
   }, [getError]);
 
   return (
-    // <AnimatePresence>
-    <div
-      className="relative h-full w-full flex-1 overflow-hidden fade-in "
-      // initial={{
-      //   opacity: 0,
-      // }}
-      // animate={{
-      //   opacity: 1,
-      // }}
-      // exit={{
-      //   opacity: 0,
-      // }}
-    >
+    <div className="relative h-full w-full flex-1 overflow-hidden">
       {showArrow && (
         <div
           className={cn(
@@ -158,7 +144,6 @@ export default function MessageBar({
         {/* </ScrollArea> */}
       </div>
     </div>
-    // </AnimatePresence>
   );
 }
 
