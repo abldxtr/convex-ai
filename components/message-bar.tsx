@@ -8,7 +8,7 @@ import MarkdownRenderer from "./markdown";
 import { cx } from "class-variance-authority";
 import { motion, AnimatePresence } from "framer-motion";
 import { AiLoading2 } from "./ai-loading";
-import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
 import { clientGetChatMessages } from "@/lib/type";
 import { PreviewAttachment } from "./preview-attachment";
 import { AIMessageError } from "./error-message-ai";
@@ -41,7 +41,7 @@ export default function MessageBar({
   });
   // if (messages.length > 0) {
   // }
-  const { getError, setGetError } = useGlobalstate();
+  const { getError, setGetError } = useGlobalState();
   useEffect(() => {
     if (getError) {
       setGetError(false);

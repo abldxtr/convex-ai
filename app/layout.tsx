@@ -7,7 +7,7 @@ import { Viewport, type Metadata } from "next";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/provider/ConvexClientProvider";
 import { Toaster } from "sonner";
-import { GlobalStoreProvider } from "@/context/global-store";
+// import { GlobalStoreProvider } from "@/context/global-store";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import Providers from "@/provider/react-query-provider";
 import { geist, vazirmatn } from "@/lib/font";
@@ -78,18 +78,18 @@ export default function RootLayout({
       </head> */}
       <ConvexAuthNextjsServerProvider>
         {/* <ReactScan /> */}
-        <GlobalStoreProvider>
-          <body>
-            <Toaster position="top-center" richColors />
-            <ConvexClientProvider>
-              <ConvexQueryCacheProvider>
-                <Providers>{children}</Providers>
-              </ConvexQueryCacheProvider>
-            </ConvexClientProvider>
-            {/* <Analytics />
+        {/* <GlobalStoreProvider> */}
+        <body>
+          <Toaster position="top-center" richColors />
+          <ConvexClientProvider>
+            <ConvexQueryCacheProvider>
+              <Providers>{children}</Providers>
+            </ConvexQueryCacheProvider>
+          </ConvexClientProvider>
+          {/* <Analytics />
             <SpeedInsights /> */}
-          </body>
-        </GlobalStoreProvider>
+        </body>
+        {/* </GlobalStoreProvider> */}
       </ConvexAuthNextjsServerProvider>
     </html>
   );

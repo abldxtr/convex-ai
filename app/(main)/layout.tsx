@@ -4,8 +4,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { Suspense } from "react";
-// export const dynamic = "force-dynamic";
 
 export default async function ChatLayout({
   children,

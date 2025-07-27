@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import MessageBar from "@/components/message-bar";
 import TooltipContainer from "@/components/tooltip-container";
-import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
 import type { ChatClientPropsPartial } from "@/lib/type";
 import { models, ModelSwitcher } from "@/components/models";
 import { motion, MotionConfig } from "framer-motion";
@@ -98,12 +98,14 @@ export default function ChatClientWithId({
     removeStoredFiles,
     disableLayout,
     setDisableLayout,
-  } = useGlobalstate();
+    attachments,
+    setAttachments,
+    scrollToBotton,
+    setScrollToBotton,
+  } = useGlobalState();
   const router = useRouter();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
-  const { attachments, setAttachments, scrollToBotton, setScrollToBotton } =
-    useGlobalstate();
 
   const [
     { files, isDragging, errors },
@@ -142,7 +144,7 @@ export default function ChatClientWithId({
       }
     });
 
-    setVisionModel(() => visionModel);
+    setVisionModel(visionModel);
 
     if (files.length > 0 && !visionModel) {
       setSelectedModel("mmd-google/gemini-2.0-flash-exp:free");

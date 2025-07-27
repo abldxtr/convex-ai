@@ -29,13 +29,11 @@ import { PlusIcon, Ellipsis, Trash2 } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
 import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
-import { useQuery } from "convex-helpers/react/cache/hooks";
 import { useMemo } from "react";
-import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
 import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
 import { getRelativeDateLabel } from "@/lib/date";
-// import { Link } from "@/lib/link";
 import { Spinner } from "./spinner";
 import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
@@ -65,7 +63,7 @@ export function AppSidebar({
     setDisableLayout,
     changeRandomId,
     setChangeRandomId,
-  } = useGlobalstate();
+  } = useGlobalState();
   const deleteChat = useMutation(api.chat.deleteChat);
 
   const chatIdd = useMemo(
@@ -82,7 +80,7 @@ export function AppSidebar({
         router.refresh();
         setDisableLayout(false);
         setActive(false);
-        setChangeRandomId((prev) => !prev);
+        setChangeRandomId(!changeRandomId);
       }
     } catch (error) {
       console.log({ error });
@@ -148,7 +146,7 @@ export function AppSidebar({
             <Link
               href="/chat"
               onClick={() => {
-                setChangeRandomId((prev) => !prev);
+                setChangeRandomId(!changeRandomId);
 
                 setActive(false);
                 setDisableLayout(false);
@@ -169,14 +167,14 @@ export function AppSidebar({
                   type="button"
                   className="h-fit p-2"
                   onClick={() => {
-                    setChangeRandomId((prev) => !prev);
+                    setChangeRandomId(!changeRandomId);
 
                     setActive(false);
                     setDisableLayout(false);
                     // window.history.pushState({}, "", `/chat`);
 
                     router.push("/chat");
-                    setNewChat(() => !newChat);
+                    setNewChat(!newChat);
                     if (state === "expanded" && isMobile) {
                       toggleSidebar();
                     }

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Message } from "@ai-sdk/react";
 import { Attachment } from "ai";
-import { useGlobalstate } from "@/context/global-store";
+import { useGlobalState } from "@/context/global-state-zus";
 // languageModels: {
 //     "mmd-meta-llama": openrouter.chat("meta-llama/llama-3.2-3b-instruct:free"),
 //     "mmd-qwen-2.5": openrouter.chat("qwen/qwen-2.5-7b-instruct:free"),
@@ -280,7 +280,7 @@ export const ModelSwitcher: React.FC<ModelSwitcherProps> = ({
   status,
   onModelSelect,
 }) => {
-  const { fileExists } = useGlobalstate();
+  const { fileExists } = useGlobalState();
   const selectedModelData = models.find(
     (model) => model.value === selectedModel
   );
