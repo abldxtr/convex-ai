@@ -10,7 +10,6 @@ import React, {
   useMemo,
   useTransition,
 } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion, MotionConfig } from "framer-motion";
 import { SidebarToggle } from "@/components/sidebar-toggle";
@@ -49,7 +48,6 @@ export default function ChatClientWithoutId() {
     changeRandomId,
     setChangeRandomId,
   } = useGlobalState();
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
@@ -59,8 +57,6 @@ export default function ChatClientWithoutId() {
   );
   console.log({ idChat });
   console.log({ changeRandomId });
-
-  // const idChat = crypto.randomUUID();
 
   const [
     { files, isDragging, errors },
@@ -83,11 +79,6 @@ export default function ChatClientWithoutId() {
   useEffect(() => {
     const hasFile = files.length > 0;
     setFileExists(hasFile);
-    // if (hasFile) {
-    //   setDisableLayout(true);
-    // } else {
-    //   setDisableLayout(false);
-    // }
 
     const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
@@ -96,7 +87,6 @@ export default function ChatClientWithoutId() {
         return false;
       }
     });
-    console.log({ visionModel });
 
     setVisionModel(visionModel);
 
@@ -118,6 +108,10 @@ export default function ChatClientWithoutId() {
     const storedModel = sessionStorage.getItem("model");
     if (storedModel) {
       setSelectedModel(storedModel);
+    }
+
+    if (value.length > 0) {
+      setInput(value);
     }
   }, []);
 
@@ -255,11 +249,11 @@ export default function ChatClientWithoutId() {
     setScrollToBotton,
   ]);
 
-  useLayoutEffect(() => {
-    if (value.length > 0) {
-      setInput(value);
-    }
-  }, []);
+  // useLayoutEffect(() => {
+  //   if (value.length > 0) {
+  //     setInput(value);
+  //   }
+  // }, []);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -331,9 +325,6 @@ export default function ChatClientWithoutId() {
                 data-files={files.length > 0 || undefined}
                 className={cn(
                   "border-token-border-default bg-token-bg-primary flex grow containerW ",
-                  // "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
-                  // "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
-                  // "lg:[--thread-content-max-width:50rem]",
                   "cursor-text flex-col items-center justify-center  rounded-[28px]",
                   "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
                   "dark:bg-[#303030] dark:shadow-none! relative ",
@@ -357,9 +348,6 @@ export default function ChatClientWithoutId() {
                     placeholder="Ask anything"
                     className="field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50 !transition-none "
                     onChange={(e) => {
-                      // if (e.target.value.length > 60) {
-                      //   setDisableLayout(true);
-                      // }
                       const direction = useDirection(e.target.value);
                       setDirection(direction);
                       setInput(e.target.value);

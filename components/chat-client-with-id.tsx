@@ -39,17 +39,10 @@ interface ChatClientWithIdProps extends ChatClientPropsPartial {
 }
 
 export default function ChatClientWithId({
-  chatItem,
-  chatMessages,
   chatIdd,
   id,
   idChat,
-  preloaded,
 }: ChatClientWithIdProps) {
-  // await queryClient.prefetchQuery({
-  //   queryKey: ['posts'],
-  //   queryFn: getPosts,
-  // })
   const queryClient = new QueryClient();
   const [isPending, startTransition] = useTransition();
 
@@ -69,10 +62,6 @@ export default function ChatClientWithId({
       }
 
       const json = await response.json();
-      console.log("ddddddddddddddddddddddddddddddd");
-
-      console.log(json);
-
       return json.chat;
     },
     refetchOnWindowFocus: false,
@@ -122,18 +111,11 @@ export default function ChatClientWithId({
     maxSize: 1024 * 1024 * 2,
     multiple: false,
     maxFiles: 1,
-    // initialFiles
   });
 
   useEffect(() => {
     const hasFile = files.length > 0;
     setFileExists(hasFile);
-    // if (hasFile) {
-    //   setDisableLayout(true);
-    // } else {
-    //   setDisableLayout(false);
-    // }
-
     const visionModel = models.some((item) => {
       if (item.value === selectedModel) {
         return item.vision === true;
@@ -187,9 +169,9 @@ export default function ChatClientWithId({
     experimental_throttle: 100,
     maxSteps: 2,
     api: "/api/chat",
-    initialMessages: clientGetChatMessages?.chatMessages
-      ? convertToUIMessages(clientGetChatMessages.chatMessages)
-      : undefined,
+    // initialMessages: clientGetChatMessages?.chatMessages
+    //   ? convertToUIMessages(clientGetChatMessages.chatMessages)
+    //   : undefined,
     experimental_prepareRequestBody: (body) => ({
       id,
       message: body.messages.at(-1),
@@ -384,9 +366,6 @@ export default function ChatClientWithId({
               <div
                 className={cn(
                   "border-token-border-default bg-token-bg-primary flex grow containerW ",
-                  // "max-w-(--thread-content-max-width) [--thread-content-max-width:32rem]",
-                  // "@[34rem]:[--thread-content-max-width:40rem] @[64rem]:[--thread-content-max-width:48rem]",
-                  // "lg:[--thread-content-max-width:50rem]",
                   "cursor-text flex-col items-center justify-center md:rounded-[28px] rounded-t-[28px] sm:rounded-[28px]  ",
                   "border bg-clip-padding shadow-sm contain-inline-size sm:shadow-lg",
                   "dark:bg-[#303030] dark:shadow-none! relative ",
