@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThreeDots } from "react-loader-spinner";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +37,6 @@ import { getRelativeDateLabel } from "@/lib/date";
 import { Spinner } from "./spinner";
 import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
-import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 
 export function AppSidebar({
@@ -56,10 +55,7 @@ export function AppSidebar({
   const {
     newChat,
     setNewChat,
-    setIsNavigating,
-    active,
     setActive,
-    disableLayout,
     setDisableLayout,
     changeRandomId,
     setChangeRandomId,
@@ -116,27 +112,27 @@ export function AppSidebar({
     );
   }, [chatList]);
 
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
-  const prefetchChatData = async (chatId: string) => {
-    await queryClient.prefetchQuery({
-      queryKey: ["posts", chatId],
-      queryFn: async ({ queryKey }) => {
-        const [, chatId] = queryKey;
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${chatId}`,
-          {
-            method: "GET",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch chat messages");
-        }
-        const json = await response.json();
-        return json.chat;
-      },
-    });
-  };
+  // const prefetchChatData = async (chatId: string) => {
+  //   await queryClient.prefetchQuery({
+  //     queryKey: ["posts", chatId],
+  //     queryFn: async ({ queryKey }) => {
+  //       const [, chatId] = queryKey;
+  //       const response = await fetch(
+  //         `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${chatId}`,
+  //         {
+  //           method: "GET",
+  //         }
+  //       );
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch chat messages");
+  //       }
+  //       const json = await response.json();
+  //       return json.chat;
+  //     },
+  //   });
+  // };
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
@@ -147,10 +143,8 @@ export function AppSidebar({
               href="/chat"
               onClick={() => {
                 setChangeRandomId(!changeRandomId);
-
                 setActive(false);
                 setDisableLayout(false);
-
                 setOpenMobile(false);
               }}
               prefetch={true}
@@ -166,21 +160,34 @@ export function AppSidebar({
                   variant="ghost"
                   type="button"
                   className="h-fit p-2"
-                  onClick={() => {
-                    setChangeRandomId(!changeRandomId);
-
-                    setActive(false);
-                    setDisableLayout(false);
-                    // window.history.pushState({}, "", `/chat`);
-
-                    router.push("/chat");
-                    setNewChat(!newChat);
-                    if (state === "expanded" && isMobile) {
-                      toggleSidebar();
-                    }
-                  }}
+                  // onClick={() => {
+                  //   setChangeRandomId(!changeRandomId);
+                  //   setActive(false);
+                  //   setDisableLayout(false);
+                  //   // window.history.pushState({}, "", `/chat`);
+                  //   // router.push("/chat");
+                  //   setNewChat(!newChat);
+                  //   if (state === "expanded" && isMobile) {
+                  //     toggleSidebar();
+                  //   }
+                  // }}
                 >
-                  <PlusIcon />
+                  <Link
+                    href="/chat"
+                    onClick={() => {
+                      setChangeRandomId(!changeRandomId);
+                      setActive(false);
+                      setDisableLayout(false);
+                      // setOpenMobile(false);
+                      setNewChat(!newChat);
+                      if (state === "expanded" && isMobile) {
+                        toggleSidebar();
+                      }
+                    }}
+                    prefetch={true}
+                  >
+                    <PlusIcon />
+                  </Link>
                 </Button>
               </TooltipTrigger>
               <TooltipContent align="end">New Chat</TooltipContent>
