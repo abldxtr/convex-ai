@@ -220,7 +220,11 @@ export function AppSidebar({
                                 //   }
                                 // }}
                               >
-                                <Link href={`/chat/${chat.id}`} prefetch={true}>
+                                <Link
+                                  href={`/chat/${chat.id}`}
+                                  prefetch={true}
+                                  scroll={false}
+                                >
                                   <ThreeDots
                                     visible={true}
                                     height="20"
