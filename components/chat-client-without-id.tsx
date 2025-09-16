@@ -23,7 +23,7 @@ import { searchTools } from "@/lib/chat-tools";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useDirection } from "@/hooks/use-direction";
-import { QueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 
 export default function ChatClientWithoutId() {
@@ -59,7 +59,7 @@ export default function ChatClientWithoutId() {
     () => crypto.randomUUID(),
     [changeRandomId, setChangeRandomId]
   );
-  const { data: clientGetChatMessages, refetch } = useSuspenseQuery({
+  const { data: clientGetChatMessages, refetch } = useQuery({
     queryKey: ["posts", idChat],
     queryFn: async ({ queryKey }) => {
       const [, chatId] = queryKey;
@@ -78,6 +78,7 @@ export default function ChatClientWithoutId() {
       return json.chat;
     },
     refetchOnWindowFocus: true,
+    enabled: !!window.location.pathname.split("/")[2],
   });
   const [
     { files, isDragging, errors },
