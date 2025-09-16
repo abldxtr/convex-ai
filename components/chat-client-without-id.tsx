@@ -23,7 +23,8 @@ import { searchTools } from "@/lib/chat-tools";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useDirection } from "@/hooks/use-direction";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 
 export default function ChatClientWithoutId() {
   const {
@@ -58,7 +59,26 @@ export default function ChatClientWithoutId() {
     () => crypto.randomUUID(),
     [changeRandomId, setChangeRandomId]
   );
+  const { data: clientGetChatMessages, refetch } = useSuspenseQuery({
+    queryKey: ["posts", idChat],
+    queryFn: async ({ queryKey }) => {
+      const [, chatId] = queryKey;
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${idChat}`,
+        {
+          method: "GET",
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error("Failed to fetch chat messages");
+      }
+
+      const json = await response.json();
+      return json.chat;
+    },
+    refetchOnWindowFocus: true,
+  });
   const [
     { files, isDragging, errors },
     {
@@ -171,6 +191,16 @@ export default function ChatClientWithoutId() {
     },
   });
 
+  useEffect(() => {
+    if (
+      messages.length === 0 &&
+      clientGetChatMessages?.chatMessages &&
+      clientGetChatMessages.chatMessages.length > 0
+    ) {
+      setMessages(convertToUIMessages(clientGetChatMessages.chatMessages));
+    }
+  }, [messages, clientGetChatMessages, setMessages]);
+
   const handleKeyboardSubmit = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
@@ -252,12 +282,6 @@ export default function ChatClientWithoutId() {
     scrollToBotton,
     setScrollToBotton,
   ]);
-
-  // useLayoutEffect(() => {
-  //   if (value.length > 0) {
-  //     setInput(value);
-  //   }
-  // }, []);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
