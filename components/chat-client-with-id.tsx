@@ -64,7 +64,7 @@ export default function ChatClientWithId({
       const json = await response.json();
       return json.chat;
     },
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
 
   const {

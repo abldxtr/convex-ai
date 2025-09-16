@@ -23,6 +23,7 @@ import { searchTools } from "@/lib/chat-tools";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useDirection } from "@/hooks/use-direction";
+import { QueryClient } from "@tanstack/react-query";
 
 export default function ChatClientWithoutId() {
   const {
@@ -48,6 +49,8 @@ export default function ChatClientWithoutId() {
     changeRandomId,
     setChangeRandomId,
   } = useGlobalState();
+  const queryClient = new QueryClient();
+
   const [isPending, startTransition] = useTransition();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
@@ -55,8 +58,6 @@ export default function ChatClientWithoutId() {
     () => crypto.randomUUID(),
     [changeRandomId, setChangeRandomId]
   );
-  console.log({ idChat });
-  console.log({ changeRandomId });
 
   const [
     { files, isDragging, errors },
@@ -151,18 +152,21 @@ export default function ChatClientWithoutId() {
       // setChangeRandomId(false);
     },
     onFinish: () => {
+      const path = window.location.pathname;
+      const chatId = path.split("/")[2];
       console.log("onFinish");
-      startTransition(() => {
-        if (attachments.length > 0) {
-          setAttachments([]);
-          clearFiles();
-        }
+      startTransition(async () => {
+        startTransition(() => {
+          if (attachments.length > 0) {
+            setAttachments([]);
+            clearFiles();
+          }
+        });
         sessionStorage.setItem(`disable-scroll`, idChat);
-        // setChangeRandomId(false);
-
-        // router.push(`/chat/${idChat}`, {
-        //   scroll: false,
-        // });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["posts", idChat] }),
+          queryClient.invalidateQueries({ queryKey: ["posts", chatId] }),
+        ]);
       });
     },
   });
