@@ -59,6 +59,30 @@ export default function ChatClientWithoutId() {
     () => crypto.randomUUID(),
     [changeRandomId, setChangeRandomId]
   );
+
+  const [idChatState, setIdChatState] = useState<string | null>(null);
+
+  useEffect(() => {
+    const updateChatId = () => {
+      const pathId = window.location.pathname.split("/")[2];
+      if (pathId) {
+        setIdChatState(pathId);
+      }
+      //  else {
+      //   const newId = crypto.randomUUID();
+      //   setIdChatState(newId);
+      //   window.history.pushState({}, "", `/chat/${newId}`);
+      // }
+    };
+
+    updateChatId();
+
+    window.addEventListener("popstate", updateChatId);
+
+    return () => {
+      window.removeEventListener("popstate", updateChatId);
+    };
+  }, []);
   const { data: clientGetChatMessages, refetch } = useQuery({
     queryKey: ["posts", idChat],
     queryFn: async ({ queryKey }) => {
@@ -78,7 +102,7 @@ export default function ChatClientWithoutId() {
       return json.chat;
     },
     refetchOnWindowFocus: true,
-    enabled: !!window.location.pathname.split("/")[2],
+    enabled: !!idChatState,
   });
   const [
     { files, isDragging, errors },
@@ -170,25 +194,20 @@ export default function ChatClientWithoutId() {
     onError: (error) => {
       console.log("error", error);
       setGetError(true);
-      // setChangeRandomId(false);
+      refetch();
     },
     onFinish: () => {
       const path = window.location.pathname;
       const chatId = path.split("/")[2];
       console.log("onFinish");
-      startTransition(async () => {
-        startTransition(() => {
-          if (attachments.length > 0) {
-            setAttachments([]);
-            clearFiles();
-          }
-        });
-        sessionStorage.setItem(`disable-scroll`, idChat);
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["posts", idChat] }),
-          queryClient.invalidateQueries({ queryKey: ["posts", chatId] }),
-        ]);
-      });
+
+      if (attachments.length > 0) {
+        setAttachments([]);
+        clearFiles();
+      }
+
+      sessionStorage.setItem(`disable-scroll`, idChat);
+      refetch();
     },
   });
 
