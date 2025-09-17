@@ -89,7 +89,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
             <code
               className={cn(
                 className,
-                "relative rounded-md bg-zinc-100 px-1 py-1 text-sm dark:bg-zinc-800"
+                "relative rounded-md bg-[#f9f9f9] px-1 py-1 text-sm dark:bg-zinc-800"
               )}
               {...props}
               dir="ltr"
@@ -107,7 +107,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
               <CopyButton code={codeText} />
               <pre
                 className={cn(
-                  "overflow-x-auto rounded-lg p-3 mt-4 text-sm z-10 bg-transparent",
+                  "overflow-x-auto rounded-lg p-3 mt-4 text-sm z-10 bg-[#f9f9f9]",
                   "border border-zinc-200 dark:border-zinc-700"
                 )}
                 {...props}
