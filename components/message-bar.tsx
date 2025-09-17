@@ -159,7 +159,9 @@ export function UserMessage({
   ) => Promise<string | null | undefined>;
 }) {
   const textPart = message.parts.find((part) => part.type === "text");
-  const direction = useDirection(textPart?.text ?? "");
+  const direction = useDirection(
+    textPart && textPart.type === "text" ? textPart.text : ""
+  );
 
   return (
     <div className="group/turn-messages mx-auto containerW " dir="auto">
@@ -228,7 +230,11 @@ export function AIMessage({
   isLastMessage: boolean;
 }) {
   const textPart = message.parts.find((part) => part.type === "text");
-  const direction = useDirection(textPart?.text ?? "");
+
+  // const direction = useDirection(textPart?.text ?? "");
+  const direction = useDirection(
+    textPart && textPart.type === "text" ? textPart.text : ""
+  );
   return (
     <div className={cn("group/turn-messages mx-auto containerW ")}>
       <div

@@ -68,11 +68,6 @@ export default function ChatClientWithoutId() {
       if (pathId) {
         setIdChatState(pathId);
       }
-      //  else {
-      //   const newId = crypto.randomUUID();
-      //   setIdChatState(newId);
-      //   window.history.pushState({}, "", `/chat/${newId}`);
-      // }
     };
 
     updateChatId();
