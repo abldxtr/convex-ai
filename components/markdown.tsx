@@ -89,7 +89,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(
             <code
               className={cn(
                 className,
-                "relative rounded-md bg-[#f9f9f9] px-1 py-1 text-sm dark:bg-zinc-800"
+                "relative rounded-md !bg-[#f9f9f9] px-1 py-1 text-sm dark:bg-zinc-800"
               )}
               {...props}
               dir="ltr"
