@@ -186,23 +186,22 @@ export default function ChatClientWithId({
     onError: (error) => {
       console.log("error", error);
       setGetError(true);
+      refetch();
     },
     onFinish: () => {
-      startTransition(async () => {
-        console.log("onFinish");
-        if (attachments.length > 0) {
-          setAttachments([]);
-          // clearFiles();
-        }
-        // refetch()
-        queryClient.invalidateQueries({
-          queryKey: ["posts", chatIdd],
-        });
+      // startTransition(async () => {
+      if (attachments.length > 0) {
+        setAttachments([]);
+        // clearFiles();
+      }
+      refetch();
+      queryClient.invalidateQueries({
+        queryKey: ["posts", chatIdd],
       });
+      // });
     },
   });
 
-  console.log({ status });
   // Handle new chat state
   useEffect(() => {
     if (newChat) {
