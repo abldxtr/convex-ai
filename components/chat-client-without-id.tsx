@@ -78,7 +78,7 @@ export default function ChatClientWithoutId() {
   }, []);
 
   const clientGetChatMessages = useQuery(api.chat.getChatById, {
-    id: idChat ? idChat : "skip",
+    id: idChatState ? idChatState : "skip",
   });
 
   const [
