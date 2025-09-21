@@ -8,7 +8,6 @@ import React, {
   useState,
   useCallback,
   useMemo,
-  useTransition,
 } from "react";
 import { toast } from "sonner";
 import { motion, MotionConfig } from "framer-motion";
@@ -23,8 +22,9 @@ import { searchTools } from "@/lib/chat-tools";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useDirection } from "@/hooks/use-direction";
-import { QueryClient, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
+import { api } from "@/convex/_generated/api";
 
 export default function ChatClientWithoutId() {
   const {
@@ -50,9 +50,7 @@ export default function ChatClientWithoutId() {
     changeRandomId,
     setChangeRandomId,
   } = useGlobalState();
-  const queryClient = new QueryClient();
 
-  const [isPending, startTransition] = useTransition();
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const [showExperimentalModels, setShowExperimentalModels] = useState(false);
   const idChat = useMemo(
@@ -78,27 +76,11 @@ export default function ChatClientWithoutId() {
       window.removeEventListener("popstate", updateChatId);
     };
   }, []);
-  const { data: clientGetChatMessages, refetch } = useQuery({
-    queryKey: ["posts", idChat],
-    queryFn: async ({ queryKey }) => {
-      const [, chatId] = queryKey;
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${idChat}`,
-        {
-          method: "GET",
-        }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch chat messages");
-      }
-
-      const json = await response.json();
-      return json.chat;
-    },
-    refetchOnWindowFocus: true,
-    enabled: !!idChatState,
+  const clientGetChatMessages = useQuery(api.chat.getChatById, {
+    id: idChat ? idChat : "skip",
   });
+
   const [
     { files, isDragging, errors },
     {
@@ -143,7 +125,6 @@ export default function ChatClientWithoutId() {
     setVisionModel,
   ]);
 
-  // Load model preference from session storage
   useLayoutEffect(() => {
     setActive(false);
     const storedModel = sessionStorage.getItem("model");
@@ -156,7 +137,6 @@ export default function ChatClientWithoutId() {
     }
   }, []);
 
-  // Set up chat with AI SDK
   const {
     messages,
     input,
@@ -189,7 +169,7 @@ export default function ChatClientWithoutId() {
     onError: (error) => {
       console.log("error", error);
       setGetError(true);
-      refetch();
+      // refetch();
     },
     onFinish: () => {
       const path = window.location.pathname;
@@ -202,7 +182,7 @@ export default function ChatClientWithoutId() {
       }
 
       sessionStorage.setItem(`disable-scroll`, idChat);
-      refetch();
+      // refetch();
     },
   });
 

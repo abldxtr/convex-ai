@@ -1,17 +1,12 @@
 import "@/styles/globals.css";
-
-// import { Analytics } from "@vercel/analytics/react";
-// import { SpeedInsights } from "@vercel/speed-insights/next";
-
 import { Viewport, type Metadata } from "next";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "@/provider/ConvexClientProvider";
 import { Toaster } from "sonner";
-// import { GlobalStoreProvider } from "@/context/global-store";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import Providers from "@/provider/react-query-provider";
 import { geist, vazirmatn } from "@/lib/font";
-// import { ReactScan } from "@/provider/react-scan-provider";
+
 const APP_NAME = "T3 Chatgpt";
 const APP_DEFAULT_TITLE = "Chat-gpt";
 const APP_TITLE_TEMPLATE = "%s - Chatgpt";
@@ -29,7 +24,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: APP_DEFAULT_TITLE,
-    // startUpImage: [],
   },
   formatDetection: {
     telephone: false,
@@ -70,15 +64,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geist.variable} ${vazirmatn.variable} `}>
-      {/* <head>
-        <script
-          crossOrigin="anonymous"
-          src="//unpkg.com/react-scan/dist/auto.global.js"
-        />
-      </head> */}
       <ConvexAuthNextjsServerProvider>
-        {/* <ReactScan /> */}
-        {/* <GlobalStoreProvider> */}
         <body>
           <Toaster position="top-center" richColors />
           <ConvexClientProvider>
@@ -86,10 +72,7 @@ export default function RootLayout({
               <Providers>{children}</Providers>
             </ConvexQueryCacheProvider>
           </ConvexClientProvider>
-          {/* <Analytics />
-            <SpeedInsights /> */}
         </body>
-        {/* </GlobalStoreProvider> */}
       </ConvexAuthNextjsServerProvider>
     </html>
   );
