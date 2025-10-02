@@ -160,16 +160,16 @@ export function AppSidebar({
                 <Link
                   href="/chat"
                   onClick={() => {
-                    startTransition(() => {
-                      setChangeRandomId(!changeRandomId);
-                      setActive(false);
-                      setDisableLayout(false);
-                      // setOpenMobile(false);
-                      setNewChat(!newChat);
-                      // if (state === "expanded" && isMobile) {
-                      //   toggleSidebar();
-                      // }
-                    });
+                    // startTransition(() => {
+                    setChangeRandomId(!changeRandomId);
+                    setActive(false);
+                    setDisableLayout(false);
+                    // setOpenMobile(false);
+                    setNewChat(!newChat);
+                    // if (state === "expanded" && isMobile) {
+                    //   toggleSidebar();
+                    // }
+                    // });
                   }}
                   prefetch={true}
                 >
