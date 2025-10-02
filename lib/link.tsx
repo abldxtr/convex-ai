@@ -12,6 +12,13 @@ type PrefetchImage = {
   loading: string;
 };
 
+// --- تغییر 1: declaration برای fetchPriority ---
+declare global {
+  interface HTMLImageElement {
+    fetchPriority?: "high" | "low" | "auto";
+  }
+}
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -21,11 +28,12 @@ async function prefetchImages(href: string) {
     return [];
   }
   const url = new URL(href, window.location.href);
+
+  // --- تغییر 2: cast کردن priority به any ---
   const imageResponse = await fetch(`/api/prefetch-images${url.pathname}`, {
-    // @ts-expect-error priority not yet in RequestInit
-    priority: "low",
+    ...({ priority: "low" } as any),
   });
-  // only throw in dev
+
   if (!imageResponse.ok && process.env.NODE_ENV === "development") {
     throw new Error("Failed to prefetch images");
   }
@@ -40,7 +48,7 @@ export const Link: typeof NextLink = (({ children, ...props }) => {
   const [preloading, setPreloading] = useState<(() => void)[]>([]);
   const linkRef = useRef<HTMLAnchorElement>(null);
   const router = useRouter();
-  let prefetchTimeout: NodeJS.Timeout | null = null; // Track the timeout ID
+  let prefetchTimeout: NodeJS.Timeout | null = null;
 
   useEffect(() => {
     if (props.prefetch === false) {
@@ -54,31 +62,28 @@ export const Link: typeof NextLink = (({ children, ...props }) => {
       (entries) => {
         const entry = entries[0];
         if (entry.isIntersecting) {
-          // Set a timeout to trigger prefetch after 1 second
           prefetchTimeout = setTimeout(async () => {
             router.prefetch(String(props.href));
-            await sleep(0); // We want the doc prefetches to happen first.
+            await sleep(0);
             void prefetchImages(String(props.href)).then((images) => {
               setImages(images);
             }, console.error);
-            // Stop observing once images are prefetched
             observer.unobserve(entry.target);
-          }, 300); // 300ms delay
+          }, 300);
         } else if (prefetchTimeout) {
-          // If the element leaves the viewport before 1 second, cancel the prefetch
           clearTimeout(prefetchTimeout);
           prefetchTimeout = null;
         }
       },
-      { rootMargin: "0px", threshold: 0.1 } // Trigger when at least 10% is visible
+      { rootMargin: "0px", threshold: 0.1 }
     );
 
     observer.observe(linkElement);
 
     return () => {
-      observer.disconnect(); // Cleanup the observer when the component unmounts
+      observer.disconnect();
       if (prefetchTimeout) {
-        clearTimeout(prefetchTimeout); // Clear any pending timeouts when component unmounts
+        clearTimeout(prefetchTimeout);
       }
     };
   }, [props.href, props.prefetch]);
@@ -130,8 +135,10 @@ function prefetchImage(image: PrefetchImage) {
   }
   const img = new Image();
   img.decoding = "async";
-  // @ts-expect-error fetchPriority not in HTMLImageElement
+
+  // --- تغییر 3: حالا fetchPriority توسط TS شناخته میشه ---
   img.fetchPriority = "low";
+
   img.sizes = image.sizes;
   seen.add(image.srcset);
   img.srcset = image.srcset;
