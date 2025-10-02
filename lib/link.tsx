@@ -13,11 +13,11 @@ type PrefetchImage = {
 };
 
 // --- تغییر 1: declaration برای fetchPriority ---
-declare global {
-  interface HTMLImageElement {
-    fetchPriority?: "high" | "low" | "auto";
-  }
-}
+// declare global {
+//   interface HTMLImageElement {
+//     fetchPriority?: "high" | "low" | "auto";
+//   }
+// }
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -136,8 +136,7 @@ function prefetchImage(image: PrefetchImage) {
   const img = new Image();
   img.decoding = "async";
 
-  // --- تغییر 3: حالا fetchPriority توسط TS شناخته میشه ---
-  img.fetchPriority = "low";
+  // img.fetchPriority = "low";
 
   img.sizes = image.sizes;
   seen.add(image.srcset);
