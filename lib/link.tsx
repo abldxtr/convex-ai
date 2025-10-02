@@ -22,6 +22,7 @@ async function prefetchImages(href: string) {
   }
   const url = new URL(href, window.location.href);
   const imageResponse = await fetch(`/api/prefetch-images${url.pathname}`, {
+    // @ts-expect-error priority not yet in RequestInit
     priority: "low",
   });
   // only throw in dev
@@ -129,6 +130,7 @@ function prefetchImage(image: PrefetchImage) {
   }
   const img = new Image();
   img.decoding = "async";
+  // @ts-expect-error fetchPriority not in HTMLImageElement
   img.fetchPriority = "low";
   img.sizes = image.sizes;
   seen.add(image.srcset);
