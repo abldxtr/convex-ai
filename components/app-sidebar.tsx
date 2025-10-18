@@ -69,9 +69,9 @@ export function AppSidebar({
     [pathName]
   );
 
-  const handleDeleteChat = (id: string) => {
+  const handleDeleteChat = async (id: string) => {
     try {
-      deleteChat({ id });
+      await deleteChat({ id });
       toast.success("Chat deleted successfully");
       if (chatIdd === id) {
         router.replace("/chat");
