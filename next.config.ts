@@ -38,7 +38,6 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     reactCompiler: true,
-    optimizeCss: true,
   },
   logging: {
     fetches: {
