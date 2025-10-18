@@ -58,6 +58,8 @@ export const buildTimeCSPDirectives: CSPDirectives = {
     "https://*.google.com",
     "https://aware-barracuda-585.convex.cloud",
     "https://cdn.jsdelivr.net",
+    "https://*.jsdelivr.net",
+    "https://jsdelivr.net",
   ],
 
   "media-src": ["'self'", "blob:"],
@@ -120,7 +122,7 @@ export function generateRuntimeCSP(): string {
     default-src 'self';
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google.com https://apis.google.com https://*.vercel-scripts.com https://*.vercel-insights.com https://vercel.live https://*.vercel.live https://vercel.com https://*.vercel.app https://vitals.vercel-insights.com https://aware-barracuda-585.convex.cloud;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' data: blob: https://*.googleusercontent.com  https://*.githubusercontent.com https://aware-barracuda-585.convex.cloud https://cdn.jsdelivr.net ;
+    img-src 'self' data: blob: https://*.googleusercontent.com https://*.githubusercontent.com https://aware-barracuda-585.convex.cloud https://jsdelivr.net https://*.jsdelivr.net;
     media-src 'self' blob:;
     font-src 'self' https://fonts.gstatic.com;
     connect-src 'self' ${appUrl} https://aware-barracuda-585.convex.cloud https://api.browser-use.com https://api.exa.ai https://*.vercel-insights.com https://vitals.vercel-insights.com https://vercel.live https://*.vercel.live https://vercel.com https://*.vercel.app wss://*.vercel.app https://pro.ip-api.com ;
