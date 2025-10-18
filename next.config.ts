@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
     ],
   },
   turbopack: {
-    resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
+    resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".mjs", "cjs", ".json"],
   },
   compiler: {
     removeConsole:
