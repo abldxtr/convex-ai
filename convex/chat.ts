@@ -205,9 +205,9 @@ export const deleteChat = mutation({
   args: { id: v.string() },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    // if (userId === null) {
-    //   return null;
-    // }
+    if (userId === null) {
+      return null;
+    }
 
     const chat = await ctx.db
       .query("chats")
@@ -215,17 +215,16 @@ export const deleteChat = mutation({
       .unique();
     if (chat) {
       const isUserChat = chat.userId === userId;
-      // if (isUserChat) {
-      const messages = await ctx.db
-        .query("vercelAiMessages")
-        .withIndex("by_chatId", (q) => q.eq("chatId", chat._id))
-        .collect();
+      if (isUserChat) {
+        const messages = await ctx.db
+          .query("vercelAiMessages")
+          .withIndex("by_chatId", (q) => q.eq("chatId", chat._id))
+          .collect();
 
-      await Promise.all(messages.map((m) => ctx.db.delete(m._id)));
+        await Promise.all(messages.map((m) => ctx.db.delete(m._id)));
 
-      // return await ctx.db.delete(chat._id);
-      return "success";
-      // }
+        return await ctx.db.delete(chat._id);
+      }
       return null;
     }
     return null;
