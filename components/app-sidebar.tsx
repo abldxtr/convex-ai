@@ -38,7 +38,7 @@ import { Spinner } from "./spinner";
 import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
 import Link from "next/link";
-// import { Link as CustomLink } from "@/lib/link";
+import { Link as CustomLink } from "@/lib/link";
 
 export function AppSidebar({
   user,
@@ -118,7 +118,7 @@ export function AppSidebar({
       <SidebarHeader>
         <SidebarMenu>
           <div className="flex flex-row items-center justify-between">
-            <Link
+            <CustomLink
               href="/chat"
               onClick={() => {
                 startTransition(() => {
@@ -128,16 +128,16 @@ export function AppSidebar({
                   setOpenMobile(false);
                 });
               }}
-              prefetch={true}
+              prefetch={false}
               className="flex flex-row items-center gap-3"
             >
               <span className="hover:bg-muted cursor-pointer rounded-md px-2 text-lg font-semibold">
                 Chatbot
               </span>
-            </Link>
+            </CustomLink>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link
+                <CustomLink
                   href="/chat"
                   onClick={() => {
                     startTransition(() => {
@@ -151,12 +151,12 @@ export function AppSidebar({
                       // }
                     });
                   }}
-                  prefetch={true}
+                  prefetch={false}
                 >
                   <Button variant="ghost" type="button" className="h-fit p-2">
                     <PlusIcon />
                   </Button>
-                </Link>
+                </CustomLink>
               </TooltipTrigger>
               <TooltipContent align="end">New Chat</TooltipContent>
             </Tooltip>
