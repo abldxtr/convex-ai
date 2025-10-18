@@ -221,10 +221,10 @@ export const deleteChat = mutation({
           .withIndex("by_chatId", (q) => q.eq("chatId", chat._id))
           .collect();
 
-        const deleteMessagePromises = messages.map((m) => ctx.db.delete(m._id));
-        await Promise.all(deleteMessagePromises);
+        await Promise.all(messages.map((m) => ctx.db.delete(m._id)));
 
-        return await ctx.db.delete(chat._id);
+        // return await ctx.db.delete(chat._id);
+        return "success";
       }
       return null;
     }
