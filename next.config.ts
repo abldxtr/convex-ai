@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 import withSerwistInit from "@serwist/next";
 import { getMainCSPPolicy } from "./lib/csp";
+import crypto from "node:crypto";
+const revision = crypto.randomUUID();
 
-const revision = globalThis.crypto?.randomUUID?.() ?? Date.now().toString();
+// const revision = globalThis.crypto?.randomUUID?.() ?? Date.now().toString();
 
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
@@ -23,9 +25,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  turbopack: {
-    resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".mjs", "cjs", ".json"],
-  },
+
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"
@@ -36,7 +36,6 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     reactCompiler: true,
-    optimizeCss: true,
   },
   logging: {
     fetches: {
