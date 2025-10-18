@@ -16,16 +16,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["convext-vercel-ai-udon.vercel.app"],
   images: {
     minimumCacheTTL: 31536000,
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "aware-barracuda-585.convex.cloud",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn.jsdelivr.net",
-      },
-    ],
+    remotePatterns: [],
   },
 
   compiler: {
