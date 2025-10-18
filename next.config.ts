@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
 import withSerwistInit from "@serwist/next";
 import { getMainCSPPolicy } from "./lib/csp";
-import crypto from "node:crypto";
-const revision = crypto.randomUUID();
 
-// const revision = globalThis.crypto?.randomUUID?.() ?? Date.now().toString();
+const revision = globalThis.crypto?.randomUUID?.() ?? Date.now().toString();
 
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
@@ -23,6 +21,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "aware-barracuda-585.convex.cloud",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.jsdelivr.net",
+      },
     ],
   },
 
@@ -36,6 +38,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     reactCompiler: true,
+    optimizeCss: true,
   },
   logging: {
     fetches: {

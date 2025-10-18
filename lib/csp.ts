@@ -45,7 +45,6 @@ export const buildTimeCSPDirectives: CSPDirectives = {
     "https://vercel.com",
     "https://*.vercel.app",
     "https://vitals.vercel-insights.com",
-    "https://b2bjsstore.s3.us-west-2.amazonaws.com",
     "https://aware-barracuda-585.convex.cloud",
   ],
 
@@ -57,16 +56,6 @@ export const buildTimeCSPDirectives: CSPDirectives = {
     "blob:",
     "https://*.googleusercontent.com",
     "https://*.google.com",
-    "https://*.atlassian.com",
-    "https://cdn.discordapp.com",
-    "https://*.githubusercontent.com",
-    "https://*.public.blob.vercel-storage.com",
-    "https://*.s3.amazonaws.com",
-    "https://s3.amazonaws.com",
-    "https://github.com/*",
-    "https://*.amazonaws.com",
-    "https://*.blob.core.windows.net",
-    "https://github.com/*",
     "https://aware-barracuda-585.convex.cloud",
   ],
 
@@ -80,23 +69,14 @@ export const buildTimeCSPDirectives: CSPDirectives = {
     "https://aware-barracuda-585.convex.cloud",
     "https://api.browser-use.com",
     "https://api.exa.ai",
-    "https://api.firecrawl.dev",
     "https://*.googleapis.com",
-    "https://*.amazonaws.com",
-    "https://*.s3.amazonaws.com",
-    "https://*.blob.core.windows.net",
     "https://*.vercel-insights.com",
     "https://vitals.vercel-insights.com",
-    "https://*.atlassian.com",
-    "https://*.supabase.co",
     "https://vercel.live",
     "https://*.vercel.live",
     "https://vercel.com",
     "https://*.vercel.app",
     "wss://*.vercel.app",
-    "https://pro.ip-api.com",
-    "https://api.github.com",
-    "https://github.com/*",
   ],
 
   "frame-src": [
@@ -137,12 +117,12 @@ export function generateRuntimeCSP(): string {
 
   return `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google.com https://apis.google.com https://*.vercel-scripts.com https://*.vercel-insights.com https://vercel.live https://*.vercel.live https://vercel.com https://*.vercel.app https://vitals.vercel-insights.com https://b2bjsstore.s3.us-west-2.amazonaws.com https://aware-barracuda-585.convex.cloud;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.google.com https://apis.google.com https://*.vercel-scripts.com https://*.vercel-insights.com https://vercel.live https://*.vercel.live https://vercel.com https://*.vercel.app https://vitals.vercel-insights.com https://aware-barracuda-585.convex.cloud;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-    img-src 'self' data: blob: https://*.googleusercontent.com https://*.google.com https://*.atlassian.com https://cdn.discordapp.com https://*.githubusercontent.com https://*.public.blob.vercel-storage.com https://aware-barracuda-585.convex.cloud ;
+    img-src 'self' data: blob: https://*.googleusercontent.com https://cdn.discordapp.com https://*.githubusercontent.com https://aware-barracuda-585.convex.cloud ;
     media-src 'self' blob:;
     font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' ${appUrl} https://aware-barracuda-585.convex.cloud https://*.up.railway.app wss://*.up.railway.app https://api.browser-use.com https://api.exa.ai https://api.firecrawl.dev https://*.googleapis.com https://*.amazonaws.com https://*.s3.amazonaws.com https://*.blob.core.windows.net https://api.github.com https://github.com/* https://*.vercel-insights.com https://vitals.vercel-insights.com https://*.atlassian.com https://*.supabase.co https://vercel.live https://*.vercel.live https://vercel.com https://*.vercel.app wss://*.vercel.app https://pro.ip-api.com ;
+    connect-src 'self' ${appUrl} https://aware-barracuda-585.convex.cloud https://api.browser-use.com https://api.exa.ai https://*.vercel-insights.com https://vitals.vercel-insights.com https://*.atlassian.com https://*.supabase.co https://vercel.live https://*.vercel.live https://vercel.com https://*.vercel.app wss://*.vercel.app https://pro.ip-api.com ;
     frame-src https://drive.google.com https://docs.google.com https://*.google.com;
     frame-ancestors 'self';
     form-action 'self';
