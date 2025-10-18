@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import withSerwistInit from "@serwist/next";
 import { getMainCSPPolicy } from "./lib/csp";
 
-const revision = crypto.randomUUID();
+const revision = globalThis.crypto?.randomUUID?.() ?? Date.now().toString();
 
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
@@ -37,7 +37,6 @@ const nextConfig: NextConfig = {
   experimental: {
     reactCompiler: true,
     optimizeCss: true,
-    turbopackSourceMaps: false,
   },
   logging: {
     fetches: {
