@@ -38,7 +38,7 @@ import { Spinner } from "./spinner";
 import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
 import Link from "next/link";
-import { Link as CustomLink } from "@/lib/link";
+// import { Link as CustomLink } from "@/lib/link";
 
 export function AppSidebar({
   user,
@@ -47,7 +47,6 @@ export function AppSidebar({
   user: UserType;
   preloadedChatList: Preloaded<typeof api.chat.getChat>;
 }) {
-  // const chatList = useQuery(api.chat.getChat, {});
   const chatList = usePreloadedQuery(preloadedChatList);
 
   const router = useRouter();
@@ -114,34 +113,12 @@ export function AppSidebar({
     );
   }, [chatList]);
 
-  // const queryClient = useQueryClient();
-
-  // const prefetchChatData = async (chatId: string) => {
-  //   await queryClient.prefetchQuery({
-  //     queryKey: ["posts", chatId],
-  //     queryFn: async ({ queryKey }) => {
-  //       const [, chatId] = queryKey;
-  //       const response = await fetch(
-  //         `${process.env.NEXT_PUBLIC_URL}/api/user-data?chatId=${chatId}`,
-  //         {
-  //           method: "GET",
-  //         }
-  //       );
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch chat messages");
-  //       }
-  //       const json = await response.json();
-  //       return json.chat;
-  //     },
-  //   });
-  // };
-
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
       <SidebarHeader>
         <SidebarMenu>
           <div className="flex flex-row items-center justify-between">
-            <CustomLink
+            <Link
               href="/chat"
               onClick={() => {
                 startTransition(() => {
@@ -151,16 +128,16 @@ export function AppSidebar({
                   setOpenMobile(false);
                 });
               }}
-              prefetch={false}
+              prefetch={true}
               className="flex flex-row items-center gap-3"
             >
               <span className="hover:bg-muted cursor-pointer rounded-md px-2 text-lg font-semibold">
                 Chatbot
               </span>
-            </CustomLink>
+            </Link>
             <Tooltip>
               <TooltipTrigger asChild>
-                <CustomLink
+                <Link
                   href="/chat"
                   onClick={() => {
                     startTransition(() => {
@@ -174,12 +151,12 @@ export function AppSidebar({
                       // }
                     });
                   }}
-                  prefetch={false}
+                  prefetch={true}
                 >
                   <Button variant="ghost" type="button" className="h-fit p-2">
                     <PlusIcon />
                   </Button>
-                </CustomLink>
+                </Link>
               </TooltipTrigger>
               <TooltipContent align="end">New Chat</TooltipContent>
             </Tooltip>
