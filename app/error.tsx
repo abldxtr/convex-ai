@@ -29,7 +29,7 @@ export default function Error({
       >
         <div className="mb-6 flex justify-center">
           <Image
-            src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzE2YzFlNWExYTJjZjkxZDUxOWQ1MmU2ZjA1NjYxNWIzYzVmMWQ5MSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/aYpmlCXgX9dc09dbpl/giphy.gif"
+            src="/error.webp"
             alt="Computer Error"
             width={300}
             height={200}
