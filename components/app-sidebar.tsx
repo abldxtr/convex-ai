@@ -144,10 +144,12 @@ export function AppSidebar({
             <CustomLink
               href="/chat"
               onClick={() => {
-                setChangeRandomId(!changeRandomId);
-                setActive(false);
-                setDisableLayout(false);
-                setOpenMobile(false);
+                startTransition(() => {
+                  setChangeRandomId(!changeRandomId);
+                  setActive(false);
+                  setDisableLayout(false);
+                  setOpenMobile(false);
+                });
               }}
               prefetch={false}
               className="flex flex-row items-center gap-3"
@@ -161,16 +163,16 @@ export function AppSidebar({
                 <CustomLink
                   href="/chat"
                   onClick={() => {
-                    // startTransition(() => {
-                    setChangeRandomId(!changeRandomId);
-                    setActive(false);
-                    setDisableLayout(false);
-                    // setOpenMobile(false);
-                    setNewChat(!newChat);
-                    // if (state === "expanded" && isMobile) {
-                    //   toggleSidebar();
-                    // }
-                    // });
+                    startTransition(() => {
+                      setChangeRandomId(!changeRandomId);
+                      setActive(false);
+                      setDisableLayout(false);
+                      // setOpenMobile(false);
+                      setNewChat(!newChat);
+                      // if (state === "expanded" && isMobile) {
+                      //   toggleSidebar();
+                      // }
+                    });
                   }}
                   prefetch={false}
                 >

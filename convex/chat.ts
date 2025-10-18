@@ -216,6 +216,14 @@ export const deleteChat = mutation({
     if (chat) {
       const isUserChat = chat.userId === userId;
       if (isUserChat) {
+        const messages = await ctx.db
+          .query("vercelAiMessages")
+          .withIndex("by_chatId", (q) => q.eq("chatId", chat._id))
+          .collect();
+
+        const deleteMessagePromises = messages.map((m) => ctx.db.delete(m._id));
+        await Promise.all(deleteMessagePromises);
+
         return await ctx.db.delete(chat._id);
       }
       return null;
