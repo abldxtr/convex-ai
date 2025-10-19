@@ -128,7 +128,7 @@ export function AppSidebar({
                   setOpenMobile(false);
                 });
               }}
-              prefetch={false}
+              prefetch={true}
               className="flex flex-row items-center gap-3"
             >
               <span className="hover:bg-muted cursor-pointer rounded-md px-2 text-lg font-semibold">
@@ -151,7 +151,7 @@ export function AppSidebar({
                       // }
                     });
                   }}
-                  prefetch={false}
+                  prefetch={true}
                 >
                   <Button variant="ghost" type="button" className="h-fit p-2">
                     <PlusIcon />

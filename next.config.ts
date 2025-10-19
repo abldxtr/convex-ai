@@ -10,10 +10,6 @@ const withSerwist = withSerwistInit({
   cacheOnNavigation: true,
   reloadOnOnline: true,
   additionalPrecacheEntries: [{ url: "/~offline", revision }],
-  exclude: [
-    ({ asset }) =>
-      asset.name.includes("_rsc") || asset.name.includes("/chat?_rsc="),
-  ],
 });
 
 const nextConfig: NextConfig = {
