@@ -315,6 +315,85 @@ export default function ChatClientWithoutId() {
     };
   }, []);
 
+  const handleTextareaChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const direction = useDirection(e.target.value);
+      setDirection(direction);
+      setInput(e.target.value);
+      setValue(e.target.value);
+    },
+    [setDirection, setInput, setValue]
+  );
+
+  const renderedTools = useMemo(() => {
+    return searchTools.map((tool) => {
+      const isStreaming = status === "streaming" || status === "submitted";
+      const isInputEmpty = input.trim().length === 0;
+
+      if (tool.name === "StopButton") return null;
+
+      const Icon =
+        tool.name === "ActionButton"
+          ? isStreaming
+            ? searchTools.find((t) => t.name === "StopButton")?.icon ||
+              tool.icon
+            : tool.icon
+          : tool.icon;
+
+      const isDisabled =
+        (tool.name === "upload" && isStreaming) ||
+        (tool.name === "ActionButton" && isInputEmpty && !isStreaming);
+
+      const handleClick = () => {
+        if (tool.name === "upload" && !isStreaming) {
+          // setDisableLayout(true);
+          openFileDialog();
+        }
+
+        if (tool.name === "ActionButton") {
+          if (isStreaming) {
+            stop();
+          } else if (!isInputEmpty) {
+            handleClickSubmit();
+          }
+        }
+      };
+
+      return (
+        <TooltipContainer
+          key={tool.name}
+          tooltipContent={
+            isStreaming && tool.name === "ActionButton"
+              ? "Stopping..."
+              : tool.description
+          }
+        >
+          <div
+            className={cn(
+              "flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 fill-[#5d5d5d]",
+              tool.name === "upload" && "hover:bg-gray-100",
+              tool.name === "ActionButton" && "bg-black fill-white",
+              isDisabled &&
+                "opacity-50 pointer-events-none hover:cursor-not-allowed",
+              !isDisabled && "hover:cursor-pointer"
+            )}
+            onClick={handleClick}
+          >
+            <Icon />
+          </div>
+        </TooltipContainer>
+      );
+    });
+  }, [
+    status,
+    input,
+    files,
+    handleClickSubmit,
+    stop,
+    openFileDialog,
+    scrollToBotton,
+  ]);
+
   return (
     <div className={cn("stretch flex h-full w-full flex-col")}>
       {/* Header */}
@@ -393,12 +472,7 @@ export default function ChatClientWithoutId() {
                     // autoFocus
                     placeholder="Ask anything"
                     className="field-sizing-content max-h-29.5  resize-none text-[16px] text-[#0d0d0d] placeholder:text-[16px] disabled:opacity-50 !transition-none "
-                    onChange={(e) => {
-                      const direction = useDirection(e.target.value);
-                      setDirection(direction);
-                      setInput(e.target.value);
-                      setValue(e.target.value);
-                    }}
+                    onChange={handleTextareaChange}
                     disabled={status === "streaming" || status === "submitted"}
                     onKeyDown={handleKeyboardSubmit}
                   />
@@ -430,68 +504,7 @@ export default function ChatClientWithoutId() {
 
                     {/* Action buttons */}
                     <div className="flex items-center gap-2">
-                      {searchTools.map((tool) => {
-                        const isStreaming =
-                          status === "streaming" || status === "submitted";
-                        const isInputEmpty = input.trim().length === 0;
-
-                        if (tool.name === "StopButton") return null;
-
-                        const Icon =
-                          tool.name === "ActionButton"
-                            ? isStreaming
-                              ? searchTools.find((t) => t.name === "StopButton")
-                                  ?.icon || tool.icon
-                              : tool.icon
-                            : tool.icon;
-
-                        const isDisabled =
-                          (tool.name === "upload" && isStreaming) ||
-                          (tool.name === "ActionButton" &&
-                            isInputEmpty &&
-                            !isStreaming);
-
-                        const handleClick = () => {
-                          if (tool.name === "upload" && !isStreaming) {
-                            // setDisableLayout(true);
-                            openFileDialog();
-                          }
-
-                          if (tool.name === "ActionButton") {
-                            if (isStreaming) {
-                              stop();
-                            } else if (!isInputEmpty) {
-                              handleClickSubmit();
-                            }
-                          }
-                        };
-
-                        return (
-                          <TooltipContainer
-                            key={tool.name}
-                            tooltipContent={
-                              isStreaming && tool.name === "ActionButton"
-                                ? "Stopping..."
-                                : tool.description
-                            }
-                          >
-                            <div
-                              className={cn(
-                                "flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 fill-[#5d5d5d]",
-                                tool.name === "upload" && "hover:bg-gray-100",
-                                tool.name === "ActionButton" &&
-                                  "bg-black fill-white",
-                                isDisabled &&
-                                  "opacity-50 pointer-events-none hover:cursor-not-allowed",
-                                !isDisabled && "hover:cursor-pointer"
-                              )}
-                              onClick={handleClick}
-                            >
-                              <Icon />
-                            </div>
-                          </TooltipContainer>
-                        );
-                      })}
+                      {renderedTools}
                     </div>
                   </div>
                 </div>
