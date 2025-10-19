@@ -1,16 +1,20 @@
 import type { NextConfig } from "next";
-// import withSerwistInit from "@serwist/next";
+import withSerwistInit from "@serwist/next";
 import { getMainCSPPolicy } from "./lib/csp";
 
-// const revision = globalThis.crypto?.randomUUID?.() ?? Date.now().toString();
+const revision = crypto.randomUUID() ?? Date.now().toString();
 
-// const withSerwist = withSerwistInit({
-//   swSrc: "app/sw.ts",
-//   swDest: "public/sw.js",
-//   cacheOnNavigation: true,
-//   reloadOnOnline: true,
-//   additionalPrecacheEntries: [{ url: "/~offline", revision }],
-// });
+const withSerwist = withSerwistInit({
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+  cacheOnNavigation: true,
+  reloadOnOnline: true,
+  additionalPrecacheEntries: [{ url: "/~offline", revision }],
+  exclude: [
+    ({ asset }) =>
+      asset.name.includes("_rsc") || asset.name.includes("/chat?_rsc="),
+  ],
+});
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["convext-vercel-ai-udon.vercel.app"],
@@ -100,5 +104,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// export default withSerwist(nextConfig);
-export default nextConfig;
+export default withSerwist(nextConfig);
