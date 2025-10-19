@@ -96,7 +96,6 @@ export default function ChatClientWithoutId() {
       const json = await response.json();
       return json.chat;
     },
-    refetchOnWindowFocus: true,
     enabled: !!idChatState,
   });
 
