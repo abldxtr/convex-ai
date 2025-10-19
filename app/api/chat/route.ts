@@ -1,11 +1,9 @@
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import {
   appendClientMessage,
-  createDataStream,
   smoothStream,
   streamText,
   type Attachment,
-  type Message,
 } from "ai";
 import { generateUUID } from "@/lib/utils";
 import {
@@ -16,22 +14,9 @@ import { after, NextResponse } from "next/server";
 import { fetchMutation, fetchQuery, fetchAction } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { mmd } from "@/provider/providers";
-import { createOpenAI } from "@ai-sdk/openai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { base64ToBlob } from "@/lib/base64-to-blob";
 import { Doc, Id } from "@/convex/_generated/dataModel";
-
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_API_KEY,
-});
-
-// const openai = createOpenAI({
-//   compatibility: "strict",
-//   apiKey: process.env.OPENAI_API_KEY,
-//   // baseURL: "https://api.chatanywhere.tech/v1",
-//   // baseURL: "https://api.chatanywhere.org/v1",
-//   baseURL: "https://api.sambanova.ai/v1",
-// });
+import { revalidateTag } from "next/cache";
 
 const DEFAULT_MODEL = "meta-llama/llama-3.2-3b-instruct:free";
 const DEFAULT_IMAGE_MODEL = "mmd-google/gemini-2.0-flash-exp:free";
@@ -254,12 +239,16 @@ export async function POST(req: Request) {
             },
             { token }
           );
+          revalidateTag("user_chat_own");
+          revalidateTag("user");
         },
         onError: async (e) => {
           await fetchAction(api.agent.createThread, {
             prompt: body.message.content,
             chatId,
           });
+          revalidateTag("user_chat_own");
+          revalidateTag("user");
           console.log(e);
         },
       });
@@ -312,12 +301,17 @@ export async function POST(req: Request) {
           },
           { token }
         );
+
+        revalidateTag("user_chat_own");
+        revalidateTag("user");
       },
       onError: async (e) => {
         await fetchAction(api.agent.createThread, {
           prompt: body.message.content,
           chatId,
         });
+        revalidateTag("user_chat_own");
+        revalidateTag("user");
         console.log(e);
       },
     });
@@ -363,6 +357,9 @@ export async function POST(req: Request) {
             },
             { token }
           );
+
+          revalidateTag("user_chat_own");
+          revalidateTag("user");
         },
         onError: async (e) => {
           console.log(e);
@@ -378,6 +375,9 @@ export async function POST(req: Request) {
           //   },
           //   { token }
           // );
+
+          revalidateTag("user_chat_own");
+          revalidateTag("user");
         },
       });
 
@@ -423,6 +423,9 @@ export async function POST(req: Request) {
           },
           { token }
         );
+
+        revalidateTag("user_chat_own");
+        revalidateTag("user");
       },
     });
 
