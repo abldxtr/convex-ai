@@ -239,16 +239,16 @@ export async function POST(req: Request) {
             },
             { token }
           );
-          revalidateTag("user_chat_own");
-          revalidateTag("user");
+          // revalidateTag("user_chat_own");
+          // revalidateTag("user");
         },
         onError: async (e) => {
           await fetchAction(api.agent.createThread, {
             prompt: body.message.content,
             chatId,
           });
-          revalidateTag("user_chat_own");
-          revalidateTag("user");
+          // revalidateTag("user_chat_own");
+          // revalidateTag("user");
           console.log(e);
         },
       });
@@ -358,8 +358,8 @@ export async function POST(req: Request) {
             { token }
           );
 
-          revalidateTag("user_chat_own");
-          revalidateTag("user");
+          // revalidateTag("user_chat_own");
+          // revalidateTag("user");
         },
         onError: async (e) => {
           console.log(e);
@@ -376,8 +376,8 @@ export async function POST(req: Request) {
           //   { token }
           // );
 
-          revalidateTag("user_chat_own");
-          revalidateTag("user");
+          // revalidateTag("user_chat_own");
+          // revalidateTag("user");
         },
       });
 
@@ -424,8 +424,8 @@ export async function POST(req: Request) {
           { token }
         );
 
-        revalidateTag("user_chat_own");
-        revalidateTag("user");
+        // revalidateTag("user_chat_own");
+        // revalidateTag("user");
       },
     });
 

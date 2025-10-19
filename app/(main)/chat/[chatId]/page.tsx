@@ -5,9 +5,6 @@ import { fetchQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { getQueryClient } from "@/provider/get-query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { unstable_cache } from "@/lib/unstable-cache";
-
-// export const dynamic = "force-static";
 
 export default async function ChatPage({
   params,
@@ -27,19 +24,19 @@ export default async function ChatPage({
     return redirect("/chat");
   }
 
-  const userOwnChat = unstable_cache(
-    async () => {
-      return fetchQuery(api.chat.getChatByUserId, { chatId }, { token });
-    },
-    ["user_chat_own"],
-    {
-      tags: ["user_chat_own"],
-      revalidate: 3600,
-    }
-  );
-  const isOwn = await userOwnChat();
+  // const userOwnChat = unstable_cache(
+  //   async () => {
+  //     return fetchQuery(api.chat.getChatByUserId, { chatId }, { token });
+  //   },
+  //   ["user_chat_own"],
+  //   {
+  //     tags: ["user_chat_own"],
+  //     revalidate: 3600,
+  //   }
+  // );
+  // const isOwn = await userOwnChat();
 
-  // const isOwn = fetchQuery(api.chat.getChatByUserId, { chatId }, { token });
+  const isOwn = fetchQuery(api.chat.getChatByUserId, { chatId }, { token });
   if (!isOwn) {
     redirect("/chat");
   }

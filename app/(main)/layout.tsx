@@ -4,19 +4,18 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { fetchQuery, preloadQuery } from "convex/nextjs";
 import { api } from "@/convex/_generated/api";
 import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
-import { unstable_cache } from "@/lib/unstable-cache";
 
-async function userFetch(token: string | undefined) {
-  const [user, preloadedTasks] = await Promise.all([
-    fetchQuery(api.user.getUser, {}, { token }),
-    preloadQuery(api.chat.getChat, {}, { token }),
-  ]);
+// async function userFetch(token: string | undefined) {
+//   const [user, preloadedTasks] = await Promise.all([
+//     fetchQuery(api.user.getUser, {}, { token }),
+//     preloadQuery(api.chat.getChat, {}, { token }),
+//   ]);
 
-  return {
-    user,
-    preloadedTasks,
-  };
-}
+//   return {
+//     user,
+//     preloadedTasks,
+//   };
+// }
 
 export default async function ChatLayout({
   children,
@@ -26,17 +25,22 @@ export default async function ChatLayout({
   const cookieStore = await cookies();
   const token = await convexAuthNextjsToken();
 
-  const getCachedUser = unstable_cache(
-    async () => {
-      return userFetch(token);
-    },
-    ["user"],
-    {
-      tags: ["user"],
-      revalidate: 3600,
-    }
-  );
-  const { user, preloadedTasks } = await getCachedUser();
+  // const getCachedUser = unstable_cache(
+  //   async () => {
+  //     return userFetch(token);
+  //   },
+  //   ["user"],
+  //   {
+  //     tags: ["user"],
+  //     revalidate: 3600,
+  //   }
+  // );
+  // const { user, preloadedTasks } = await getCachedUser();
+
+  const [user, preloadedTasks] = await Promise.all([
+    fetchQuery(api.user.getUser, {}, { token }),
+    preloadQuery(api.chat.getChat, {}, { token }),
+  ]);
 
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
