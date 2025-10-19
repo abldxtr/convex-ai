@@ -17,7 +17,7 @@ export default function NotFound() {
       >
         <div className="mb-6 flex justify-center">
           <Image
-            src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDI1NDg1YzFjNDYzNDc1YTE0MzlmYzc5MDM4YWU0ZDc0ZTdlMGRjMiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/xTiN0L7EW5trfOvEk0/giphy.gif"
+            src="/404.webp"
             alt="Lost in space"
             width={300}
             height={200}
