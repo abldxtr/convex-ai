@@ -433,7 +433,7 @@ export default function ChatClientWithoutId() {
           What can I help with?
         </div>
 
-        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
+        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.6 }}>
           <motion.div
             className="md:mb-4 mb-2 w-full px-[16px] sm:px-[0px]  "
             layoutId={disableLayout ? undefined : "chat-input"}

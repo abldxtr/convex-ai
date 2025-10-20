@@ -429,7 +429,7 @@ export default function ChatClientWithId({
           active ? "" : " flex items-center justify-center"
         )}
       >
-        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.4 }}>
+        <MotionConfig transition={{ type: "spring", bounce: 0, duration: 0.6 }}>
           <motion.div
             className="md:mb-4  w-full sm:px-[16px] md:px-[0px] bg-transparent  "
             layoutId={disableLayout ? undefined : "chat-input"}
