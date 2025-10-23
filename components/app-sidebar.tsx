@@ -25,11 +25,11 @@ import {
   SidebarMenuAction,
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { PlusIcon, Ellipsis, Trash2 } from "lucide-react";
+import { PlusIcon, Ellipsis, Trash2, Search, SquarePen } from "lucide-react";
 import { NavUser } from "@/components/nav-user";
 import { api } from "@/convex/_generated/api";
 import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
-import { useMemo, useTransition } from "react";
+import { Fragment, useMemo, useTransition } from "react";
 import { useGlobalState } from "@/context/global-state-zus";
 import type { UserType } from "@/lib/type";
 import { toast } from "sonner";
@@ -39,6 +39,7 @@ import { cn } from "@/lib/utils";
 import { useDirection } from "@/hooks/use-direction";
 import Link from "next/link";
 import { Link as CustomLink } from "@/lib/link";
+import FullTextSearch from "./full-text-search";
 
 export function AppSidebar({
   user,
@@ -60,6 +61,8 @@ export function AppSidebar({
     setDisableLayout,
     changeRandomId,
     setChangeRandomId,
+    openSearchBar,
+    setOpenSearchBar,
   } = useGlobalState();
   const deleteChat = useMutation(api.chat.deleteChat);
 
@@ -112,6 +115,17 @@ export function AppSidebar({
       {} as Record<string, typeof chatList>
     );
   }, [chatList]);
+
+  const menue = [
+    {
+      title: "New Chat",
+      icon: <SquarePen />,
+    },
+    {
+      title: "Search Chats",
+      icon: <Search />,
+    },
+  ];
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
@@ -171,6 +185,48 @@ export function AppSidebar({
             <Spinner />
           </div>
         )}
+        <SidebarGroup>
+          <SidebarGroupLabel className="  ">
+            {/* {dateLabel} */}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                {menue.map((item, index) => {
+                  return (
+                    <Fragment key={index}>
+                      {index === 0 ? (
+                        <SidebarMenuButton asChild>
+                          <Link href={"/chat"} prefetch={true} scroll={false}>
+                            {item.icon}
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      ) : (
+                        <SidebarMenuButton
+                          asChild
+                          onClick={() => setOpenSearchBar(true)}
+                          className=" hover:cursor-pointer "
+                        >
+                          <div
+                          // onClick={() => {
+                          //   setOpenSearchBar(true);
+                          //   console.log(openSearchBar);
+                          // }}
+                          // className="flex items-center gap-2 "
+                          >
+                            {item.icon}
+                            <span>{item.title}</span>
+                          </div>
+                        </SidebarMenuButton>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
         {chatGroup &&
           Object.entries(chatGroup)

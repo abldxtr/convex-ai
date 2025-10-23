@@ -10,6 +10,9 @@ interface GlobalState {
   newChat: boolean;
   setNewChat: (value: boolean) => void;
 
+  openSearchBar: boolean;
+  setOpenSearchBar: (value: boolean) => void;
+
   isNavigating: boolean;
   setIsNavigating: (value: boolean) => void;
 
@@ -61,6 +64,9 @@ export const useGlobalState = create<GlobalState>()(
       newChat: false,
       setNewChat: (value) => set({ newChat: value }),
 
+      openSearchBar: false,
+      setOpenSearchBar: (value) => set({ openSearchBar: value }),
+
       isNavigating: false,
       setIsNavigating: (value) => set({ isNavigating: value }),
 
@@ -103,7 +109,7 @@ export const useGlobalState = create<GlobalState>()(
       setChangeRandomId: (value) => set({ changeRandomId: value }),
     }),
     {
-      name: "global-store", // برای ذخیره در localStorage
+      name: "global-store",
       partialize: (state) => ({
         value: state.value,
         storedFiles: state.storedFiles,

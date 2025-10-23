@@ -24,7 +24,6 @@ import { useFileUpload } from "@/hooks/use-file-upload";
 import PreviewImg from "@/components/preview-img";
 import { useDirection } from "@/hooks/use-direction";
 import { useQuery } from "@tanstack/react-query";
-// import { useQuery } from "convex-helpers/react/cache/hooks";
 import { convertToUIMessages } from "@/lib/convert-to-uimessages";
 
 export default function ChatClientWithoutId() {

@@ -1,8 +1,5 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useForm } from "react-hook-form";
-// import { FaGithub } from "react-icons/fa";
-// import { FcGoogle } from "react-icons/fc";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { TriangleAlert } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import type { SignInFlow } from "@/components/auth/types";
 import { useRouter } from "next/navigation";
 
@@ -26,6 +23,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
   const router = useRouter();
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm({
     defaultValues: {
@@ -37,20 +35,24 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
   const { signIn } = useAuthActions();
 
   const handlePasswordSignIn = form.handleSubmit(({ email, password }) => {
-    setSigningIn(true);
-    //  signIn(provider:"password", param:{ email, password, flow: "signIn" })
-    void signIn("password", {
-      email,
-      password,
-      flow: "signIn",
-    })
-      .then(() => router.push("/chat"))
-      .catch(() => {
-        setError("Invalid email or password");
-      })
-      .finally(() => {
-        setSigningIn(false);
+    startTransition(async () => {
+      startTransition(() => {
+        setSigningIn(true);
       });
+      //  signIn(provider:"password", param:{ email, password, flow: "signIn" })
+      void signIn("password", {
+        email,
+        password,
+        flow: "signIn",
+      })
+        .then(() => router.push("/chat"))
+        .catch(() => {
+          setError("Invalid email or password");
+        })
+        .finally(() => {
+          setSigningIn(false);
+        });
+    });
   });
 
   return (
@@ -73,7 +75,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             {...form.register("email", {
               required: true,
             })}
-            disabled={signingIn}
+            disabled={isPending}
             placeholder="Email"
             type="email"
           />
@@ -81,7 +83,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             {...form.register("password", {
               required: true,
             })}
-            disabled={signingIn}
+            disabled={isPending}
             placeholder="Password"
             type="password"
           />
@@ -89,7 +91,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={signingIn}
+            disabled={isPending}
           >
             Continue
           </Button>

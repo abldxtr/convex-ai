@@ -53,7 +53,19 @@ const schema = defineSchema({
     .index("by_userId", ["userId"])
     .index("by_chatId_userId", ["chatId", "userId"])
     .index("by_ID", ["id"])
-    .index("by_chatId_userId_id", ["chatId", "userId", "id"]),
+    .index("by_chatId_userId_id", ["chatId", "userId", "id"])
+    .searchIndex("search_body", {
+      searchField: "content",
+      filterFields: ["userId"],
+    }),
+  searchItem: defineTable({
+    id: v.string(),
+    userId: v.id("users"),
+    title: v.string(),
+    content: v.string(),
+    searchText: v.string(),
+  }).index("by_userId", ["userId"]),
+
   stream: defineTable({
     id: v.string(),
     chatId: v.id("chats"),

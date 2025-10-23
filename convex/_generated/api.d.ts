@@ -13,6 +13,7 @@ import type * as auth from "../auth.js";
 import type * as chat from "../chat.js";
 import type * as http from "../http.js";
 import type * as langchain_db from "../langchain/db.js";
+import type * as search from "../search.js";
 import type * as stream from "../stream.js";
 import type * as user from "../user.js";
 import type * as vercel from "../vercel.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   chat: typeof chat;
   http: typeof http;
   "langchain/db": typeof langchain_db;
+  search: typeof search;
   stream: typeof stream;
   user: typeof user;
   vercel: typeof vercel;

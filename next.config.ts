@@ -100,4 +100,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSerwist(nextConfig);
+// export default withSerwist(nextConfig);
+
+export default nextConfig;

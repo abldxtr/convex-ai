@@ -1,6 +1,6 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { TriangleAlert } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 // import { FaGithub } from "react-icons/fa";
 // import { FcGoogle } from "react-icons/fc";
@@ -24,6 +24,7 @@ interface SignUpCardProps {
 export const SignUpCard = ({ setState }: SignUpCardProps) => {
   const [signingUp, setSigningUp] = useState(false);
   const [error, setError] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm({
     defaultValues: {
@@ -38,17 +39,20 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 
   const handlePasswordSignUp = form.handleSubmit(
     ({ name, email, password, confirmPassword }) => {
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
-
-      void signIn("password", { name, email, password, flow: "signUp" })
-        .then(() => setSigningUp(true))
-        .catch(() => {
-          setError("Something went wrong!");
-        })
-        .finally(() => {});
+      startTransition(async () => {
+        startTransition(() => {
+          if (password !== confirmPassword) {
+            setError("Passwords do not match");
+            return;
+          }
+        });
+        void signIn("password", { name, email, password, flow: "signUp" })
+          .then(() => setSigningUp(true))
+          .catch(() => {
+            setError("Something went wrong!");
+          })
+          .finally(() => {});
+      });
     }
   );
 
@@ -72,14 +76,14 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             {...form.register("name", {
               required: true,
             })}
-            disabled={signingUp}
+            disabled={isPending}
             placeholder="Full name"
           />
           <Input
             {...form.register("email", {
               required: true,
             })}
-            disabled={signingUp}
+            disabled={isPending}
             placeholder="Email"
             type="email"
           />
@@ -87,7 +91,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             {...form.register("password", {
               required: true,
             })}
-            disabled={signingUp}
+            disabled={isPending}
             placeholder="Password"
             type="password"
           />
@@ -95,7 +99,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             {...form.register("confirmPassword", {
               required: true,
             })}
-            disabled={signingUp}
+            disabled={isPending}
             placeholder="Confirm password"
             type="password"
           />
@@ -103,7 +107,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={signingUp}
+            disabled={isPending}
           >
             Continue
           </Button>

@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import Providers from "@/provider/react-query-provider";
 import { geist, vazirmatn } from "@/lib/font";
+import FullTextSearch from "@/components/full-text-search";
 
 const APP_NAME = "T3 Chatgpt";
 const APP_DEFAULT_TITLE = "Chat-gpt";
@@ -69,7 +70,11 @@ export default function RootLayout({
           <Toaster position="top-center" richColors />
           <ConvexClientProvider>
             <ConvexQueryCacheProvider>
-              <Providers>{children}</Providers>
+              <Providers>
+                <FullTextSearch />
+
+                {children}
+              </Providers>
             </ConvexQueryCacheProvider>
           </ConvexClientProvider>
         </body>

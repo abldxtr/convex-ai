@@ -312,3 +312,64 @@ export const saveMessageWithInternalAction = internalAction({
     return await ctx.runMutation(internal.chat.saveMessageWithInternal, args);
   },
 });
+
+export const searchBody = query({
+  args: { searchText: v.string() },
+  handler: async (ctx, { searchText }) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+
+    const messages = await ctx.db
+      .query("vercelAiMessages")
+      .withSearchIndex("search_body", (q) =>
+        q.search("content", searchText).eq("userId", userId)
+      )
+      .take(20);
+
+    if (messages.length === 0) return null;
+
+    // فقط اولین پیام هر chatId
+    const uniqueMessagesMap = new Map();
+    for (const msg of messages) {
+      if (!uniqueMessagesMap.has(msg.chatId)) {
+        uniqueMessagesMap.set(msg.chatId, msg);
+      }
+    }
+
+    const uniqueMessages: Doc<"vercelAiMessages">[] = Array.from(
+      uniqueMessagesMap.values()
+    );
+    const chats = await Promise.all(
+      uniqueMessages.map((m) => ctx.db.get(m.chatId))
+    );
+
+    const results = uniqueMessages.map((msg, i) => {
+      const chat = chats[i];
+      return {
+        id: chat?._id ?? "unknown",
+        title: chat?.title ?? "Untitled Chat",
+        content: msg.content ?? msg.parts?.[0]?.text ?? "",
+      };
+    });
+
+    return results;
+  },
+});
+
+// export const deleteAllMessageWithoutChatId = mutation({
+//   args: {},
+//   handler: async (ctx, {}) => {
+//     const allChatId = await ctx.db.query("chats").collect();
+//     const validChatIds = new Set(allChatId.map((c) => c._id));
+//     const chatMessage = await ctx.db.query("vercelAiMessages").collect();
+
+//     const messagesToDelete = chatMessage.filter(
+//       (msg) => !validChatIds.has(msg.chatId)
+//     );
+//     console.log(messagesToDelete.length);
+
+//     // for (const msg of messagesToDelete) {
+//     //   await ctx.db.delete(msg._id);
+//     // }
+//   },
+// });
