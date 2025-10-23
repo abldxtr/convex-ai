@@ -16,7 +16,6 @@ import { api } from "@/convex/_generated/api";
 import { mmd } from "@/provider/providers";
 import { base64ToBlob } from "@/lib/base64-to-blob";
 import { Doc, Id } from "@/convex/_generated/dataModel";
-import { revalidateTag } from "next/cache";
 
 const DEFAULT_MODEL = "meta-llama/llama-3.2-3b-instruct:free";
 const DEFAULT_IMAGE_MODEL = "mmd-google/gemini-2.0-flash-exp:free";
@@ -301,18 +300,12 @@ export async function POST(req: Request) {
           },
           { token }
         );
-
-        revalidateTag("user_chat_own");
-        revalidateTag("user");
       },
       onError: async (e) => {
         await fetchAction(api.agent.createThread, {
           prompt: body.message.content,
           chatId,
         });
-        revalidateTag("user_chat_own");
-        revalidateTag("user");
-        console.log(e);
       },
     });
 
