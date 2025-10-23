@@ -27,9 +27,7 @@ const nextConfig: NextConfig = {
           }
         : false,
   },
-  experimental: {
-    reactCompiler: true,
-  },
+  experimental: {},
   logging: {
     fetches: {
       fullUrl: true,
@@ -100,6 +98,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-// export default withSerwist(nextConfig);
+export default withSerwist(nextConfig);
 
-export default nextConfig;
+// export default nextConfig;
