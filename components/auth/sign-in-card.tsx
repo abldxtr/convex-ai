@@ -35,24 +35,24 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
   const { signIn } = useAuthActions();
 
   const handlePasswordSignIn = form.handleSubmit(({ email, password }) => {
-    startTransition(async () => {
-      startTransition(() => {
-        setSigningIn(true);
-      });
-      //  signIn(provider:"password", param:{ email, password, flow: "signIn" })
-      void signIn("password", {
-        email,
-        password,
-        flow: "signIn",
-      })
-        .then(() => router.push("/chat"))
-        .catch(() => {
-          setError("Invalid email or password");
-        })
-        .finally(() => {
-          setSigningIn(false);
-        });
+    // startTransition(async () => {
+    startTransition(() => {
+      setSigningIn(true);
     });
+    //  signIn(provider:"password", param:{ email, password, flow: "signIn" })
+    void signIn("password", {
+      email,
+      password,
+      flow: "signIn",
+    })
+      .then(() => router.push("/chat"))
+      .catch(() => {
+        setError("Invalid email or password");
+      })
+      .finally(() => {
+        setSigningIn(false);
+      });
+    // });
   });
 
   return (
@@ -75,7 +75,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             {...form.register("email", {
               required: true,
             })}
-            disabled={isPending}
+            disabled={signingIn}
             placeholder="Email"
             type="email"
           />
@@ -83,7 +83,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             {...form.register("password", {
               required: true,
             })}
-            disabled={isPending}
+            disabled={signingIn}
             placeholder="Password"
             type="password"
           />
@@ -91,7 +91,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isPending}
+            disabled={signingIn}
           >
             Continue
           </Button>

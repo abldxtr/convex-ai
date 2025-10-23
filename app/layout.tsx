@@ -71,9 +71,8 @@ export default function RootLayout({
           <ConvexClientProvider>
             <ConvexQueryCacheProvider>
               <Providers>
-                <FullTextSearch />
-
                 {children}
+                <FullTextSearch />
               </Providers>
             </ConvexQueryCacheProvider>
           </ConvexClientProvider>

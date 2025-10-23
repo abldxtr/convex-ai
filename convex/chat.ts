@@ -346,7 +346,7 @@ export const searchBody = query({
     const results = uniqueMessages.map((msg, i) => {
       const chat = chats[i];
       return {
-        id: chat?._id ?? "unknown",
+        id: chat?.id ?? "unknown",
         title: chat?.title ?? "Untitled Chat",
         content: msg.content ?? msg.parts?.[0]?.text ?? "",
       };

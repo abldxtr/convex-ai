@@ -2,9 +2,6 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { TriangleAlert } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-// import { FaGithub } from "react-icons/fa";
-// import { FcGoogle } from "react-icons/fc";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,20 +36,18 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 
   const handlePasswordSignUp = form.handleSubmit(
     ({ name, email, password, confirmPassword }) => {
-      startTransition(async () => {
-        startTransition(() => {
-          if (password !== confirmPassword) {
-            setError("Passwords do not match");
-            return;
-          }
-        });
-        void signIn("password", { name, email, password, flow: "signUp" })
-          .then(() => setSigningUp(true))
-          .catch(() => {
-            setError("Something went wrong!");
-          })
-          .finally(() => {});
+      startTransition(() => {
+        if (password !== confirmPassword) {
+          setError("Passwords do not match");
+          return;
+        }
       });
+      void signIn("password", { name, email, password, flow: "signUp" })
+        .then(() => setSigningUp(true))
+        .catch(() => {
+          setError("Something went wrong!");
+        })
+        .finally(() => {});
     }
   );
 
@@ -76,14 +71,14 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             {...form.register("name", {
               required: true,
             })}
-            disabled={isPending}
+            disabled={signingUp}
             placeholder="Full name"
           />
           <Input
             {...form.register("email", {
               required: true,
             })}
-            disabled={isPending}
+            disabled={signingUp}
             placeholder="Email"
             type="email"
           />
@@ -91,7 +86,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             {...form.register("password", {
               required: true,
             })}
-            disabled={isPending}
+            disabled={signingUp}
             placeholder="Password"
             type="password"
           />
@@ -99,7 +94,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             {...form.register("confirmPassword", {
               required: true,
             })}
-            disabled={isPending}
+            disabled={signingUp}
             placeholder="Confirm password"
             type="password"
           />
@@ -107,7 +102,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isPending}
+            disabled={signingUp}
           >
             Continue
           </Button>
