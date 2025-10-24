@@ -15,7 +15,17 @@ export const setSearchHistory = mutation({
       return null;
     }
 
-    ctx.db.insert("searchItem", {
+    const existingItem = await ctx.db
+      .query("searchItem")
+      .withIndex("by_chat_id", (q) => q.eq("id", id))
+      .filter((q) => q.eq(q.field("searchText"), searchText))
+      .first();
+    console.log(existingItem);
+    if (existingItem !== null) {
+      return null;
+    }
+
+    return await ctx.db.insert("searchItem", {
       id,
       title,
       userId,
@@ -36,6 +46,6 @@ export const getSearchHistory = query({
     return await ctx.db
       .query("searchItem")
       .withIndex("by_userId", (q) => q.eq("userId", userId))
-      .collect();
+      .take(5);
   },
 });

@@ -64,7 +64,10 @@ const schema = defineSchema({
     title: v.string(),
     content: v.string(),
     searchText: v.string(),
-  }).index("by_userId", ["userId"]),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_chat_id", ["id"])
+    .index("by_search_text", ["searchText"]),
 
   stream: defineTable({
     id: v.string(),

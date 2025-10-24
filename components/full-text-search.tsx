@@ -73,17 +73,19 @@ export default function FullTextSearch() {
     );
   };
 
-  const handleChatSelect = async (chat: ChatResult) => {
+  const handleChatSelect = async (chat: ChatResult, save: boolean) => {
     try {
-      await setSearchHistory({
-        id: chat.id,
-        title: chat.title,
-        content: chat.content || "",
-        searchText: search,
-      });
       setOpenSearchBar(false);
-      setSearch("");
       router.push(`/chat/${chat.id}`);
+      if (save) {
+        await setSearchHistory({
+          id: chat.id,
+          title: chat.title,
+          content: chat.content || "",
+          searchText: search,
+        });
+      }
+      setSearch("");
       setData(null);
     } catch (error) {
       console.error("Failed to save search history:", error);
@@ -169,7 +171,7 @@ export default function FullTextSearch() {
               {data.map((chat, index) => (
                 <button
                   key={index}
-                  onClick={() => handleChatSelect(chat)}
+                  onClick={() => handleChatSelect(chat, true)}
                   className="w-full flex flex-col items-start gap-1.5 px-4 py-3 hover:bg-accent transition-colors text-left"
                 >
                   <div className="flex items-start gap-2 w-full">
@@ -202,7 +204,7 @@ export default function FullTextSearch() {
                 {searchHistoryData.map((chat, index) => (
                   <button
                     key={index}
-                    onClick={() => handleChatSelect(chat)}
+                    onClick={() => handleChatSelect(chat, false)}
                     className="w-full flex flex-col items-start gap-1.5 px-4 py-3 hover:bg-accent transition-colors text-left"
                   >
                     <div className="flex items-start gap-2 w-full">
