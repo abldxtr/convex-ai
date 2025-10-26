@@ -27,7 +27,9 @@ const nextConfig: NextConfig = {
           }
         : false,
   },
-  experimental: {},
+  experimental: {
+    cacheComponents: true,
+  },
   logging: {
     fetches: {
       fullUrl: true,
