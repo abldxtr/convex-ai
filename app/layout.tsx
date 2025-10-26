@@ -86,7 +86,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${vazirmatn.variable} `}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${geist.variable} ${vazirmatn.variable} `}
+    >
       <head>
         <script
           type="application/ld+json"
