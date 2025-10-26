@@ -1,6 +1,15 @@
 {
-  "name": "T3 of chatgpt ",
-  "short_name": "T3 gpt",
+  "name": "T3 Chatbot - چت‌بات هوش مصنوعی",
+  "short_name": "T3 Chatbot",
+  "description": "T3 Chatbot یک چت‌بات هوش مصنوعی پیشرفته است که برای گفت‌وگو، پاسخ به پرسش‌ها و اجرای وظایف هوشمند طراحی شده است.",
+  "lang": "fa-IR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "categories": ["artificial intelligence", "productivity", "communication"],
   "icons": [
     {
       "src": "/icons/android-chrome-192x192.png",
@@ -11,12 +20,32 @@
     {
       "src": "/icons/icon-512-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
-  "theme_color": "#FFFFFF",
-  "background_color": "#FFFFFF",
-  "start_url": "/",
-  "display": "standalone",
-  "orientation": "portrait"
+  "shortcuts": [
+    {
+      "name": "شروع گفتگو",
+      "short_name": "چت جدید",
+      "description": "شروع گفت‌وگو با چت‌بات T3",
+      "url": "/chat",
+      "icons": [
+        {
+          "src": "/icons/icon-512-512.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/chat-ui.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "رابط کاربری چت"
+    }
+  ]
 }

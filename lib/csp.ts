@@ -186,3 +186,46 @@ export function removeCSPSource(
     ]!.filter((s: string) => s !== source);
   }
 }
+
+/**
+ * Generate static structured data for SEO
+ */
+export function generateStructuredData() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Chatbot",
+    name: "T3 Chatbot",
+    description:
+      "T3 Chatbot یک چت‌بات هوش مصنوعی پیشرفته است که برای گفت‌وگو، پاسخ به پرسش‌ها و اجرای وظایف هوشمند طراحی شده است. این سیستم از مدل‌های زبانی قدرتمند استفاده می‌کند تا تجربه‌ای طبیعی و سریع را برای کاربران فراهم کند.",
+    url: "https://convext-vercel-ai-udon.vercel.app",
+    applicationCategory: "AIChatApplication",
+    operatingSystem: "Web Browser",
+    offers: {
+      "@type": "Offer",
+      category: "SaaS",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    creator: {
+      "@type": "Organization",
+      name: "T3 AI",
+      url: "https://convext-vercel-ai-udon.vercel.app",
+      sameAs: ["https://github.com/", "https://x.com/"],
+    },
+    featureList: [
+      "پشتیبانی از مکالمه‌های هوشمند چندمرحله‌ای",
+      "درک زبان طبیعی (NLP)",
+      "حافظه گفتگو برای پاسخ‌های شخصی‌سازی‌شده",
+      "قابلیت اتصال به APIهای خارجی",
+      "رابط کاربری ساده و مدرن",
+    ],
+    inLanguage: "fa",
+    keywords: [
+      "چت‌بات هوش مصنوعی",
+      "گفت‌وگوی خودکار",
+      "ChatGPT فارسی",
+      "ربات چت",
+      "هوش مصنوعی تحت وب",
+    ],
+  };
+}
