@@ -2,6 +2,6 @@
 
 import { AuthScreen } from "@/components/auth/auth-screen";
 
-export default function AuthPage() {
+export default async function AuthPage() {
   return <AuthScreen />;
 }
