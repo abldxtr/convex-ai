@@ -324,7 +324,7 @@ export const searchBody = query({
       .withSearchIndex("search_body", (q) =>
         q.search("content", searchText).eq("userId", userId)
       )
-      .take(20);
+      .take(4);
 
     if (messages.length === 0) return null;
 

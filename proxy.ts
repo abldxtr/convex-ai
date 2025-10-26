@@ -7,6 +7,7 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 const isSignInPage = createRouteMatcher(["/auth"]);
 const isProtectedRoute = createRouteMatcher(["/chat(.*)"]);
+const isHomeRoute = createRouteMatcher(["/"]);
 
 const SUSPICIOUS_UA_PATTERNS = [
   /^\s*$/, // Empty user agents
@@ -20,7 +21,9 @@ export default convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
   const securityBlock = handleSecurityFiltering(request);
   if (securityBlock) return securityBlock;
   const isAuth = await isAuthenticatedNextjs();
-
+  if (isHomeRoute(request) && isAuth) {
+    return nextjsMiddlewareRedirect(request, "/chat");
+  }
   if (isSignInPage(request) && isAuth) {
     return nextjsMiddlewareRedirect(request, "/chat");
   }
