@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000,
     remotePatterns: [],
   },
-
+  reactCompiler: true,
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"
