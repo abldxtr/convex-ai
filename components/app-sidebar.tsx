@@ -152,7 +152,19 @@ export function AppSidebar({
                   <Fragment key={index}>
                     {index === 0 ? (
                       <SidebarMenuButton asChild>
-                        <Link href={"/chat"} prefetch scroll={false}>
+                        <Link
+                          href={"/chat"}
+                          onClick={() => {
+                            startTransition(() => {
+                              setChangeRandomId(!changeRandomId);
+                              setActive(false);
+                              setDisableLayout(false);
+                              setOpenMobile(false);
+                            });
+                          }}
+                          prefetch
+                          scroll={false}
+                        >
                           {item.icon}
                           <span>{item.title}</span>
                         </Link>

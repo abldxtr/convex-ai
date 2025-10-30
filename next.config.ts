@@ -27,7 +27,9 @@ const nextConfig: NextConfig = {
           }
         : false,
   },
-  experimental: {},
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
+  },
   logging: {
     fetches: {
       fullUrl: true,

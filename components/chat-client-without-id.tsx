@@ -98,9 +98,6 @@ export default function ChatClientWithoutId() {
     enabled: !!idChatState,
   });
 
-  // تست برای استفاده از خود هوک های کانوکس برای گرفتن اطلاعات که به درستی کار نکرد!
-  // const clientGetChatMessages = useQuery(api.chat.getChatById, { id: idChat });
-
   const [
     { files, isDragging, errors },
     {
